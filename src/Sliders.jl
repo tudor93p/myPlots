@@ -114,10 +114,9 @@ init_oper(oper) = function iop!(d)
 
 init_Vec2Scalar() = function ivs!(d::AbstractDict)
 
-	tex(s) = "\$$s\$"
+	#tex(s) = "\$$s\$"
 
-
-	xyz = ([tex(i), tex(i)*"/norm", tex(i*"^2")] for i in 'x'.+(0:SYST_DIM-1))
+	xyz = ([i, i*"/norm", i*"^2"] for i in 'x'.+(0:SYST_DIM-1))
 
 	return merge!(union, d, Dict("Vec2Scalar" => map(string, [	
 							 xyz... ;  "Angle"; "Norm";

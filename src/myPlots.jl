@@ -373,11 +373,9 @@ end
 #---------------------------------------------------------------------------#
 
 
-function main_secondary_dimension()
+function main_secondary_dimensions()::Tuple{String,String}
 
-	@warn "Function being used" 
-
-	["x","y"][[MAIN_DIM, SECOND_DIM]]
+	Tuple(["x","y"][[MAIN_DIM, SECOND_DIM]])
 
 end 
 

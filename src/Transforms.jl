@@ -199,31 +199,12 @@ end
 
 
 
-
-
-
-
 #===========================================================================#
 #
 #
 #
 #---------------------------------------------------------------------------#
 
-
-function Vec2Scalar(data::AbstractVector{<:Number}, args...
-									 )::Number 
-
-	Vec2Scalar(Utils.VecAsMat(data, VECTOR_STORE_DIM), 
-						 args...)[1]
-
-end 
-
-function Vec2Scalar(data::AbstractMatrix{<:Number}, P::AbstractDict=Dict()
-									 )::Vector{<:Number}
-	
-	Vec2Scalar(data, [2,1][VECTOR_STORE_DIM], P)
-
-end 
 
 
 function parse_vec2scalar(d::AbstractString)::Function
@@ -249,6 +230,33 @@ function parse_vec2scalar(d::AbstractString)::Function
 	end  
 
 	error("Not supported Vec2Scalar: '$d'")
+
+end 
+
+
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+function Vec2Scalar(data::AbstractVector{<:Number}, args...
+									 )::Number 
+
+	Vec2Scalar(Utils.VecAsMat(data, VECTOR_STORE_DIM), 
+						 args...)[1]
+
+end 
+
+function Vec2Scalar(data::AbstractMatrix{<:Number}, P::AbstractDict=Dict()
+									 )::Vector{<:Number}
+	
+	Vec2Scalar(data, [2,1][VECTOR_STORE_DIM], P)
 
 end 
 
