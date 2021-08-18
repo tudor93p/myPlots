@@ -130,6 +130,19 @@ init_Vec2Scalar() = function ivs!(d::AbstractDict)
 
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+init_regions(n::Int) = function addregions!(d::AbstractDict)
+
+	merge!(max, d, Dict("Regions"=>n))
+
+end
+
 
 
 
