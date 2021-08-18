@@ -96,15 +96,13 @@ function SamplingWeights(args...; kwargs...)
 end
 
 
-function SampleVectors(vectors, args...; kwargs...)
+function SampleVectors(vectors, args...; dim=VECTOR_STORE_DIM, kwargs...)
 	
 	a = get_SamplingVars(args...; kwargs...)
 
 	isnothing(a) && return vectors
 
-	return Algebra.ConvoluteVectorPacket(a..., vectors; 
-																			 dim=VECTOR_STORE_DIM,
-																			 kwargs...)
+	return Algebra.ConvoluteVectorPacket(a..., vectors; dim=dim, kwargs...)
 
 end
 
