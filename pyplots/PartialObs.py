@@ -1,0 +1,34 @@
+import numpy as np
+import Plot,Algebra,Utils
+from plothelpers import *
+from sliders import *
+from Curves_yofx import nr_axes, common_sliders as common_sliders0
+from Curves_yofx import plot as plot0
+
+
+common_sliders = [partial_observables, partobs_vminmax, boundaries, smoothen]
+
+add_sliders, read_sliders = addread_sliders(*common_sliders0, 
+                                            *common_sliders,
+                                            choose_energy)
+                
+
+
+
+
+#===========================================================================#
+#
+#   plot
+#
+#---------------------------------------------------------------------------#
+
+
+
+def plot(Ax, get_plotdata, pobsmin=None, pobsmax=None, **kwargs):
+   
+
+    plot0(Ax, get_plotdata, ylim=[pobsmin,pobsmax], **kwargs)
+
+
+
+
