@@ -94,7 +94,7 @@ task = myPlots.PlotTask(CompTask("no name", identity,
 																				 function () end,
 																				 identity,identity),
 						[identity],
-						myPlots.TypicalPlots.plot_obs(identity)
+						myPlots.TypicalPlots.obs(identity)
 						) 
 
 #@show task 
@@ -145,7 +145,7 @@ task2 = myPlots.PlotTask("test plot task local",
 									 x->true,
 									 x->(nothing,nothing),
 									 myPlots.Sliders.init_localobs(["obs1","LocalObs2"]),
-									 myPlots.TypicalPlots.plot_localobs((args...;kwargs...)->(nothing,[nothing]),  latt_x
+									 myPlots.TypicalPlots.localobs((args...;kwargs...)->(nothing,[nothing]),  latt_x
 																				)...)
 
 
@@ -169,7 +169,7 @@ function get_latt(args...; kwargs...)
 
 end  
 
-q = myPlots.TypicalPlots.plot_lattice(get_latt)
+q = myPlots.TypicalPlots.lattice(get_latt)
 
 
 
@@ -207,8 +207,8 @@ function get_data(args...;kwargs...)
 end 
 
 
-@show myPlots.TypicalPlots.plot_oper(get_data)[1]
-@show myPlots.TypicalPlots.plot_oper(get_data)[2](Dict())
+@show myPlots.TypicalPlots.oper(get_data)[1]
+@show myPlots.TypicalPlots.oper(get_data)[2](Dict())
 
 
 @show myPlots.obs_x_and_label("x", nothing, "x", nothing)
