@@ -4,4 +4,4 @@ test/savefile
 testfiles
 pyplots/__pycache__  
 pyplots/pyqt_config 
-*/.*.jl.swp
+*/.*.swp

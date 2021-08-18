@@ -1,5 +1,6 @@
 from plothelpers import *
-from sliders import *
+from sliders import * 
+
 from VectorField import plot as plot0, common_sliders as common_sliders0
 from VectorField import nr_axes
 

@@ -1,11 +1,14 @@
 import Plot,Algebra,Utils
 from plothelpers import *
-from sliders import *
-from Curves_yofx import nr_axes, common_sliders as common_sliders0
-from Curves_yofx import plot as plot0
-from SiteVectorObservables import common_sliders as common_sliders1
+from sliders import * 
 
-common_sliders = common_sliders1 + [sitevectorobs_vminmax]
+from Curves_yofx import nr_axes, common_sliders as common_sliders0
+
+from Curves_yofx import plot as plot0
+
+from SiteVector import common_sliders as common_sliders1
+
+common_sliders = common_sliders1 + [sitevectorobs_vminmax, vec2scalar]
 
 add_sliders, read_sliders = addread_sliders(*common_sliders0,
                                             *common_sliders,
