@@ -145,6 +145,34 @@ end
 
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+function init(f::Symbol, args...)::Vector{Function}
+
+	[get(@__MODULE__, f)(args...)]
+
+end 
+
+function init(t::Tuple{Symbol, Vararg})::Vector{Function}
+
+	init(t...)
+
+end 
+
+function init(tuples::Vararg{Tuple})::Vector{Function}
+
+	vcat(init.(tuples)...)
+
+end 
+
+
+
+
 
 
 #############################################################################
