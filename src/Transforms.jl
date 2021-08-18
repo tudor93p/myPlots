@@ -3,11 +3,11 @@ module Transforms
 
 import LinearAlgebra
 
-import myLibs: Utils, Algebra 
+import myLibs: Utils, Algebra, ArrayOps
 
 
 
-using Constants: ENERGIES, VECTOR_STORE_DIM
+using Constants: ENERGIES, VECTOR_STORE_DIM, HOPP_CUTOFF, SYST_DIM
 
 
 
@@ -214,15 +214,14 @@ function Vec2Scalar(data::AbstractVector{<:Number}, args...
 									 )::Number 
 
 	Vec2Scalar(Utils.VecAsMat(data, VECTOR_STORE_DIM), 
-						 VECTOR_STORE_DIM,
 						 args...)[1]
 
 end 
 
-function Vec2Scalar(data::AbstractMatrix{<:Number}, args...
+function Vec2Scalar(data::AbstractMatrix{<:Number}, P::AbstractDict=Dict()
 									 )::Vector{<:Number}
 	
-	Vec2Scalar(data, VECTOR_STORE_DIM, args...)
+	Vec2Scalar(data, [2,1][VECTOR_STORE_DIM], P)
 
 end 
 
@@ -234,17 +233,16 @@ function parse_vec2scalar(d::AbstractString)::Function
 	d=="Norm" && return LinearAlgebra.norm
 
 
-	for i in 0:SYST_DIM-1
+	for i in 1:SYST_DIM
 
 		if any(c->occursin(c,d), i-1 .+ ['x', 'X'])
 
-			sel = Utils.sel(1, i+1)
 
-			occursin("norm", d) && return R -> sel(R)/LinearAlgebra.norm(R)
+			occursin("norm", d) && return R -> R[i]/LinearAlgebra.norm(R)
 
-			occursin("^2", d) && return abs2 ∘ sel 
+			occursin("^2", d) && return R->abs2(R[i])
 
-			return sel 
+			return R->R[i]
 			
 		end 
 
@@ -257,11 +255,11 @@ end
 
 function Vec2Scalar(data::AbstractArray{<:Number, N},
 										dim::Int,
-										P::AbstractDict,
+										P::AbstractDict=Dict()
 										)::Array{<:Number, N-1} where N
 															
 
-	haskey(P, "vec2scalar") || return zeros(size(data)[setdiff(1:N),dim])
+	haskey(P, "vec2scalar") || return zeros(size(data)[setdiff(1:N,dim)])
 
 	return ArrayOps.mapslices_dropLostDims(parse_vec2scalar(P["vec2scalar"]),
 																				 data, dim) 

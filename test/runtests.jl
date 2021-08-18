@@ -3,10 +3,10 @@ using Revise, Test
 import myPlots
 
 
-include("myplots.jl")
+#include("myplots.jl")
 
 
-#include("transforms.jl")
+include("transforms.jl")
 
 
 

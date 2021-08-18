@@ -1,6 +1,19 @@
 module TypicalPlots
 #############################################################################
 
+using myLibs.ComputeTasks: CompTask
+import myLibs: Lattices ,Utils
+
+using ..myPlots: PlotTask 
+using Constants: VECTOR_STORE_DIM 
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
 
 plot_obs(task::CompTask) = plot_obs(task.get_data) 
 

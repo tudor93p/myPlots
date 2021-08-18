@@ -2,6 +2,6 @@ Data
 test/Data 
 test/savefile 
 testfiles
-plots/__pycache__  
-plots/pyqt_config 
-
+pyplots/__pycache__  
+pyplots/pyqt_config 
+*/.*.jl.swp

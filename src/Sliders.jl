@@ -1,7 +1,7 @@
 module Sliders
 #############################################################################
 
-
+using Constants:SYST_DIM
 
 #===========================================================================#
 #
@@ -114,9 +114,13 @@ init_oper(oper) = function iop!(d)
 
 init_Vec2Scalar() = function ivs!(d::AbstractDict)
 
-		merge!(union, d, Dict("Vec2Scalar" => map(string, [																				
-			collect(Base.product('x' .+ (0:SYST_DIM-1),[""," norm.","^2"]))[:];
-			 "Angle"; "Norm";
+	tex(s) = "\$$s\$"
+
+
+	xyz = ([tex(i), tex(i)*"/norm", tex(i*"^2")] for i in 'x'.+(0:SYST_DIM-1))
+
+	return merge!(union, d, Dict("Vec2Scalar" => map(string, [	
+							 xyz... ;  "Angle"; "Norm";
 			 
 			])))
 

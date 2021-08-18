@@ -7,18 +7,18 @@ obs_list = ["Intruder", "LocalA", "BondVector1", "SiteVectorV", "Obs1"]
 
 
 
-@show myPlots.pick_local(obs_list)
+@show myPlots.Sliders.pick_local(obs_list)
 
 
-@show myPlots.pick_bondvector(obs_list) 
+@show myPlots.Sliders.pick_bondvector(obs_list) 
 
-@show myPlots.pick_sitevector(obs_list) 
+@show myPlots.Sliders.pick_sitevector(obs_list) 
 
-@show myPlots.pick_nonlocal(obs_list)
+@show myPlots.Sliders.pick_nonlocal(obs_list)
 
 
-@show myPlots.init_obs(obs_list)(Dict())
-@show myPlots.init_enlim(rand(5))(Dict())
+@show myPlots.Sliders.init_obs(obs_list)(Dict())
+@show myPlots.Sliders.init_enlim(rand(5))(Dict())
 
 
 
@@ -26,39 +26,9 @@ println()
 
 
 
-@show myPlots.get_SamplingVars_(Dict(), "Energy")
-@show myPlots.get_SamplingVars_(Dict("Energy"=>0.1), "Energy")
 
 
 P = Dict{Any,Any}("Energy"=>0.1)
-
-
-@show myPlots.get_SamplingVars_(P, "Energy", sort(rand(4)), "E_width") 
-
-@show myPlots.get_SamplingVars_(merge(P,Dict("E_width"=>0.01)), 
-													 "Energy", sort(rand(4)), "E_width")
-
-
-
-println()
-
-P["k"] = 0.3
-
-Data = Dict("kLabels"=>rand(NR_ENERGIES))
-
-@show myPlots.get_SamplingVars(P; Data=Data, get_k=true)
-
-
-
-println()
-
-
-
-@show myPlots.SamplingWeights(P) |> size
-
-@show myPlots.SamplingWeights(P; Data=Data, get_k=true) |> size
-
-@show myPlots.SampleVectors(rand(10,NR_ENERGIES), P; Data=Data, get_k=true) |> size 
 
 
 
@@ -124,7 +94,7 @@ task = myPlots.PlotTask(CompTask("no name", identity,
 																				 function () end,
 																				 identity,identity),
 						[identity],
-						myPlots.plot_obs(identity)
+						myPlots.TypicalPlots.plot_obs(identity)
 						) 
 
 #@show task 
@@ -137,8 +107,8 @@ task = myPlots.PlotTask("test plot task",
 									 (args...) -> [Dict("xyz"=>321)],
 									 x->true,
 									 x->"data",
-									 [myPlots.init_obs(["obs1","LocalObs2"]),
-										myPlots.init_enlim(ENERGIES),
+									 [myPlots.Sliders.init_obs(["obs1","LocalObs2"]),
+										myPlots.Sliders.init_enlim(ENERGIES),
 										],
 									 "Observables",
 									 function (P) 
@@ -174,8 +144,8 @@ task2 = myPlots.PlotTask("test plot task local",
 									 (args...) -> [Dict("xyz"=>321)],
 									 x->true,
 									 x->(nothing,nothing),
-									 myPlots.init_localobs(["obs1","LocalObs2"]),
-									 myPlots.plot_localobs((args...;kwargs...)->(nothing,[nothing]),  latt_x
+									 myPlots.Sliders.init_localobs(["obs1","LocalObs2"]),
+									 myPlots.TypicalPlots.plot_localobs((args...;kwargs...)->(nothing,[nothing]),  latt_x
 																				)...)
 
 
@@ -199,7 +169,7 @@ function get_latt(args...; kwargs...)
 
 end  
 
-q = myPlots.plot_lattice(get_latt)
+q = myPlots.TypicalPlots.plot_lattice(get_latt)
 
 
 
@@ -213,14 +183,10 @@ q = myPlots.plot_lattice(get_latt)
 
 
 
-import PyCall, PyPlot; fig,ax = PyPlot.subplots()
-
-path = "/media/tudor/Tudor/Work/2020_Snake-states/SnakeStates/Helpers/plots/"
-
-pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"), path)
+import PyPlot; fig,ax = PyPlot.subplots()
 
 
-PyCall.pyimport("Scatter").plot([ax], q[2],dotsize=100)
+myPlots.pyplot("Scatter", [ax], q[2]; dotsize=100)
 
 
 
@@ -241,8 +207,8 @@ function get_data(args...;kwargs...)
 end 
 
 
-@show myPlots.plot_oper(get_data)[1]
-@show myPlots.plot_oper(get_data)[2](Dict())
+@show myPlots.TypicalPlots.plot_oper(get_data)[1]
+@show myPlots.TypicalPlots.plot_oper(get_data)[2](Dict())
 
 
 @show myPlots.obs_x_and_label("x", nothing, "x", nothing)

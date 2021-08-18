@@ -4,7 +4,7 @@ module myPlots
 
 import PyCall 
 
-using myLibs: Utils, Algebra, Lattices, ComputeTasks
+using myLibs: Utils, Algebra, ComputeTasks
 
 using myLibs.ComputeTasks: CompTask
 
@@ -23,9 +23,6 @@ export PlotTask
 #---------------------------------------------------------------------------#
 
 
-include("Sliders.jl")
-include("Transforms.jl")
-include("TypicalPlots.jl")
 
 
 #===========================================================================#
@@ -123,6 +120,18 @@ function PlotTask(pt::PlotTask, args...)::PlotTask
 
 end  
 
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+include("Sliders.jl")
+include("Transforms.jl")
+include("TypicalPlots.jl")
 
 #===========================================================================#
 #
@@ -243,7 +252,7 @@ function construct_obs0obs(P, obs, val, obs0, val0, labels=nothing, labels0=labe
 
 	if all(in(keys(P)), ["interp_method", "Energy", "E_width"] )
 
-		out["weights"] = SamplingWeights(P)
+		out["weights"] = Transforms.SamplingWeights(P)
 
 	end
 	
@@ -315,6 +324,22 @@ end
 
 
 
+
+function pyplot(script::AbstractString, args...; kwargs...)
+
+	path = "$PATH_SNAKE/myPlots/pyplots/"
+
+	pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"), path)
+
+	PyCall.pyimport(script).plot(args...; kwargs...)
+
+end
+
+
+
+
+
+
 plot(task::PlotTask; kwargs...) = plot([task]; kwargs...)
 plot(tasks::Vararg{PlotTask}; kwargs...) = plot(collect(tasks); kwargs...)
 
@@ -330,15 +355,11 @@ function plot(tasks::AbstractVector{PlotTask}; only_prep=false, kwargs...)
 	only_prep && return pyplot_args 
 
 
+	pyplot("scheleton", pyplot_args...; kwargs...)
 
-	path = "$PATH_SNAKE/myPlots/pyplots/"
-
-	pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"), path)
+end 
 
 
-	PyCall.pyimport("scheleton").plot(pyplot_args...; kwargs...)
-
-end
 
 
 
@@ -359,6 +380,19 @@ function main_secondary_dimension()
 	["x","y"][[MAIN_DIM, SECOND_DIM]]
 
 end 
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
+
 
 
 
