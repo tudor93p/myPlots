@@ -135,7 +135,7 @@ def plot(Ax, get_plotdata,
     
     if "label" in data:
     
-        label = label + "("+ data["label"] + ")" 
+        label = label + "\n"+ data["label"] 
 
 
     Plot.good_colorbar(P, [vmin, vmax], ax0, label,

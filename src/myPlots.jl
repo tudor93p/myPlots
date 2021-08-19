@@ -344,6 +344,27 @@ end
 include("TypicalPlots.jl")
 
 
+#===========================================================================#
+#
+# Split long labels in two rows
+#
+#---------------------------------------------------------------------------#
+
+
+function split_label(labels::AbstractVector{<:AbstractString};
+										 sep2::Union{Char,AbstractString}="\n",
+										 sep1::Union{Char,AbstractString}="/",
+										 )::String
+
+	length(labels)==1 && return labels[1]
+
+	possib = [(join(labels[1:i], sep1),
+						 join(labels[i+1:end], sep1)) for i in 1:length(labels)-1]
+
+	return join(possib[argmin([abs(-(length.(p)...)) for p in possib])], sep2)
+
+end 
+
 
 #===========================================================================#
 #

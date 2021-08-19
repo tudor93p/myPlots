@@ -394,7 +394,7 @@ convol_energy = ProcessData("Energy",
 
 													(SampleVectors(Data, P; kwargs...),
 
-											 "@E=" * string(round(P["Energy"],digits=2))
+											 "E=" * string(round(P["Energy"],digits=2))
 					
 											)
 					
