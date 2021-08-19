@@ -165,13 +165,12 @@ function init(f::Symbol, args...)::Vector{Function}
 
 end 
 
-function init(t::Tuple{Symbol, Vararg})::Vector{Function}
+init(t::Tuple)::Vector{Function} = init(t...)
 
-	init(t...)
+init(tuples::Vararg{Tuple})::Vector{Function} = vcat(init.(tuples)...)
 
-end 
+init(tuples::AbstractVector{<:Tuple})::Vector{Function} = init(tuples...)
 
-init(tuples::Vararg{Tuple})::Vector{Function}  = vcat(init.(tuples)...)
 
 init(f::Function)::Vector{Function}  = [f]
 

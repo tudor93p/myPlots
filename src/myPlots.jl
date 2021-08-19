@@ -92,7 +92,7 @@ function PlotTask(name::AbstractString,
 																			Tuple{Tuple,Vararg},
 																			AbstractVector,
 																			Function},
-									args...)
+									args...)::PlotTask
 
 	PlotTask(name, get_plotparams, get_paramcombs, files_exist,
 					 get_data, Sliders.init(init_sliders), args...)
@@ -107,7 +107,7 @@ function PlotTask(name::AbstractString,
 									get_data::Function,
 									pp::Union{AbstractString, 
 														Tuple{<:AbstractString,<:Function}},
-									args...)
+									args...)::PlotTask
 
 	PlotTask(name, get_plotparams, get_paramcombs, files_exist,
 					 get_data, Sliders.init(), pp, args...)
@@ -121,7 +121,7 @@ function PlotTask(name::AbstractString,
 									get_data::Function,
 									init_sliders::AbstractVector{Function},
 									pp::Tuple{<:AbstractString,<:Function}
-									)
+									)::PlotTask
 
 	PlotTask(name, get_plotparams, get_paramcombs, files_exist,
 					 get_data, init_sliders, pp...)
