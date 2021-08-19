@@ -7,7 +7,7 @@ import myLibs: Utils, Algebra, ArrayOps, ComputeTasks
 
 
 
-using Constants: ENERGIES, VECTOR_STORE_DIM, HOPP_CUTOFF, SYST_DIM
+using Constants: ENERGIES, VECTOR_STORE_DIM, HOPP_CUTOFF, SYST_DIM, MAIN_DIM
 
 
 
@@ -401,6 +401,17 @@ convol_energy = ProcessData("Energy",
 										end)
 
 
+function dist_dw_label(Rs::AbstractVector{<:Number})::Vector{String}
+
+	dist_dw_label.(Rs)
+
+end 
+
+function dist_dw_label(R::Number)::String 
+
+	string(["x","y"][MAIN_DIM], "=", round(R, digits=1))
+
+end 
 
 
 #===========================================================================#
