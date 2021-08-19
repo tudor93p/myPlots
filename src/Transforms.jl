@@ -1,7 +1,7 @@
 module Transforms
 #############################################################################
 
-import LinearAlgebra
+import LinearAlgebra, FFTW
 
 import myLibs: Utils, Algebra, ArrayOps, ComputeTasks
 
@@ -282,10 +282,112 @@ function Vec2Scalar(data::AbstractArray{<:Number, N},
 end
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+get_interp_order(r::Nothing=nothing)::Int = 3
+get_interp_order(r::Real)::Int = trunc(interp_order)
+
+
+function interp(x0::AbstractVector{<:Real}, 
+								y0::AbstractArray{<:Real,N},
+								args...; interp_N::Int=200, dim::Int
+								)::Tuple{Vector{Float64},Array{Float64, N}} where N
+
+	interp_order = get_interp_order(args...)	
+
+	x1 = range(extrema(x0)..., length=interp_N)
+
+	return (x1,
+
+					mapslices(y0, dims=dim) do v 
+											 
+						Algebra.Interp1D(x0, v, interp_order, x1)
+
+					end)
+	
+end
+
+
+function fourier_abs(x::AbstractVector{<:Real},
+								 y::AbstractArray{<:Real,N}; 
+								dim::Int
+								)::Tuple{Vector{Float64},Array{Float64, N}} where N
+	
+	dist = Utils.Unique(diff(sort(x)), tol=1e-6)
+
+	length(dist)>1 && return fourier_abs(interp(x, y; dim=dim)...; dim=dim)
+
+	return (
+
+				 FFTW.rfftfreq(length(x), 2pi/(x[2]-x[1])),
+			
+				 abs.(mapslices(FFTW.rfft, y, dims=dim))
+			
+				 )
+
+end 
+
+
+function fourier_comp(A::AbstractArray{<:Number,N}, freq::Real;  
+											dim::Int, kwargs...)::Array{ComplexF64, N} where N
+
+	Algebra.fft(A, freq; addup=false, dim=dim)
+
+end 
+
+
+#function fourier_comp(a::AbstractVecOrMat, freq::Real; dim::Int, rtol=0)
+#
+#	A = real(Algebra.fft(a, freq, addup=false, dim=dim)) 
+#	
+#	rtol>0 && Utils.ReplaceByNeighbor!(isapprox(0, atol=rtol*maximum(abs,A)), A)
+#
+#	return sign.(A)
+#
+#end 
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+#=
+function plothelper_transform(P, x, y, xlab=nothing; dim=1, interp_N=200)
+
+	out(A, B, L) = (collect(A), collect(B), L)
+
+	transf = get(P, "transform", "None")
+
+	transfparam = get(P, "transfparam", nothing)
+
+
+	elseif transf=="Fourier comp."
+
+		freq = Utils.Assign_Value(transfparam,0)*2pi
+		
+		y1 = find_Fourier_components(y, freq; dim=dim, rtol=get(P, "smooth", 0)/100)
+
+		
 
 
 
 
+		return out(x, y1, xlab) # don't input label !!
+
+	end 
+
+end
+
+
+
+=#
 
 #===========================================================================#
 #
@@ -400,6 +502,54 @@ convol_energy = ProcessData("Energy",
 					
 										end)
 
+
+
+transform = ProcessData(
+												
+								function check_transf(P::AbstractDict, Data; kwargs...)
+
+									get(P, "transform", "None") in ["|Fourier|","Interpolate",
+																									"Fourier comp."]
+
+								end,
+
+								function calc_transf(P::AbstractDict, (x,y); kwargs...)
+
+									transf = P["transform"]
+	
+									if transf=="Interpolate" 
+
+										transfparam = get(P, "transfparam", nothing)
+
+										return (interp(x, y, transfparam; kwargs...), "interp.")
+
+									elseif transf=="|Fourier|"
+
+										return (fourier_abs(x, y; kwargs...), "|FFT|")
+
+									elseif transf=="Fourier comp." 
+		
+										freq = get(P, "transfparam", 0) 
+
+										lab = round(freq, digits=1)  
+
+										return ((x, fourier_comp(y, freq*pi; kwargs...)),
+
+														"Fcomp($lab"*"pi)"
+														)
+									end 
+
+								end 
+
+								)
+
+
+
+
+
+
+
+
 function dist_dw_label(Rs::AbstractVector{<:Number})::Vector{String}
 
 	dist_dw_label.(Rs)
@@ -424,10 +574,6 @@ closest_to_dw = ProcessData(
 
 				end)
 
-#
-#		SVO, labels = myPlots.Transforms.closest_to_dw(P, SVO;
-#																									 R=Rlabel, inds=inds, dim=1)
-#
 
 
 

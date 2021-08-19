@@ -109,10 +109,47 @@ myPlots.Transforms.succesive_transforms([:choose_obs_i, :convol_energy, :vec2sca
 
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+println()
 
 
 
+@show myPlots.Sliders.init_transforms()(Dict())
 
+for t in first(values(myPlots.Sliders.init_transforms()(Dict())))
+
+	occursin("comp",t) || continue 
+
+	println()
+
+	@info t 
+
+	p = Dict("transform"=>t,"transfparam"=>1)
+
+	x = range(0,2pi,length=100) 
+
+	y = hcat(sin.(x), sin.(2x), sin.(3x), sin.(4x))
+
+	(x1,y1),label = myPlots.Transforms.transform(p, (x,y); dim=1)
+
+	@show size(x1)
+
+	@show size(y1) 
+
+	@show sum(abs, imag(y1)) 
+	@show label 
+
+#	@show  x1[argmax.(eachcol(y1))]
+
+
+	
+
+
+end 
 
 
 

@@ -154,6 +154,25 @@ end
 #---------------------------------------------------------------------------#
 
 
+
+init_transforms(t::Vararg{<:AbstractString}) = function addtransf!(d)
+
+	merge!(union, d, Dict("Transforms"=> vcat("None",t...)))
+
+end 
+
+init_transforms() = init_transforms("Interpolate", 
+																		"|Fourier|", 
+																		"Fourier comp.")
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
 function init(f::Symbol, args...)::Vector{Function}
 
 	F = Utils.getprop(@__MODULE__, f, 
