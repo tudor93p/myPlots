@@ -394,12 +394,11 @@ convol_energy = ProcessData("Energy",
 
 													(SampleVectors(Data, P; kwargs...),
 
-											 "E=" * string(round(P["Energy"],digits=2))
-					
-											)
+													 "E=" * string(round(P["Energy"],digits=2))
+
+													 )
 					
 										end)
-
 
 function dist_dw_label(Rs::AbstractVector{<:Number})::Vector{String}
 
@@ -411,7 +410,25 @@ function dist_dw_label(R::Number)::String
 
 	string(["x","y"][MAIN_DIM], "=", round(R, digits=1))
 
-end 
+end  
+
+
+closest_to_dw = ProcessData(
+
+				function just_slice(P::AbstractDict, A::AbstractArray{<:Number, N};
+														R::Number, inds::AbstractVector{Int}, dim::Int 
+														)::Tuple{AbstractArray{<:Number,N}, String} where N
+
+								(selectdim(A, dim, inds), dist_dw_label(R))
+
+
+				end)
+
+#
+#		SVO, labels = myPlots.Transforms.closest_to_dw(P, SVO;
+#																									 R=Rlabel, inds=inds, dim=1)
+#
+
 
 
 #===========================================================================#
