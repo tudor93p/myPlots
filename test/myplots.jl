@@ -85,19 +85,38 @@ P["E_width"] =0.2
 myPlots.construct_obs0obs(P, "Obs", [1,2,3], "Obs0", [30,10,20]);
 
 
+println()
 
-
-println()  
-
-
-myPlots.PlotTask(identity,
+pt0 = myPlots.PlotTask(identity,
 						identity,
 						identity,
 						identity,
 						[identity],
 						"py",
 						identity
-						) |> println 
+						) 
+
+println(pt0)
+
+
+
+for init_sli in [(:Vec2Scalar,), ((:enlim, [rand(1:2),rand(1:5)]),), ([identity],),(identity,),(),]
+
+	for init_pl in [("s",identity), (("a",identity),)]
+
+#		@show init_sli init_pl
+		myPlots.PlotTask(pt0, init_sli..., init_pl...)
+
+myPlots.PlotTask(identity, identity,
+								 identity, identity,
+								 init_sli...,
+								 init_pl...,
+								 )
+end end 
+
+println()  
+
+error()
 
 
 

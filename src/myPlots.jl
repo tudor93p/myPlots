@@ -87,60 +87,102 @@ function PlotTask(name::AbstractString,
 									get_paramcombs::Function,
 									files_exist::Function,
 									get_data::Function,
-									init_slider::Function,
-									args...)
-
-	PlotTask(name, get_plotparams, get_paramcombs, files_exist,
-					 get_data, [init_slider], args...)
-	
-end 
-
-
-
-function PlotTask(task::CompTask,
-									init_sliders::AbstractVector{<:Function},
-									pyplot_script::AbstractString,
-									plot_::Function)::PlotTask
-
-	PlotTask((getproperty(task, p) for p in propertynames(task))...,
-					 init_sliders, pyplot_script, plot_)
-
-end 
-
-function PlotTask(task::CompTask,
-									init_sliders::AbstractVector{<:Function},
-									pp::Tuple{<:AbstractString,<:Function})::PlotTask
-
-	PlotTask(task, init_sliders, pp...)
-
-end 
-
-
-function PlotTask(task::CompTask,
 									init_sliders::Union{Symbol,
 																			Tuple{Symbol, Vararg},
 																			Tuple{Tuple,Vararg},
 																			AbstractVector,
 																			Function},
-									args...
-									)::PlotTask
+									args...)
 
-	PlotTask(task, Sliders.init(init_sliders), args...)
-
+	PlotTask(name, get_plotparams, get_paramcombs, files_exist,
+					 get_data, Sliders.init(init_sliders), args...)
+	
 end 
 
 
-function PlotTask(task::CompTask,
+function PlotTask(name::AbstractString,
+									get_plotparams::Function,
+									get_paramcombs::Function,
+									files_exist::Function,
+									get_data::Function,
 									pp::Union{AbstractString, 
 														Tuple{<:AbstractString,<:Function}},
 									args...)
 
+	PlotTask(name, get_plotparams, get_paramcombs, files_exist,
+					 get_data, Sliders.init(), pp, args...)
+	
+end  
 
-	PlotTask(task, Sliders.init(), pp, args...)
+function PlotTask(name::AbstractString,
+									get_plotparams::Function,
+									get_paramcombs::Function,
+									files_exist::Function,
+									get_data::Function,
+									init_sliders::AbstractVector{Function},
+									pp::Tuple{<:AbstractString,<:Function}
+									)
 
+	PlotTask(name, get_plotparams, get_paramcombs, files_exist,
+					 get_data, init_sliders, pp...)
+	
 end 
 
 
+
+
+
+
+function PlotTask(task::CompTask,
+									args...)::PlotTask
+	
+	PlotTask((getproperty(task, p) for p in propertynames(task))...,
+					 args...)
+
+end 
+#
+#									init_sliders::AbstractVector{<:Function},
+#									pyplot_script::AbstractString,
+#									plot_::Function)::PlotTask
+#
+#					 init_sliders, pyplot_script, plot_)
+#
+#end 
+#
+#function PlotTask(task::CompTask,
+#									init_sliders::AbstractVector{<:Function},
+#									pp::Tuple{<:AbstractString,<:Function})::PlotTask
+#
+#	PlotTask(task, init_sliders, pp...)
+#
+#end 
+#
+#
+#function PlotTask(task::CompTask,
+#									init_sliders::Union{Symbol,
+#																			Tuple{Symbol, Vararg},
+#																			Tuple{Tuple,Vararg},
+#																			AbstractVector,
+#																			Function},
+#									args...
+#									)::PlotTask
+#
+#	PlotTask(task, Sliders.init(init_sliders), args...)
+#
+#end 
+#
+#
+#function PlotTask(task::CompTask,
+#									pp::Union{AbstractString, 
+#														Tuple{<:AbstractString,<:Function}},
+#									args...)
+#
+#
+#	PlotTask(task, Sliders.init(), pp, args...)
+#
+#end 
+#
+#
 
 function PlotTask(pt::PlotTask, args...)::PlotTask
 									
@@ -156,7 +198,6 @@ end
 #
 #
 #---------------------------------------------------------------------------#
-
 
 
 
