@@ -132,7 +132,9 @@ for t in first(values(myPlots.Sliders.init_transforms()(Dict())))
 
 	x = range(0,2pi,length=100) 
 
-	y = hcat(sin.(x), sin.(2x), sin.(3x), sin.(4x))
+#	y = hcat(sin.(x), sin.(2x), sin.(3x), sin.(4x))
+
+	y=sin.(x)
 
 	(x1,y1),label = myPlots.Transforms.transform(p, (x,y); dim=1)
 

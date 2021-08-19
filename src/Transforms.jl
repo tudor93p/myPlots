@@ -333,8 +333,16 @@ function fourier_abs(x::AbstractVector{<:Real},
 end 
 
 
-function fourier_comp(A::AbstractArray{<:Number,N}, freq::Real;  
-											dim::Int, kwargs...)::Array{ComplexF64, N} where N
+
+function fourier_comp(V::AbstractVector{<:Number}, freq::Real;  
+											kwargs...)::Vector{ComplexF64}
+
+	Algebra.fft(V, freq; addup=false)[1,:]
+
+end 
+
+function fourier_comp(A::AbstractMatrix{<:Number}, freq::Real;  
+											dim::Int, kwargs...)::Matrix{ComplexF64}
 
 	Algebra.fft(A, freq; addup=false, dim=dim)
 
