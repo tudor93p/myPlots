@@ -4,8 +4,10 @@ module TypicalPlots
 using myLibs.ComputeTasks: CompTask
 import myLibs: Lattices ,Utils
 
-using ..myPlots: PlotTask 
+using ..myPlots: PlotTask, construct_obs0obs
 using Constants: VECTOR_STORE_DIM 
+
+import ..Transforms 
 
 #===========================================================================#
 #
@@ -51,9 +53,11 @@ localobs(get_data::Function, PosAtoms::Function) = ("LocalObservables", function
 	atoms = PosAtoms(good_P...)
 
 	(isnothing(Data) || !haskey(Data,localobs_)) && return Dict("xy"=>atoms)
-	
+
+	@assert haskey(P, "Energy")
+
 	return Dict("xy" => atoms, 
-							"z" => SampleVectors(Data[localobs_], P; Data=Data, get_k=true))
+							"z" => Transforms.SampleVectors(Data[localobs_], P; Data=Data, get_k=true))
 	
 end)
 
@@ -100,7 +104,7 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz", function (P::AbstractDict)
 
 	if oper_=="weights" && all(in(keys(P)), ["interp_method","Energy","E_width"])
 
-		out["z"] = SamplingWeights(P; Data=Data, get_k=true)
+		out["z"] = Transforms.SamplingWeights(P; Data=Data, get_k=true)
 
 	end
 

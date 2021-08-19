@@ -3,7 +3,7 @@ from plothelpers import *
 from sliders import *
 from Z_vsX_vsEnergy import nr_axes, common_sliders as common_sliders0
 from Z_vsX_vsEnergy import plot as plot0
-from SiteVectorObservables_Cut_Scalar import common_sliders as common_sliders1
+from SiteVectorScalarCut import common_sliders as common_sliders1
 
 
 add_sliders, read_sliders = addread_sliders(*common_sliders0,
