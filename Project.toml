@@ -1,7 +1,7 @@
 name = "myPlots"
 uuid = "ab28f933-13dd-4a82-b110-d2be63b453ac"
 authors = ["tudor <tudor.pahomi@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Constants = "26e1ccdb-dc7d-4967-a216-0e9bd72dc499"

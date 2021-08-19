@@ -3,7 +3,7 @@ module Transforms
 
 import LinearAlgebra
 
-import myLibs: Utils, Algebra, ArrayOps
+import myLibs: Utils, Algebra, ArrayOps, ComputeTasks
 
 
 
@@ -251,6 +251,15 @@ function Vec2Scalar(data::AbstractVector{<:Number}, args...
 
 end 
 
+function Vec2Scalar(data::AbstractMatrix{<:Number}, dim::Nothing,
+										args...
+									 )::Vector{<:Number}
+
+	Vec2Scalar(data, args...)
+
+end 
+
+
 function Vec2Scalar(data::AbstractMatrix{<:Number}, P::AbstractDict=Dict()
 									 )::Vector{<:Number}
 	
@@ -286,10 +295,137 @@ end
 
 
 
+struct ProcessData 
+
+	check::Union{Bool, Function} 
+
+	calc::Function 
+
+	kwargs::NamedTuple
+
+end 
+
+function ProcessData(calc::Function; kwargs...)
+
+	ProcessData(true, calc, NamedTuple(kwargs))
+
+end  
+
+function ProcessData(check::Function, calc::Function; kwargs...)
+
+	ProcessData(check, calc, NamedTuple(kwargs))
+
+end  
+
+function ProcessData(check_arg::AbstractString, calc::Function; kwargs...)
+
+	check(P::AbstractDict, a...; kwargs...)::Bool = haskey(P, check_arg)
+
+	return ProcessData(check, calc; kwargs...)
+
+end  
 
 
 
 
+function (pd::ProcessData)(P::AbstractDict,
+												Data,
+												label::Union{AbstractString,
+																		 <:AbstractVector{<:AbstractString}
+																		 }=String[];
+												kwargs...)::Tuple{Any, Vector{String}}
+
+	if (isa(pd.check, Bool) && pd.check) || (
+			isa(pd.check, Function) && pd.check(P, Data; pd.kwargs..., kwargs...))
+
+		new_Data, new_label = pd.calc(P, Data; pd.kwargs..., kwargs...)
+	
+		return (new_Data, vcat(label, string(new_label))) 
+
+	else 
+
+		return (Data, vcat(label))
+
+	end 
+
+end 
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
+
+
+choose_obs_i = ProcessData(
+									function check_obs_i(P::AbstractDict, Data; kwargs...)::Bool
+										
+										haskey(P, "obs_i") && Utils.is_dict_or_JLDAW(Data)
+
+									end,
+
+								 function calc_obs_i(P::AbstractDict, Data; kwargs...) 
+
+									 ComputeTasks.choose_obs_i(Data; P=P, kwargs...)
+
+								 end,
+									)
+
+vec2scalar = ProcessData("vec2scalar",
+												 
+												 function calc_vec2(P::AbstractDict, Data; 
+																			 dim=nothing, kwargs...)
+													 
+													 (Vec2Scalar(Data, dim, P),
+
+														P["vec2scalar"])
+
+												 end)
+
+
+convol_energy = ProcessData("Energy",
+														 
+									function calc_chen(P::AbstractDict, Data; kwargs...)
+
+													(SampleVectors(Data, P; kwargs...),
+
+											 "@E=" * string(round(P["Energy"],digits=2))
+					
+											)
+					
+										end)
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+function succesive_transforms(fs::AbstractVector{Symbol},
+															P::AbstractDict, 
+															Data,
+															label::Union{AbstractString,
+																					 <:AbstractVector{<:AbstractString}
+																					 }=String[];
+															kwargs...)
+
+	isempty(fs) && return (Data, label) 
+
+	F = getproperty(@__MODULE__, fs[1])
+
+	return succesive_transforms(fs[2:end], P, F(P, Data, label; kwargs...)...;
+															kwargs...)
+	
+end 
 
 
 

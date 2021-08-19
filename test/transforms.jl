@@ -73,3 +73,59 @@ end
 #println()
 end 
 
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+println()
+
+
+P = Dict("obs_i"=>1, "vec2scalar"=>"x", "Energy"=>0)
+
+
+@show myPlots.Transforms.choose_obs_i(P, Dict(:a=>2,:b=>3))
+@show myPlots.Transforms.choose_obs_i(P, Dict(:a=>2,:b=>3),"test1")
+
+@show myPlots.Transforms.vec2scalar(P, rand(2), "test2")
+
+@show myPlots.Transforms.vec2scalar(P, rand(2,3), "test3")
+@show myPlots.Transforms.convol_energy(P, rand(2,3), "test3"; Data=Dict("Energy"=>[-1,0,1]))
+@show myPlots.Transforms.convol_energy(P, rand(2,3); Data=Dict("Energy"=>[-1,0]), dim=1)
+#
+
+println()
+
+
+myPlots.Transforms.succesive_transforms([:choose_obs_i, :convol_energy, :vec2scalar], P,
+																				Dict(:a=>rand(2,3), :b=>rand(3,4)); Data=Dict("Energy"=>[-1,0,1])) .|> println
+																				 
+#																				 , :vec2scalar, :convol_energy 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
