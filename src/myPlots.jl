@@ -350,16 +350,30 @@ include("TypicalPlots.jl")
 #
 #---------------------------------------------------------------------------#
 
+function join_label(labels::AbstractVector{<:AbstractString};
+										sep1::Union{Char,AbstractString}="/")
+	
+	join(labels, sep1)
+
+end 
+
 
 function split_label(labels::AbstractVector{<:AbstractString};
 										 sep2::Union{Char,AbstractString}="\n",
-										 sep1::Union{Char,AbstractString}="/",
+										 kwargs...
 										 )::String
 
 	length(labels)==1 && return labels[1]
 
-	possib = [(join(labels[1:i], sep1),
-						 join(labels[i+1:end], sep1)) for i in 1:length(labels)-1]
+	possib = map(1:length(labels)-1) do i
+
+		map([<=(i), >(i)]) do f 
+
+			join_label(labels[f.(axes(labels,1))]; kwargs...)
+						
+		end 
+
+	end 
 
 	return join(possib[argmin([abs(-(length.(p)...)) for p in possib])], sep2)
 
