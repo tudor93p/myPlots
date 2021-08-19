@@ -1,6 +1,8 @@
 module Sliders
 #############################################################################
 
+import myLibs: Utils 
+
 using Constants:SYST_DIM
 
 #===========================================================================#
@@ -154,7 +156,12 @@ end
 
 function init(f::Symbol, args...)::Vector{Function}
 
-	[get(@__MODULE__, f)(args...)]
+	F = Utils.getprop(@__MODULE__, f, 
+										Utils.getprop(@__MODULE__, Symbol(string("init_",f))))
+
+	@assert F isa Function 
+
+	return [F(args...),]
 
 end 
 
@@ -164,16 +171,15 @@ function init(t::Tuple{Symbol, Vararg})::Vector{Function}
 
 end 
 
-function init(tuples::Vararg{Tuple})::Vector{Function}
+init(tuples::Vararg{Tuple})::Vector{Function}  = vcat(init.(tuples)...)
 
-	vcat(init.(tuples)...)
+init(f::Function)::Vector{Function}  = [f]
 
-end 
+init(fs::AbstractVector{<:Function})::Vector{Function} = fs
 
+init(fs::Vararg{<:Function})::Vector{Function} = vcat(fs...)
 
-
-
-
+init()::Vector{Function} = Function[]
 
 #############################################################################
 end

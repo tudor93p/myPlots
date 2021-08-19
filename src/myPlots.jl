@@ -53,6 +53,35 @@ struct PlotTask
 
 end  
 
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+include("Sliders.jl")
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+function PlotTask(get_plotparams::Function, args...)
+
+	PlotTask("", get_plotparams, args...)
+
+end 
+
 function PlotTask(name::AbstractString,
 									get_plotparams::Function,
 									get_paramcombs::Function,
@@ -66,11 +95,7 @@ function PlotTask(name::AbstractString,
 	
 end 
 
-function PlotTask(get_plotparams::Function, args...)
 
-	PlotTask("", get_plotparams, args...)
-
-end 
 
 function PlotTask(task::CompTask,
 									init_sliders::AbstractVector{<:Function},
@@ -91,14 +116,19 @@ function PlotTask(task::CompTask,
 end 
 
 
-					
 function PlotTask(task::CompTask,
-									init_sliders::Function,
-									args...)
+									init_sliders::Union{Symbol,
+																			Tuple{Symbol, Vararg},
+																			Tuple{Tuple,Vararg},
+																			AbstractVector,
+																			Function},
+									args...
+									)::PlotTask
 
-	PlotTask(task, [init_sliders], args...)
+	PlotTask(task, Sliders.init(init_sliders), args...)
 
 end 
+
 
 function PlotTask(task::CompTask,
 									pp::Union{AbstractString, 
@@ -106,7 +136,7 @@ function PlotTask(task::CompTask,
 									args...)
 
 
-	PlotTask(task, Function[], pp, args...)
+	PlotTask(task, Sliders.init(), pp, args...)
 
 end 
 
@@ -121,7 +151,6 @@ function PlotTask(pt::PlotTask, args...)::PlotTask
 end  
 
 
-
 #===========================================================================#
 #
 #
@@ -129,7 +158,9 @@ end
 #---------------------------------------------------------------------------#
 
 
-include("Sliders.jl")
+
+
+
 include("Transforms.jl")
 include("TypicalPlots.jl")
 

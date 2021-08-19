@@ -20,6 +20,17 @@ obs_list = ["Intruder", "LocalA", "BondVector1", "SiteVectorV", "Obs1"]
 @show myPlots.Sliders.init_obs(obs_list)(Dict())
 @show myPlots.Sliders.init_enlim(rand(5))(Dict())
 
+println()
+
+
+
+@show myPlots.Sliders.init(:init_enlim, rand(5))[1](Dict())
+@show myPlots.Sliders.init(:enlim, rand(5))[1](Dict())
+
+println()
+
+@show myPlots.Sliders.init((:init_enlim, rand(5)))[1](Dict())
+@show myPlots.Sliders.init((:init_enlim, rand(5)),(:init_Vec2Scalar,))[2](Dict())
 
 
 println()
