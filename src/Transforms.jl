@@ -313,6 +313,14 @@ function interp(x0::AbstractVector{<:Real},
 end
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
 function fourier_abs(x::AbstractVector{<:Real},
 								 y::AbstractArray{<:Real,N}; 
 								dim::Int
@@ -332,6 +340,44 @@ function fourier_abs(x::AbstractVector{<:Real},
 
 end 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+function argmax_fourier_abs(x::AbstractVector{<:Real},
+														y::AbstractVector{<:Real}; 
+														kwargs...)::Real 
+
+	x1, y1 = fourier_abs(x, y; dim=1)
+
+	return x1[argmax(y1)]
+
+end 
+
+
+
+
+
+
+
+function argmax_fourier_abs(x::AbstractVector{<:Real},
+								 y::AbstractArray{<:Real,N};
+								dim::Int
+								)::Array{Float64, N-1} where N
+
+	x1, y1 = fourier_abs(x, y; dim=dim)
+
+	return dropdims(mapslices(yi->x1[argmax(yi)], y1; dims=dim), dims=dim)
+
+end 
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
 
 
 function fourier_comp(V::AbstractVector{<:Number}, freq::Real;  
@@ -464,13 +510,9 @@ end
 
 #===========================================================================#
 #
-#
+# Functions which reduce structure
 #
 #---------------------------------------------------------------------------#
-
-
-
-
 
 choose_obs_i = ProcessData(
 									function check_obs_i(P::AbstractDict, Data; kwargs...)::Bool
@@ -509,6 +551,16 @@ convol_energy = ProcessData("Energy",
 													 )
 					
 										end)
+
+
+#choose_argmax_Fourier = ProcessData
+
+
+#===========================================================================#
+#
+# Functions which keep data structure 
+#
+#---------------------------------------------------------------------------#
 
 
 
@@ -553,6 +605,14 @@ transform = ProcessData(
 
 
 
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
 
 
 

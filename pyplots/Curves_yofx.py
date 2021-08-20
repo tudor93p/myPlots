@@ -76,8 +76,14 @@ def plot(Ax, get_plotdata, linewidth=1, fontsize=12, **kwargs):
         for (z,(x,y,l,c,lw)) in enumerate(zip(d("x"),d("y"),d("label"),colors[1:], LWS)):
    
 
+            if np.any(np.abs(y) > 1e-9):
+    
+                ax0.plot(np.reshape(x,-1), np.reshape(y,-1), c=c, linewidth=lw, zorder=2+z*2, alpha=alpha, label=l, linestyle=LSS[ils])#**lk)
 
-            ax0.plot(np.reshape(x,-1), np.reshape(y,-1), c=c, linewidth=lw, zorder=2+z*2, alpha=alpha, label=l, linestyle=LSS[ils])#**lk)
+                ils+=1
+
+
+#            ax0.plot(np.reshape(x,-1), np.reshape(y,-1), c=c, linewidth=lw, zorder=2+z*2, alpha=alpha, label=l, linestyle=LSS[ils])#**lk)
 
 
 
