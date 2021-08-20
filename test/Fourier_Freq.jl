@@ -14,25 +14,27 @@ omega = 2pi/T
 @show omega 
 
 phi0 = rand()*2pi 
-y0 = rand()*0
+y0 = rand()
 
 y = sin.(omega*x .+ phi0) .+ y0
 
 
 
-fig,(ax1,ax2)=PyPlot.subplots(2)
+#fig,(ax1,ax2)=PyPlot.subplots(2)
 
-ax1.plot(x,y)
+#ax1.plot(x,y)
 
 
 k,A = myPlots.Transforms.fourier_abs(x,y) 
-ax2.plot(2pi./k,A)
+#ax2.plot(2pi./k,A)
 
-@show myPlots.Transforms.argmax_fourier_abs(x,y)
+@show myPlots.Transforms.dominant_freq(x,y)/omega
+
+@show A[1] argmax(A) maximum(A)
 
 @show 2pi/k[argmax(A)]
 
-@show 2pi./k
+#@show 2pi./k
 
 
 

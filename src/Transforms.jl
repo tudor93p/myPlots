@@ -343,7 +343,6 @@ function fourier_abs(x::AbstractVector{<:Real},
 	return (
 
 				 FFTW.rfftfreq(length(x), 2pi/(x[2]-x[1])),
-#				 FFTW.rfftfreq(length(x)),#, 2pi/(x[2]-x[1])),
 			
 				 abs.(mapslices(FFTW.rfft, y, dims=dim))
 			
@@ -356,13 +355,16 @@ end
 #
 #
 #---------------------------------------------------------------------------#
-function argmax_fourier_abs(x::AbstractVector{<:Real},
+
+
+
+function dominant_freq(x::AbstractVector{<:Real},
 														y::AbstractVector{<:Real}; 
 														kwargs...)::Real 
 
 	x1, y1 = fourier_abs(x, y)
 
-	return x1[argmax(y1)]
+	return x1[1+argmax(y1[2:end])]
 
 end 
 
@@ -372,14 +374,14 @@ end
 
 
 
-function argmax_fourier_abs(x::AbstractVector{<:Real},
+function dominant_freq(x::AbstractVector{<:Real},
 								 y::AbstractArray{<:Real,N};
 								dim::Int
 								)::Array{Float64, N-1} where N
 
 	x1, y1 = fourier_abs(x, y; dim=dim)
 
-	return dropdims(mapslices(yi->x1[argmax(yi)], y1; dims=dim), dims=dim)
+	return dropdims(mapslices(yi->x1[1+argmax(yi[2:end])], y1; dims=dim), dims=dim)
 
 end 
 
@@ -566,7 +568,6 @@ convol_energy = ProcessData("Energy",
 										end)
 
 
-#choose_argmax_Fourier = ProcessData
 
 
 #===========================================================================#
