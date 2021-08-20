@@ -1,8 +1,8 @@
 T = myPlots.Transforms
 using Constants: NR_ENERGIES
-
-
-
+import PyPlot
+import myLibs:Utils
+using BenchmarkTools: @btime
 
 
 @show T.get_SamplingVars_(Dict(), "Energy")
@@ -122,46 +122,153 @@ println()
 
 for t in first(values(myPlots.Sliders.init_transforms()(Dict())))
 
-	occursin("comp",t) || continue 
+	occursin("Interp.+",t) || continue 
 
 	println()
+end 
 
-	@info t 
+showplot =false
 
-	p = Dict("transform"=>t,"transfparam"=>1)
 
-	x = range(0,2pi,length=100) 
+for i in [true,false]
+
+local x = range(0,2pi,length=rand(8:14))
 
 #	y = hcat(sin.(x), sin.(2x), sin.(3x), sin.(4x))
+#n = 1 + rand()*4
 
-	y=sin.(x)
+local n = rand(1:5)
+#@show n 
 
-	(x1,y1),label = myPlots.Transforms.transform(p, (x,y); dim=1)
+f(x) = sin.(n*x) # + rand(length(x))*0.04# sin.(2n*x)
+local y=f(x)
+@time begin 
 
-	@show size(x1)
+	@show size(x) size(y) 
 
-	@show size(y1) 
+	foreach(q->myPlots.Transforms.dominant_freq(x,y; interpolate=i),1:100)
 
-	@show sum(abs, imag(y1)) 
-	@show label 
-
-#	@show  x1[argmax.(eachcol(y1))]
+end 
+end  
 
 
+acc = map(1:50) do _
+
+
+x = range(0,2pi,length=rand(8:14))
+
+#	y = hcat(sin.(x), sin.(2x), sin.(3x), sin.(4x))
+#n = 1 + rand()*4
+
+n = rand(1:5)
+#@show n 
+
+f(x) = sin.(n*x) # + rand(length(x))*0.04# sin.(2n*x)
+y=f(x)
+
+
+#@show size(x) size(y) ;println()
+
+
+N = 100 
+
+x0 = range(0,2pi,length=N);
+
+
+x0l,y0l = myPlots.Transforms.interp(x,y,1;interp_N=N,dim=1) 
+
+
+
+p = Dict("transform"=>"Interpolate", "transfparam"=>N)
+
+
+(xi,yi),label = myPlots.Transforms.transform(p, (x,y); dim=1)
+
+
+#fig,(ax1,ax2) = PyPlot.subplots(2) 
+if showplot
+
+ax1.plot(x0,f(x0),label="true")
+ax1.scatter(x,y)
+ax1.plot(x0l, y0l, label="sampled")
+ax1.plot(xi, yi, label=label[1])
+ax1.legend()
+
+if sum(abs, y0l-f(x0)) < sum(abs, yi-f(x0)) 
 	
+println("linear is better") 
 
+else 
 
+	println("interp is better")
+
+end 
+println()
 end 
 
 
 
+#
+#acc = map([
+#			Dict("transform"=>"|Fourier|"),
+#			Dict("transform"=>"Interp.+|FFT|", "transfparam"=>N)
+#			]) do  p
+#
+#
+#
+#
+#
+#
+#local	(x_i,y_i),label_i = myPlots.Transforms.transform(p, (x,y); dim=1)
+#
+#showplot &&	ax2.plot(x_i,
+##					 y_i,
+#					 Utils.Rescale(y_i,[0,1]), 
+#					 label=label_i[1])
+#
+#
+#return abs(n-x_i[1+argmax(abs.(y_i[2:end]))])
+#
+#
+#end |> argmin 
+#@show size(x) size(y) 
+
+wo = myPlots.Transforms.dominant_freq(x,y; interpolate=false)
+
+w = myPlots.Transforms.dominant_freq(x,y; interpolate=true)
+
+#@show n w wo 
+#println()
+
+acc = isapprox(wo,w,atol=1e-7) ? 0 : argmin(abs.(n .- [wo, w]))
+
+#@show acc 
+
+showplot && ax2.legend()
+
+return acc 
+
+end 
+
+println("FFT / iFFT: ",count(isequal(1), acc)/count(isequal(2), acc))
 
 
 
 
 
+x = range(0,2pi,length=30)
+
+y = hcat(sin.(x), sin.(2x), sin.(3x))
+
+for (yi,dim) in zip((y,transpose(y)),(1,2))
+
+local (x1,y1),l1 = myPlots.Transforms.transform(Dict("transform"=>"Interp.+|FFT|"),
+																		 (x,yi); dim=dim)
 
 
+@show size(x1) size(y1)
+
+end 
 
 
 

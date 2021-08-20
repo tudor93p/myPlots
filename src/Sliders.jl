@@ -161,8 +161,9 @@ init_transforms(t::Vararg{<:AbstractString}) = function addtransf!(d)
 
 end 
 
-init_transforms() = init_transforms("Interpolate", 
+init_transforms() = init_transforms("Interpolate",
 																		"|Fourier|", 
+																		"Interp.+|FFT|",
 																		"Fourier comp.")
 
 

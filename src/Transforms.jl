@@ -289,22 +289,24 @@ end
 #---------------------------------------------------------------------------#
 
 
-get_interp_order(r::Nothing=nothing)::Int = 3
-get_interp_order(r::Real)::Int = trunc(interp_order)
+parse_integer(r::Nothing=nothing)::Int = 0
+parse_integer(r::Real)::Int = trunc(r)
 
 
 function interp(x0::AbstractVector{<:Real}, 
 								y0::AbstractArray{<:Real,N},
-								args...; interp_N::Int=200, dim::Int
+								interp_order::Int=3; 
+								interp_N::Int=200,  
+								kwargs...
 								)::Tuple{Vector{Float64},Array{Float64, N}} where N
 
-	interp_order = get_interp_order(args...)	
 
 	x1 = range(extrema(x0)..., length=interp_N)
 
-	return (x1,
+	N==1 && return (x1, Algebra.Interp1D(x0, y0, interp_order, x1))
 
-					mapslices(y0, dims=dim) do v 
+
+	return (x1, mapslices(y0, dims=kwargs[:dim]) do v 
 											 
 						Algebra.Interp1D(x0, v, interp_order, x1)
 
@@ -319,34 +321,68 @@ end
 #
 #---------------------------------------------------------------------------#
 
+#function fourier_abs(x::AbstractVector{<:Real},
+#								 y::AbstractVector{<:Real}; kwargs...
+#								)::Tuple{Vector{Float64},Vector{Float64}}
+#
+#
+#	x1, y1 = fourier_abs(x, Utils.VecAsMat(y,1); dim=2)
+#
+#	return (x1, vec(y1))
+#
+#end 
+
+
+function fourier_freq(x::AbstractVector{<:Real}; check_step::Bool=true)::Vector{Float64}
+
+	if check_step 
+
+		D = diff(x)
+	
+		@assert all(D.>0)
+
+		dist = Utils.Unique(D, tol=1e-6)
+
+		#length(dist)>1 && return fourier_abs(interp(x, y; dim=dim)...; dim=dim)
+	
+		@assert length(dist)==1
+
+	end 
+
+	return FFTW.rfftfreq(length(x), 2pi/(x[2]-x[1]))
+
+end 
+
+#function apply_VecOrArray(f::Function, y::AbstractVector{<:Number}; kwargs...)
+#	
+#		f(y) : mapslices(f, y, dims=kwargs[:dim])
+#
+#end 
+
 function fourier_abs(x::AbstractVector{<:Real},
-								 y::AbstractVector{<:Real}; kwargs...
-								)::Tuple{Vector{Float64},Vector{Float64}}
+								 y::AbstractArray{<:Real,N}; 
+								 kwargs...
+								)::Tuple{Vector{Float64},Array{Float64, N}} where N
+	
+	(fourier_freq(x),
+	 
+	 abs.(N==1 ? FFTW.rfft(y) : mapslices(FFTW.rfft, y, dims=kwargs[:dim]))
 
-
-	x1, y1 = fourier_abs(x, Utils.VecAsMat(y,1); dim=2)
-
-	return (x1, vec(y1))
+	 )
 
 end 
 
 
-function fourier_abs(x::AbstractVector{<:Real},
-								 y::AbstractArray{<:Real,N}; 
-								dim::Int
-								)::Tuple{Vector{Float64},Array{Float64, N}} where N
+function interp_and_fourier_abs(x::AbstractVector{<:Real},
+																y::AbstractArray{<:Real,N};
+																kwargs...
+																)::Tuple{Vector{Float64},Array{Float64, N}} where N
 	
-	dist = Utils.Unique(diff(x), tol=1e-6)
+	k = fourier_freq(x) 
 
-	length(dist)>1 && return fourier_abs(interp(x, y; dim=dim)...; dim=dim)
+	ki, Ai = fourier_abs(interp(x, y; kwargs...)...; kwargs...)
 
-	return (
-
-				 FFTW.rfftfreq(length(x), 2pi/(x[2]-x[1])),
-			
-				 abs.(mapslices(FFTW.rfft, y, dims=dim))
-			
-				 )
+	return k, selectdim(Ai, N==1 ? 1 : kwargs[:dim], axes(k,1))
 
 end 
 
@@ -357,31 +393,42 @@ end
 #---------------------------------------------------------------------------#
 
 
+function get_freq_max(x::AbstractVector{<:Real},
+											y::AbstractVector{<:Real})::Real 
+	x[1+ argmax(y[2:end])]
 
-function dominant_freq(x::AbstractVector{<:Real},
-														y::AbstractVector{<:Real}; 
-														kwargs...)::Real 
+end 
 
-	x1, y1 = fourier_abs(x, y)
-
-	return x1[1+argmax(y1[2:end])]
+function get_freq_max(x::AbstractVector{<:Real})::Function 
+	
+	gfm(y::AbstractVector{<:Real})::Real = get_freq_max(x, y) 
 
 end 
 
 
+function dominant_freq(x::AbstractVector{T},
+														y::AbstractVector{<:Real};
+														interpolate::Bool=false,
+														kwargs...)::T where T<:Real
+
+	f = interpolate ? interp_and_fourier_abs : fourier_abs
+
+	return get_freq_max(f(x, y; kwargs...)...)
+
+end 
 
 
-
-
-
-function dominant_freq(x::AbstractVector{<:Real},
+function dominant_freq(x::AbstractVector{T},
 								 y::AbstractArray{<:Real,N};
-								dim::Int
-								)::Array{Float64, N-1} where N
+								 interpolate::Bool=false,
+								dim::Int, kwargs...
+								)::Array{T, N-1} where {T<:Real,N}
 
-	x1, y1 = fourier_abs(x, y; dim=dim)
+	f = interpolate ? interp_and_fourier_abs : fourier_abs
 
-	return dropdims(mapslices(yi->x1[1+argmax(yi[2:end])], y1; dims=dim), dims=dim)
+	x1, y1 = f(x, y; dim=dim, kwargs...)
+
+	return dropdims(mapslices(get_freq_max(x1), y1; dims=dim), dims=dim)
 
 end 
 
@@ -425,36 +472,6 @@ end
 #
 #---------------------------------------------------------------------------#
 
-#=
-function plothelper_transform(P, x, y, xlab=nothing; dim=1, interp_N=200)
-
-	out(A, B, L) = (collect(A), collect(B), L)
-
-	transf = get(P, "transform", "None")
-
-	transfparam = get(P, "transfparam", nothing)
-
-
-	elseif transf=="Fourier comp."
-
-		freq = Utils.Assign_Value(transfparam,0)*2pi
-		
-		y1 = find_Fourier_components(y, freq; dim=dim, rtol=get(P, "smooth", 0)/100)
-
-		
-
-
-
-
-		return out(x, y1, xlab) # don't input label !!
-
-	end 
-
-end
-
-
-
-=#
 
 #===========================================================================#
 #
@@ -495,7 +512,27 @@ function ProcessData(check_arg::AbstractString, calc::Function; kwargs...)
 end  
 
 
+function ProcessData(check_arg1::AbstractString, check_arg2::AbstractString,
+										 calc::Function; kwargs...)
 
+	function check(P::AbstractDict, a...; kwargs...)::Bool 
+		
+		haskey(P, check_arg1) && P[check_arg1]==check_arg2
+
+	end 
+
+	return ProcessData(check, calc; kwargs...)
+
+end  
+
+
+function check_pd(pd::ProcessData, args...; kwargs...)::Bool
+
+	isa(pd.check, Bool) && pd.check && return true 
+
+	isa(pd.check, Function) && pd.check(args...; pd.kwargs..., kwargs...)
+
+end 
 
 function (pd::ProcessData)(P::AbstractDict,
 												Data,
@@ -504,18 +541,11 @@ function (pd::ProcessData)(P::AbstractDict,
 																		 }=String[];
 												kwargs...)::Tuple{Any, Vector{String}}
 
-	if (isa(pd.check, Bool) && pd.check) || (
-			isa(pd.check, Function) && pd.check(P, Data; pd.kwargs..., kwargs...))
+	check_pd(pd, P, Data; kwargs...) || return (Data, vcat(label))
 
-		new_Data, new_label = pd.calc(P, Data; pd.kwargs..., kwargs...)
-	
-		return (new_Data, vcat(label, string(new_label))) 
+	new_Data, new_label = pd.calc(P, Data; pd.kwargs..., kwargs...)
 
-	else 
-
-		return (Data, vcat(label))
-
-	end 
+	return (new_Data, vcat(label, string(new_label))) 
 
 end 
 
@@ -576,46 +606,99 @@ convol_energy = ProcessData("Energy",
 #
 #---------------------------------------------------------------------------#
 
+pd_interp = ProcessData("transform", "Interpolate",
+
+		function calc_interp(P::AbstractDict, (x,y); kwargs...)
+
+					N = max(2length(x), parse_integer(get(P, "transfparam", 10)))
+
+					return interp(x, y; interp_N=N, kwargs...), "interp."
+
+		end 
+
+							)
+
+pd_fourier = ProcessData("transform", "|Fourier|",
+												  
+		function calc_fourier(P::AbstractDict, (x,y); kwargs...)
+
+			fourier_abs(x, y; kwargs...), "|FFT|"
+
+		end
+		)
 
 
-transform = ProcessData(
-												
-								function check_transf(P::AbstractDict, Data; kwargs...)
+pd_interp_fourier = ProcessData("transform", "Interp.+|FFT|",
 
-									get(P, "transform", "None") in ["|Fourier|","Interpolate",
-																									"Fourier comp."]
+		function calc_if(P::AbstractDict, (x,y); kwargs...)
 
-								end,
-
-								function calc_transf(P::AbstractDict, (x,y); kwargs...)
-
-									transf = P["transform"]
-	
-									if transf=="Interpolate" 
-
-										transfparam = get(P, "transfparam", nothing)
-
-										return (interp(x, y, transfparam; kwargs...), "interp.")
-
-									elseif transf=="|Fourier|"
-
-										return (fourier_abs(x, y; kwargs...), "|FFT|")
-
-									elseif transf=="Fourier comp." 
+			N = max(2length(x), parse_integer(get(P, "transfparam", 10)))
 		
-										freq = get(P, "transfparam", 0) 
+			return interp_and_fourier_abs(x,y; interp_N=N, kwargs...), "i|FFT|"
 
-										lab = round(freq, digits=1)  
+		end)
 
-										return ((x, fourier_comp(y, freq*pi; kwargs...)),
 
-														"Fcomp($lab"*"pi)"
-														)
-									end 
+pd_fourier_comp = ProcessData("transform", "Fourier comp.",
 
-								end 
+		function calc_fc(P::AbstractDict, (x,y); kwargs...)
 
-								)
+			freq = get(P, "transfparam", 0)::Real 
+
+			lab = round(freq, digits=1)  
+
+			return (x, fourier_comp(y, freq*pi; kwargs...)), "Fcomp($lab"*"pi)"
+
+		end)
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
+function ProcessData(pds::Vararg{ProcessData}; kwargs0...)::ProcessData
+
+	function find_pd(args...; kwargs...)::Tuple{Vararg{ProcessData}}
+
+		n = filter(pd->check_pd(pd, args...; kwargs...), pds)
+		
+		@assert length(n)<=1 
+
+		return n
+
+	end 
+
+	function any_check(args...; kwargs...)::Bool
+
+		!isempty(find_pd(args...; kwargs...))
+
+	end 
+
+#any_check = (!isempty) ∘ find_pd 
+
+	function one_calc(args...; kwargs...)
+
+		find_pd(args...; kwargs...)[1].calc(args...; kwargs...)
+
+	end 
+
+	return ProcessData(any_check, one_calc, NamedTuple(kwargs0))
+
+end 
+
+
+
+
+
+
+
+transform = ProcessData(pd_fourier_comp, 
+												pd_interp, 
+												pd_fourier, 
+												pd_interp_fourier)
+
 
 
 
