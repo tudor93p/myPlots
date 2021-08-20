@@ -517,8 +517,10 @@ end
 choose_obs_i = ProcessData(
 									function check_obs_i(P::AbstractDict, Data; kwargs...)::Bool
 										
-										haskey(P, "obs_i") && Utils.is_dict_or_JLDAW(Data)
+										Utils.is_dict_or_JLDAW(Data) || return false 
 
+										return haskey(P, "obs_i") || haskey(kwargs, :f)
+										
 									end,
 
 								 function calc_obs_i(P::AbstractDict, Data; kwargs...) 
