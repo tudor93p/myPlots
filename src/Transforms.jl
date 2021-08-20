@@ -319,6 +319,16 @@ end
 #
 #---------------------------------------------------------------------------#
 
+function fourier_abs(x::AbstractVector{<:Real},
+								 y::AbstractVector{<:Real}; kwargs...
+								)::Tuple{Vector{Float64},Vector{Float64}}
+
+
+	x1, y1 = fourier_abs(x, Utils.VecAsMat(y,1); dim=2)
+
+	return (x1, vec(y1))
+
+end 
 
 
 function fourier_abs(x::AbstractVector{<:Real},
@@ -326,13 +336,14 @@ function fourier_abs(x::AbstractVector{<:Real},
 								dim::Int
 								)::Tuple{Vector{Float64},Array{Float64, N}} where N
 	
-	dist = Utils.Unique(diff(sort(x)), tol=1e-6)
+	dist = Utils.Unique(diff(x), tol=1e-6)
 
 	length(dist)>1 && return fourier_abs(interp(x, y; dim=dim)...; dim=dim)
 
 	return (
 
 				 FFTW.rfftfreq(length(x), 2pi/(x[2]-x[1])),
+#				 FFTW.rfftfreq(length(x)),#, 2pi/(x[2]-x[1])),
 			
 				 abs.(mapslices(FFTW.rfft, y, dims=dim))
 			
@@ -349,7 +360,7 @@ function argmax_fourier_abs(x::AbstractVector{<:Real},
 														y::AbstractVector{<:Real}; 
 														kwargs...)::Real 
 
-	x1, y1 = fourier_abs(x, y; dim=1)
+	x1, y1 = fourier_abs(x, y)
 
 	return x1[argmax(y1)]
 
