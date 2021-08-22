@@ -558,20 +558,19 @@ end
 #---------------------------------------------------------------------------#
 
 choose_obs_i = ProcessData(
-									function check_obs_i(P::AbstractDict, Data; kwargs...)::Bool
-										
-										Utils.is_dict_or_JLDAW(Data) || return false 
 
-										return haskey(P, "obs_i") || haskey(kwargs, :f)
-										
-									end,
+		function check_obs_i(P::AbstractDict, Data::AbstractDict; kwargs...)::Bool
+						
+			haskey(P, "obs_i") || haskey(kwargs, :f)
+						
+		end,
 
-								 function calc_obs_i(P::AbstractDict, Data; kwargs...) 
+		function calc_obs_i(P::AbstractDict, Data::AbstractDict; kwargs...) 
 
-									 ComputeTasks.choose_obs_i(Data; P=P, kwargs...)
+			ComputeTasks.choose_obs_i(Data; P=P, kwargs...)
 
-								 end,
-									)
+		end,
+					)
 
 vec2scalar = ProcessData("vec2scalar",
 												 

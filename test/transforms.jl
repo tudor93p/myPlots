@@ -86,8 +86,8 @@ println()
 P = Dict("obs_i"=>1, "vec2scalar"=>"x", "Energy"=>0)
 
 
-@show myPlots.Transforms.choose_obs_i(P, Dict(:a=>2,:b=>3))
-@show myPlots.Transforms.choose_obs_i(P, Dict(:a=>2,:b=>3),"test1")
+@show myPlots.Transforms.choose_obs_i(P, Dict(:a=>rand(2),:b=>rand(3)))
+@show myPlots.Transforms.choose_obs_i(P, Dict(:a=>[2],:b=>[3]),"test1")
 
 @show myPlots.Transforms.vec2scalar(P, rand(2), "test2")
 
