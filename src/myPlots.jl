@@ -220,7 +220,7 @@ function check_obs_type(val)
 	isa(val, AbstractArray) && count(!isequal(1), size(val))<=1 && return 2,[]
 
 
-	if !Utils.is_dict_or_JLDAW(val)
+	if !isa(val,AbstractDict) #Utils.is_dict_or_JLDAW(val)
 		
 		isa(val, AbstractArray) && @show size(val)
 
