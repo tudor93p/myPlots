@@ -730,11 +730,12 @@ end
 
 closest_to_dw = ProcessData(
 
-				function just_slice(P::AbstractDict, A::AbstractArray{<:Number, N};
+				function just_slice(P::AbstractDict, A::AbstractArray{T, N};
 														R::Number, inds::AbstractVector{Int}, kwargs... 
-														)::Tuple{Array{<:Number,N}, String} where N
+														)::Tuple{Array{T,N}, String} where {T<:Number, N}
 
-				(selectdim(A, N==1 ? 1 : kwargs[:dim], inds), dist_dw_label(R))
+					(collect(selectdim(A, N==1 ? 1 : kwargs[:dim], inds)), 
+					 dist_dw_label(R))
 
 
 				end)
