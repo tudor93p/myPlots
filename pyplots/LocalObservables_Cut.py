@@ -12,6 +12,7 @@ add_sliders, read_sliders = addread_sliders(
                                     *common_sliders1,
 #                                    *common_sliders,
                                     choose_energy,
+                                    regions,
                                     transforms,
                                     )
 
