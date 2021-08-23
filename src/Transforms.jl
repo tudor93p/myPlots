@@ -559,13 +559,13 @@ end
 
 choose_obs_i = ProcessData(
 
-		function check_obs_i(P::AbstractDict, Data::AbstractDict; kwargs...)::Bool
+		function check_obs_i(P::AbstractDict, Data; kwargs...)::Bool
 						
 			haskey(P, "obs_i") || haskey(kwargs, :f)
 						
 		end,
 
-		function calc_obs_i(P::AbstractDict, Data::AbstractDict; kwargs...) 
+		function calc_obs_i(P::AbstractDict, Data; kwargs...) 
 
 			ComputeTasks.choose_obs_i(Data; P=P, kwargs...)
 
