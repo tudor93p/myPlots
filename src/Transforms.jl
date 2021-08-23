@@ -96,7 +96,18 @@ function SamplingWeights(args...; kwargs...)
 end
 
 
-function SampleVectors(vectors, args...; dim=VECTOR_STORE_DIM, kwargs...)
+
+function SampleVectors(vector::AbstractVector{T}, args...; 
+											 kwargs...)::Vector{T} where T<:Number 
+
+	SampleVectors(Utils.VecAsMat(vector, 1), args...;
+								dim=2, kwargs...) |> vec
+
+end 
+
+function SampleVectors(vectors::AbstractMatrix{T}, args...; 
+											 dim=VECTOR_STORE_DIM, kwargs...
+											 )::Matrix{T} where T<:Number
 	
 	a = get_SamplingVars(args...; kwargs...)
 
