@@ -95,8 +95,6 @@ function SamplingWeights(args...; kwargs...)
 
 end
 
-
-
 function SampleVectors(vector::AbstractVector{T}, args...; 
 											 kwargs...)::Vector{T} where T<:Number 
 
