@@ -32,7 +32,7 @@ add_sliders, read_sliders = addread_sliders(
 
 
 def plot(Ax, get_plotdata, localobs=None, cmap="PuBuGn", atomsize=100, 
-        lobsmin=None, lobsmax=None, fontsize=12, **kwargs):
+        lobsmin=None, lobsmax=None, fontsize=12, show_colorbar=True, **kwargs):
 
 
 
@@ -73,6 +73,7 @@ def plot(Ax, get_plotdata, localobs=None, cmap="PuBuGn", atomsize=100,
                 vminmax = [vmin,vmax],
                 dotsize=atomsize,
                 cbarlabs=[localobs],
+                show_colorbar=show_colorbar,
             )
    
 
