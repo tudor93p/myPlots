@@ -99,7 +99,7 @@ P = Dict("obs_i"=>1, "vec2scalar"=>"x", "Energy"=>0)
 println()
 
 
-myPlots.Transforms.succesive_transforms([:choose_obs_i, :convol_energy, :vec2scalar], P,
+myPlots.Transforms.successive_transforms([:choose_obs_i, :convol_energy, :vec2scalar], P,
 																				Dict(:a=>rand(2,3), :b=>rand(3,4)); Data=Dict("Energy"=>[-1,0,1])) .|> println
 																				 
 #																				 , :vec2scalar, :convol_energy 
@@ -269,6 +269,18 @@ local (x1,y1),l1 = myPlots.Transforms.transform(Dict("transform"=>"Interp.+|FFT|
 @show size(x1) size(y1)
 
 end 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

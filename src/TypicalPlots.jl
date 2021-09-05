@@ -62,7 +62,7 @@ localobs(get_data::Function, PosAtoms::Function) = ("LocalObservables", function
 end)
 
 
-localobs(get_data::Function, lattice::Module) = localobs(get_data, lattice.PosAtoms)
+localobs(get_data::Function, lattice_::Module) = localobs(get_data, lattice_.PosAtoms)
 
 
 
@@ -123,32 +123,38 @@ end)
 
 
 
+lattice(task::CompTask; kwargs...) = lattice(task.get_data; kwargs...)
 
-lattice(task::CompTask) = lattice(task.get_data)
-
-
-lattice(get_data::Function) = ("Scatter", function plot_(P::AbstractDict) 
+lattice(get_data::Function; nr_uc::Int=0, kwargs...) = ("ColoredAtoms", 
+																												 
+	function plot_(P::AbstractDict)::Dict{String,Any}
 
 		latt = get_data(P, mute=false, fromPlot=true) 
 
-		labels = Lattices.sublatt_labels(latt) 
+		labels = Base.product(Lattices.sublatt_labels(latt), 0:nr_uc)
 
-		sel = collect ∘ Utils.sel([2,1][VECTOR_STORE_DIM]) 
+		function lxy((label, n)::Tuple{Any,Int}
+								 )::Tuple{String, Matrix{Float64}}
 
-
-		function lxy(label)::Tuple{String, Vector{Float64}, Vector{Float64}}
+			text = string(label)
 			
-			atoms = Lattices.PosAtoms(latt; label=label)
+			if nr_uc!=0 
+				
+				text *= string(" (UC=", n==0 ? "" : "±", "$n)")
 
-			return (string(label), sel(atoms, 1), sel(atoms, 2))
+			end 
+
+			Ns = n==0 ? n : [n,-n]
+
+			atoms = Lattices.Atoms_ManyUCs(latt; label=label, Ns=Ns) 
+
+			return (text, Lattices.VecsOnDim(atoms; dim=2))
 
 		end 
 
-
-		return Dict(zip(["labels", "xs","ys"], Utils.zipmap(lxy, labels)))
+		return Dict(zip(["labels", "xys"], Utils.zipmap(lxy, labels)))
 	
 	end)
-
 
 
 

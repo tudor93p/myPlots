@@ -118,7 +118,31 @@ end
 
 
 
+function SampleVectors(A::AbstractArray{T,N}, args...; dim::Int,
+											 kwargs...)::Array{T,N} where T<:Number where N
 
+	B = if dim==1 
+
+		SampleVectors(reshape(A, size(A,1), :), args...; dim=1, kwargs...)
+
+			elseif dim==N
+
+		SampleVectors(reshape(A, :, size(A,N)), args...; dim=2, kwargs...)
+
+			else 
+
+				mapslices(A,dims=(dim-1,dim)) do vectors 
+
+					SampleVectors(vectors, args...; dim=2, kwargs...)
+
+				end 
+
+			end 
+
+
+	return reshape(B, (d==dim ? 1 : size(A,d) for d=1:N)...)
+
+end 
 
 
 
@@ -758,7 +782,7 @@ closest_to_dw = ProcessData(
 #---------------------------------------------------------------------------#
 
 
-function succesive_transforms(fs::AbstractVector{Symbol},
+function successive_transforms(fs::AbstractVector{Symbol},
 															P::AbstractDict, 
 															Data,
 															label::Union{AbstractString,
@@ -770,7 +794,7 @@ function succesive_transforms(fs::AbstractVector{Symbol},
 
 	F = getproperty(@__MODULE__, fs[1])
 
-	return succesive_transforms(fs[2:end], P, F(P, Data, label; kwargs...)...;
+	return successive_transforms(fs[2:end], P, F(P, Data, label; kwargs...)...;
 															kwargs...)
 	
 end 
