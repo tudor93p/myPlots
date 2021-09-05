@@ -45,9 +45,9 @@ def plot(Ax, get_plotdata, cmap="PuBuGn", atomsize=100, fontsize=12,
 
     if Z is None:
 
-        for i,(xy,lab,col) in enumerate(zip(XY,L,colors)):
+        for i,(xy,lab) in enumerate(zip(XY,L)):
 
-            ax0.scatter(*xy[:2], s=atomsize, c=col, label=lab)
+            ax0.scatter(*xy[:2], s=atomsize, c=colors[i%len(colors)], label=lab)
 
         if sum(map(lambda l: l is not None, L))>1: 
 
@@ -58,18 +58,22 @@ def plot(Ax, get_plotdata, cmap="PuBuGn", atomsize=100, fontsize=12,
 
         wH = np.diff(xylim, axis=1).reshape(-1) 
 
-        r = max(wH)/min(wH)
+        m,M = Algebra.minmax(wH)
 
-        pad = np.full(2, 0.1)  
+        if M < 100*m:
 
-        pad[np.argmin(wH)] = np.matmul([[2*r,0],[r,r-1]], [pad[0], 1]).min()
+            r = M/m
 
+            pad = np.full(2, 0.1)  
     
-        for (lim, p, setlim) in zip(xylim, pad, [ax0.set_xlim,ax0.set_ylim]):
-
-            setlim(Plot.extend_limits(lim,p/2)) 
-
-        ax0.set_aspect(1)
+            pad[np.argmin(wH)] = np.matmul([[2*r,0],[r,r-1]], [pad[0], 1]).min()
+    
+        
+            for (lim, p, setlim) in zip(xylim, pad, [ax0.set_xlim,ax0.set_ylim]):
+    
+                setlim(Plot.extend_limits(lim,p/2)) 
+    
+            ax0.set_aspect(1)
     
         ax0.set_xlabel("$x$",fontsize=fontsize)
 

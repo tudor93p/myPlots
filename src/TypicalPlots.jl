@@ -125,26 +125,42 @@ end)
 
 lattice(task::CompTask; kwargs...) = lattice(task.get_data; kwargs...)
 
-lattice(get_data::Function; nr_uc::Int=0, kwargs...) = ("ColoredAtoms", 
-																												 
+function lattice(get_data::Function; nr_uc::Int=0, kwargs...) 
+
+	expand(n::Int)::Vector{Int} = [n,-n]
+
 	function plot_(P::AbstractDict)::Dict{String,Any}
 
 		latt = get_data(P, mute=false, fromPlot=true) 
 
-		labels = Base.product(Lattices.sublatt_labels(latt), 0:nr_uc)
+		d = Lattices.LattDim(latt)
 
-		function lxy((label, n)::Tuple{Any,Int}
-								 )::Tuple{String, Matrix{Float64}}
+		ns = if d==0
+
+						[0]
+				
+				else 
+
+#					vcat(Utils.DistributeBallsToBoxes.(0:nr_uc, d, expand)...)
+
+					eachcol(Utils.vectors_of_integers(d, nr_uc; dim=2))
+				end 
+				
+		iter = Base.product(Lattices.sublatt_labels(latt), ns) 
+
+		function lxy((label, Ns))::Tuple{String, Matrix{Float64}}
 
 			text = string(label)
 			
-			if nr_uc!=0 
+			if length(ns)>1 
 				
-				text *= string(" (UC=", n==0 ? "" : "±", "$n)")
+				text *= ", UC="
+				
+				text *= string((length(Ns)==1 ? Ns : ["(",join(Ns,','),")"])...)
 
-			end 
+			end  
 
-			Ns = n==0 ? n : [n,-n]
+			length(Ns)==1 ? Ns[1] : "("*join(Ns,",")*")"
 
 			atoms = Lattices.Atoms_ManyUCs(latt; label=label, Ns=Ns) 
 
@@ -152,10 +168,14 @@ lattice(get_data::Function; nr_uc::Int=0, kwargs...) = ("ColoredAtoms",
 
 		end 
 
-		return Dict(zip(["labels", "xys"], Utils.zipmap(lxy, labels)))
+		return Dict(zip(["labels", "xys"], Utils.zipmap(lxy, iter)))
 	
-	end)
+	end 
 
+
+	return ("ColoredAtoms", plot_)
+
+end 
 
 
 

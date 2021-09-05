@@ -1,54 +1,77 @@
 import PyPlot; 
 import myLibs:Lattices
 
+function do_work(nr_uc::Int,gl::Function)
+
+@show Lattices.LattDim(gl())
+
+
+
+	pyscript,plot = myPlots.TypicalPlots.lattice(gl;nr_uc=nr_uc)
+
+
+	plot(Dict())
+
+
+	fig,ax = PyPlot.subplots()
+
+	myPlots.pyplot(pyscript,[ax],plot)
+	sleep(2) 
+
+	PyPlot.close()
+
+	println()
+	println()
+
+end 
+
+
+
+
+for nr_uc in [2,1,0]
+println("\n----------------")
+@show nr_uc 
+println("----------------\n")
 
 for dim in [0,1,2]
 
 	function get_latt(args...; kwargs...)
 	
-	
-		latt = Lattices.Superlattice(Lattices.SquareLattice(), [6,1])
+		latt = Lattices.SquareLattice()
 
-	
-	
+		Lattices.Superlattice!(latt, [2,5]) 
 
-		Lattices.AddAtoms!(latt, rand(2,1),"X")
-	
+		Lattices.KeepDim!(latt,1:dim)
+
+		#Lattices.AddAtoms!(latt, rand(2,1),"X")
 	
 #		Lattices.AddAtoms!(latt, rand(2,3),"Y")
 		
-		for d in 1:dim 
 
-#			Lattices.ReduceDim!(latt,1)
-
-		end  
-
-		latt.LattDims = 1:2-dim
-#		latt.LattDims = 1+dim:2 
-
-		latt.LattVec = latt.LattVec[:,1+dim:2]
-	
 		return latt 
 	
 	
 	end 
 	
-
-
-	@show Lattices.LattDim(get_latt())
-
-
-	pyscript,plot = myPlots.TypicalPlots.lattice(get_latt;nr_uc=0)
-
-
-	plot(Dict())
-
-#	fig,ax = PyPlot.subplots()
-
-#	myPlots.pyplot(script,[ax],plot)
-
+	
+	do_work(nr_uc,get_latt)
+	
 
 
 
 end 
+
+
+
+	function get_latt1(args...;kwargs...)
+	
+		Lattices.Lattice([10.0 0.0; 0.0 1.0], [-4.5 -3.5 -2.5 -1.5 -0.5 0.5 1.5 2.5 3.5 4.5; 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0], nothing,[2])
+	
+	end 
+
+	do_work(nr_uc,get_latt1)
+
+
+end 
+	
 
