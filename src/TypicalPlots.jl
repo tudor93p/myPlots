@@ -39,8 +39,32 @@ end)
 #
 #---------------------------------------------------------------------------#
 
-
-localobs(task::Union{CompTask,PlotTask}, arg...) = localobs(task.get_data, arg...) 
+#
+#localobs(task::Union{CompTask,PlotTask}, arg...; kwargs...) = localobs(task.get_data, arg...; kwargs...) 
+#
+#
+#localobs(get_data::Function, Latt::Function; nr_uc:Int=0) = ("LocalObservables", function plot_(P::AbstractDict)
+#	
+#	localobs_ = get(P, "localobs", "QP-LocalDOS")::AbstractString
+#	
+#	Data, good_P = get_data(P, mute=false, fromPlot=true, target=localobs_,
+#													get_good_P=true)
+#	
+#	latt = Latt(good_P...)
+#
+#
+#
+#	(isnothing(Data) || !haskey(Data,localobs_)) && return Dict("xy"=>atoms)
+#
+#	@assert haskey(P, "Energy")
+#
+#	return Dict("xy" => atoms, 
+#							"z" => Transforms.SampleVectors(Data[localobs_], P; Data=Data, get_k=true))
+#	
+#end)
+#
+#
+#localobs(get_data::Function, lattice_::Module; kwargs...) = localobs(get_data, lattice_.Latt; kwargs...)
 
 
 localobs(get_data::Function, PosAtoms::Function) = ("LocalObservables", function plot_(P::AbstractDict)
@@ -63,8 +87,6 @@ end)
 
 
 localobs(get_data::Function, lattice_::Module) = localobs(get_data, lattice_.PosAtoms)
-
-
 
 
 

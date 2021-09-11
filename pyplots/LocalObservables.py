@@ -77,8 +77,6 @@ def plot(Ax, get_plotdata, localobs=None, cmap="PuBuGn", atomsize=100,
             )
    
 
-    ax0.set_xlabel("$x$",fontsize=fontsize)
-    ax0.set_ylabel("$y$",rotation=0,fontsize=fontsize)
     
     
 
