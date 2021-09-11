@@ -17,7 +17,7 @@ import ..Transforms
 
 
 
-obs(task::CompTask) = obs(task.get_data) 
+obs(task::Union{CompTask,PlotTask}) = obs(task.get_data) 
 
 obs(get_data::Function) = ("Observables", function plot_(P::AbstractDict)
 																	
@@ -39,8 +39,8 @@ end)
 #
 #---------------------------------------------------------------------------#
 
-#
-#localobs(task::Union{CompTask,PlotTask}, arg...; kwargs...) = localobs(task.get_data, arg...; kwargs...) 
+
+localobs(task::Union{CompTask,PlotTask}, arg...; kwargs...) = localobs(task.get_data, arg...; kwargs...) 
 #
 #
 #localobs(get_data::Function, Latt::Function; nr_uc:Int=0) = ("LocalObservables", function plot_(P::AbstractDict)
@@ -145,7 +145,7 @@ end)
 
 
 
-lattice(task::CompTask; kwargs...) = lattice(task.get_data; kwargs...)
+lattice(task::Union{CompTask,PlotTask}; kwargs...) = lattice(task.get_data; kwargs...)
 
 function lattice(get_data::Function; nr_uc::Int=0, kwargs...) 
 
