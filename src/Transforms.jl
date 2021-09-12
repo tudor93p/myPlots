@@ -73,7 +73,7 @@ function get_SamplingVars(P;	Data=Dict(), get_k=false,
 	haskey(Data, "kLabels") || return E_SV 
 
 	k_SV = get_SamplingVars_(P, "k",
-													 get(Data, "kLabels", nothing),
+												 get(Data, "kLabels", nothing),
 													"k_width",
 													 haskey(P,"k_width_factor") ? "k_width_factor" : "E_width_factor",)
 
@@ -151,6 +151,51 @@ end
 
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
+function DOSatEvsK1D(P::AbstractDict, Data::AbstractDict;
+										 ks::AbstractVector{<:Real}, kwargs...
+										 )::Tuple{Vector{Float64},Matrix{Float64}}
+
+	if !all(isapprox.(extrema(ks), extrema(Data["kLabels"])))
+
+		Data["kLabels"] = Utils.Rescale(Data["kLabels"], ks)
+
+	end 
+
+
+	weights = SamplingWeights(Utils.adapt_merge(P, "k"=>ks); 
+														Data=Data, get_k=true)
+
+	return dropdims(sum(weights, dims=2), dims=2), weights
+
+end 
+
+
+function DOSatEvsK1D(P::AbstractDict,
+										 (Data,oper)::Tuple{<:AbstractDict,<:AbstractString};
+										 ks::AbstractVector{<:Real}, kwargs...
+										 )::Tuple{Vector{Float64},
+															<:Union{Nothing,Vector{Float64}}}
+
+	DOS, weights = DOSatEvsK1D(P, Data; ks=ks)
+
+	if !(haskey(Data, oper) && count(size(Data[oper]).!=1)<=1)
+
+		return DOS, nothing 
+
+	end 
+
+	return (DOS, dropdims(sum(reshape(Data[oper],1,:).*weights;
+														dims=2), dims=2)./DOS)
+
+end 
 
 
 
@@ -634,6 +679,15 @@ convol_energy = ProcessData("Energy",
 					
 										end)
 
+convol_DOSatEvsK1D = ProcessData("Energy",
+
+					 function calc_daevk1(P::AbstractDict, Data; kwargs...)
+
+						 (DOSatEvsK1D(P, Data; kwargs...),
+							"E=" * string(round(P["Energy"],digits=2)))
+
+						end 
+					 )
 
 
 
