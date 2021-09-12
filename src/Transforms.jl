@@ -64,17 +64,20 @@ function get_SamplingVars(P;	Data=Dict(), get_k=false,
 													 "E_width",
 													 "E_width_factor")
 
-	!get_k && return E_SV 
+	get_k || return E_SV 
 
-	!haskey(P, "k") && return E_SV
+	haskey(P, "k") || return E_SV
+
+	haskey(P, "k_width") || return E_SV 
+
+	haskey(Data, "kLabels") || return E_SV 
 
 	k_SV = get_SamplingVars_(P, "k",
 													 get(Data, "kLabels", nothing),
-													 haskey(P,"k_width") ? "k_width" : "E_width",
+													"k_width",
 													 haskey(P,"k_width_factor") ? "k_width_factor" : "E_width_factor",)
 
 
-	isnothing(k_SV) && return E_SV 
 
 	return collect(zip(E_SV, k_SV))
 	
@@ -93,7 +96,7 @@ function SamplingWeights(args...; kwargs...)
 
 	isnothing(a) && return nothing
 
-	return Algebra.getCombinedDistrib(a...; kwargs...)[:]
+	return Algebra.getCombinedDistrib(a...; kwargs...)
 
 end
 

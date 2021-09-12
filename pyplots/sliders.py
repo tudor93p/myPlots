@@ -73,7 +73,7 @@ def zoom_choose_energy():
     def add(fig, enlim=None, **kwargs):
    
         
-        fig.add_text(label="Center energy", key="shift", text="")
+#        fig.add_text(label="Center energy", key="shift", text="")
 
         if enlim is not None:
     
@@ -90,7 +90,7 @@ def zoom_choose_energy():
         fig.add_text(label="Energy",key="Energy",text="")
 
 
-        fig.add_text(label="Sample window",key="sample_states_width",text="")
+        fig.add_text(label="Sample window E",key="sample_states_width_E",text="")
     
         fig.add_combobox(["Lorentzian","Gaussian","Rectangle"],label="Sample method",key="sample_states_method")
 
@@ -130,7 +130,7 @@ def zoom_choose_energy():
         
 
     
-        try: delta = float(obj.get_text("sample_states_width"))
+        try: delta = float(obj.get_text("sample_states_width_E"))
 
         except: delta = 0.02
     
@@ -160,7 +160,7 @@ def choose_k():
    
         fig.add_text(label="Eigenvalue index",key="kpoint",text="")
 
-        fig.add_text(label="Sample window",key="sample_states_width",text="")
+        fig.add_text(label="Sample window k",key="sample_states_width_k",text="")
     
         fig.add_combobox(["Lorentzian","Gaussian","Rectangle"],
                     label="Sample states method",key="sample_states_method")
@@ -168,9 +168,9 @@ def choose_k():
     
     def read(obj):
    
-        out = {"E_width" : 0.02}
+        out = {"k_width" : 0.02}
 
-        out.update(read_text(obj, "sample_states_width", "E_width"))
+        out.update(read_text(obj, "sample_states_width_k", "k_width"))
 
         out["interp_method"] = obj.get_combobox("sample_states_method")
 

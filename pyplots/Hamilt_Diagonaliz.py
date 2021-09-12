@@ -8,7 +8,7 @@ from Scatter_vsEnergy import nr_axes
 from Scatter_vsEnergy import common_sliders as common_sliders0, plot as plot0
 
 
-common_sliders1 = [ operators, oper_vminmax, pick_systems, choose_k]
+common_sliders1 = [operators, oper_vminmax, choose_k]
 
 
 add_sliders, read_sliders = addread_sliders(*common_sliders1,
