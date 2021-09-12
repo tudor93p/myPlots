@@ -46,7 +46,8 @@ function get_SamplingVars_(P::AbstractDict,
 		end
 
 
-	return (get(P, "interp_method", :Lorentzian), [P[value]], centers, width) 
+		return (get(P, "interp_method", :Lorentzian), 
+						vcat(P[value]), centers, width) 
 
 end 
 
@@ -65,11 +66,12 @@ function get_SamplingVars(P;	Data=Dict(), get_k=false,
 
 	!get_k && return E_SV 
 
+	!haskey(P, "k") && return E_SV
 
 	k_SV = get_SamplingVars_(P, "k",
 													 get(Data, "kLabels", nothing),
-													 "E_width",
-													 "E_width_factor")
+													 haskey(P,"k_width") ? "k_width" : "E_width",
+													 haskey(P,"k_width_factor") ? "k_width_factor" : "E_width_factor",)
 
 
 	isnothing(k_SV) && return E_SV 
