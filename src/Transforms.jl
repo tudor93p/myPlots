@@ -163,11 +163,11 @@ function DOSatEvsK1D(P::AbstractDict, Data::AbstractDict;
 										 ks::AbstractVector{<:Real}, kwargs...
 										 )::Tuple{Vector{Float64},Matrix{Float64}}
 
-	if !all(isapprox.(extrema(ks), extrema(Data["kLabels"])))
+#	if !all(isapprox.(extrema(ks), extrema(Data["kLabels"])))
 
-		Data["kLabels"] = Utils.Rescale(Data["kLabels"], ks)
+#		Data["kLabels"] = Utils.Rescale(Data["kLabels"], ks)
 
-	end 
+#	end 
 
 
 	weights = SamplingWeights(Utils.adapt_merge(P, "k"=>ks); 

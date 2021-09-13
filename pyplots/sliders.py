@@ -128,8 +128,6 @@ def zoom_choose_energy():
 
             enlim = None
         
-
-    
         try: delta = float(obj.get_text("sample_states_width_E"))
 
         except: delta = 0.02
@@ -165,12 +163,17 @@ def choose_k():
         fig.add_combobox(["Lorentzian","Gaussian","Rectangle"],
                     label="Sample states method",key="sample_states_method")
     
+        fig.add_slider(label="Zoom k", key="zoomk", columnSpan=4,
+                    vs=np.linspace(1,0,80,endpoint=False))
     
     def read(obj):
    
-        out = {"k_width" : 0.02}
+        out = read_slider(obj, "zoomk")) 
 
-        out.update(read_text(obj, "sample_states_width_k", "k_width"))
+        out["k_width"] = 0.02 
+
+        out.update(read_text(obj, "sample_states_width_k", "k_width")) 
+
 
         out["interp_method"] = obj.get_combobox("sample_states_method")
 
