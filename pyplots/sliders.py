@@ -486,6 +486,31 @@ def transforms():
     return add,read
 
 
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+def saturation():
+
+
+    def add(fig, **kwargs):
+
+        fig.add_slider(label="Saturation", key="saturation", columnSpan=4,
+                    vs=np.linspace(0,1,80),v0=79)
+
+
+    def read(obj):
+
+        return read_slider(obj, "saturation")
+
+
+    return add, read 
+
+
 #===========================================================================#
 #
 #

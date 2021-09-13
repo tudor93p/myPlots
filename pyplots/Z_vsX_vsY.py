@@ -23,7 +23,7 @@ add_sliders, read_sliders = addread_sliders(*common_sliders)
 
 
 
-def plot(Ax, get_plotdata, ylim=None, cmap="viridis", show_colorbar=True, fontsize=12, **kwargs): 
+def plot(Ax, get_plotdata, ylim=None, cmap="viridis", fontsize=12, **kwargs): 
 
     ax0 = Ax[0]
 
@@ -38,9 +38,11 @@ def plot(Ax, get_plotdata, ylim=None, cmap="viridis", show_colorbar=True, fontsi
     P = ax0.pcolormesh(*Utils.mgrid_from_1D(data["x"],data["y"]), data["z"],
                         cmap=cmap, edgecolors='face',
       		        zorder=2, vmax=zlim[1], vmin=zlim[0])
-   
-    if show_colorbar:
-        Plot.good_colorbar(P, zlim , ax0, data.get("zlabel",""), fontsize=fontsize)
+  
+
+    if get_val("show_colorbar", True):
+
+        Plot.good_colorbar(P, zlim, ax0, data.get("zlabel",""), fontsize=fontsize)
    
 
 
