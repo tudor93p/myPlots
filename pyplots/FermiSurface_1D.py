@@ -27,9 +27,9 @@ add_sliders, read_sliders = addread_sliders(*common_sliders1,
 
 def plot(*args, **kwargs):
 
-    plot1(*args, **kwargs)
+    plot1(*args, zorder0=0, **kwargs)
 
-    plot2(*args, **kwargs)
+    plot2(*args, zorder0=1000, **kwargs)
 
 
 

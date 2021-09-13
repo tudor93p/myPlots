@@ -26,7 +26,7 @@ add_sliders,read_sliders = addread_sliders(*common_sliders)
 
 
 
-def plot(Ax, get_plotdata, linewidth=1, fontsize=12, **kwargs):
+def plot(Ax, get_plotdata, linewidth=1, fontsize=12, zorder0=0, **kwargs):
 
             
     data = get_plotdata(kwargs)
@@ -65,7 +65,7 @@ def plot(Ax, get_plotdata, linewidth=1, fontsize=12, **kwargs):
     
                 if np.any(np.abs(y) > 1e-9):
     
-                    ax0.plot(x, y[0], c=c, linewidth=lw, zorder=2+z*2, alpha=alpha, label=l, linestyle=LSS[ils])#**LKS[ils])
+                    ax0.plot(x, y[0], c=c, linewidth=lw, zorder=zorder0+2+z*2, alpha=alpha, label=l, linestyle=LSS[ils])#**LKS[ils])
 
                     ils+=1
 
@@ -78,7 +78,7 @@ def plot(Ax, get_plotdata, linewidth=1, fontsize=12, **kwargs):
 
             if np.any(np.abs(y) > 1e-9):
     
-                ax0.plot(np.reshape(x,-1), np.reshape(y,-1), c=c, linewidth=lw, zorder=2+z*2, alpha=alpha, label=l, linestyle=LSS[ils])#**lk)
+                ax0.plot(np.reshape(x,-1), np.reshape(y,-1), c=c, linewidth=lw, zorder=zorder0+2+z*2, alpha=alpha, label=l, linestyle=LSS[ils])#**lk)
 
                 ils+=1
 
@@ -112,7 +112,7 @@ def plot(Ax, get_plotdata, linewidth=1, fontsize=12, **kwargs):
     
     ax0.tick_params(labelsize=fontsize)
 
-    plot_levellines(ax0, get_val, zorder=5, color="k", lw=1, alpha=0.6) 
+    plot_levellines(ax0, get_val, zorder=zorder0+5, color="k", lw=1, alpha=0.6) 
 
 
 

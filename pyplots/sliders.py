@@ -168,7 +168,7 @@ def choose_k():
     
     def read(obj):
    
-        out = read_slider(obj, "zoomk")) 
+        out = read_slider(obj, "zoomk")
 
         out["k_width"] = 0.02 
 
