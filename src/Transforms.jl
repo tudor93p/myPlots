@@ -688,7 +688,7 @@ choose_color_i = ProcessData(choose_obs_i.check,
 	
 		ndims(z1)==0 && return [only(z1)], ""
 	
-		ndims(z1)==1 && return z, ""
+		ndims(z1)==1 && return z1, ""
 	
 		D = eachslice(z1, dims=Dict(1=>ndims(z1), 2=>1)[VECTOR_STORE_DIM])
 	
