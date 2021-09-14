@@ -98,41 +98,68 @@ localobs(get_data::Function, lattice_::Module) = localobs(get_data, lattice_.Pos
 
 oper(task::Union{CompTask,PlotTask}) = oper(task.get_data)
 
-oper(get_data::Function) = ("Hamilt_Diagonaliz", function (P::AbstractDict)
+oper(get_data::Function) = ("Hamilt_Diagonaliz", 
 
-	oper_ = get(P, "oper", nothing)
+	function plot_(P::AbstractDict)
 
-	Data = get_data(P, mute=false, fromPlot=true, target=oper_)
+		oper_ = get(P, "oper", nothing)
+	
+		Data = get_data(P, mute=false, fromPlot=true, target=oper_)
+	
+	
+	  out = Dict(
+	
+			"xlabel" => haskey(Data, "kTicks") ? "k" : "Eigenvalue index",
+	
+			"ylabel" => "Energy",
+	
+			"x" => Data["kLabels"][:],
+	
+	#		"xticks" => Data["kTicks"],
+	
+			"y" => Data["Energy"][:],
+	
+			)
+	
+		if haskey(Data, oper_) 
+
+			z = Data[oper_] 
+
+			if count(size(z).>1)<=1 
+	
+				@assert length(z)==length(out["y"]) 
+
+				out["z"] = z[:]
+
+				out["zlabel"] = oper_  
+
+	
+			elseif count(size(z).>1)<=2 
 
 
-  out = Dict(
+				@assert size(z,VECTOR_STORE_DIM)==length(out["y"])
 
-		"xlabel" => haskey(Data, "kTicks") ? "k" : "Eigenvalue index",
+			 	dim2 = [2,1][VECTOR_STORE_DIM]
 
-		"ylabel" => "Energy",
+				i = min(size(z, dim2),get(P,"obs_i",1))
 
-		"zlabel" => oper_,
+				out["zlabel"] = "$oper_/$i"
 
+				out["z"] = selectdim(z, dim2, i)
 
-		"x" => Data["kLabels"][:],
+			end 
+	
+		elseif oper_=="weights" && haskey(P, "Energy")
+	
+			out["z"] = Transforms.SamplingWeights(P; Data=Data, get_k=true)
 
-#		"xticks" => Data["kTicks"],
+			out["zlabel"] = oper_ 
 
-		"y" => Data["Energy"][:],
-
-		"z" => haskey(Data, oper_) ? Data[oper_][:] : nothing,
-
-					)
-
-	if oper_=="weights" && all(in(keys(P)), ["interp_method","Energy","E_width"])
-
-		out["z"] = Transforms.SamplingWeights(P; Data=Data, get_k=true)
-
-	end
-
-	return out
-
-end)
+		end
+	
+		return out
+	
+	end)
 
 
 
