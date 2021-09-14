@@ -123,7 +123,11 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 	
 		if haskey(Data, oper_) 
 
+			@show oper size(Data[oper_]) P 
+
 			z,lab = Transforms.choose_color_i(P, Data[oper_], oper_; f="first") 
+
+			@show size(z) lab  length(out["y"])
 
 			@assert z isa AbstractVector && length(z)==length(out["y"])
 

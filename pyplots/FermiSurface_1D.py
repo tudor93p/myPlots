@@ -15,6 +15,7 @@ common_sliders = [saturation, choose_k, choose_energy]
 add_sliders, read_sliders = addread_sliders(*common_sliders1,
                                             *common_sliders2,
                                             *common_sliders,
+                                            obs_index,
                                             )
 
 
