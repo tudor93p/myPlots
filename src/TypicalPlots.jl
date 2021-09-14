@@ -143,9 +143,18 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 
 				i = min(size(z, dim2),get(P,"obs_i",1))
 
-				out["zlabel"] = "$oper_/$i"
 
-				out["z"] = selectdim(z, dim2, i)
+				if oper_=="Velocity" 
+
+					out["zlabel"] = string(oper_, " ", "xyz"[i])
+
+				else 
+
+					out["zlabel"] = "$oper_/Part $i"
+
+				end
+
+				out["z"] = collect(selectdim(z, dim2, i))
 
 			end 
 	
