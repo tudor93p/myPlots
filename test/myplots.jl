@@ -116,7 +116,6 @@ end end
 
 println()  
 
-error()
 
 
 
@@ -209,14 +208,10 @@ q = myPlots.TypicalPlots.lattice(get_latt)
 @show keys(q[2](Dict()))
 
 
-@show typeof(q[2](Dict())["xs"])
+@show typeof(q[2](Dict())["xys"])
 
 
 
-import PyPlot; fig,ax = PyPlot.subplots()
-
-
-myPlots.pyplot("Scatter", [ax], q[2]; dotsize=100)
 
 
 
@@ -225,13 +220,17 @@ myPlots.pyplot("Scatter", [ax], q[2]; dotsize=100)
 #
 #
 #---------------------------------------------------------------------------#
+println()
 
+@info "TypicalPlots.oper"
 
 function get_data(args...;kwargs...)
 
 
 	Dict("kLabels"=>range(0,1,length=20),
 			 "Energy"=>rand(20),
+			 "A"=>rand(2,20),
+			 "Velocity"=>rand(3,20),
 			 )
 
 end 
@@ -243,8 +242,13 @@ end
 
 @show myPlots.obs_x_and_label("x", nothing, "x", nothing)
 
+println()
 
 
+D = myPlots.TypicalPlots.oper(get_data)[2](Dict("oper"=>"Velocity","obs_i"=>2))
+
+@show D["z"] |> size 
+@show D["zlabel"]
 
 
 

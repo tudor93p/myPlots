@@ -4,7 +4,7 @@ module TypicalPlots
 using myLibs.ComputeTasks: CompTask
 import myLibs: Lattices ,Utils
 
-using ..myPlots: PlotTask, construct_obs0obs
+using ..myPlots: PlotTask, construct_obs0obs, join_label
 using Constants: VECTOR_STORE_DIM 
 
 import ..Transforms 
@@ -123,41 +123,24 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 	
 		if haskey(Data, oper_) 
 
-			z = Data[oper_] 
+			z,lab = Transforms.choose_color_i(P, Data[oper_], oper_; f="first") 
 
-			if count(size(z).>1)<=1 
-	
-				@assert length(z)==length(out["y"]) 
+			@assert z isa AbstractVector && length(z)==length(out["y"])
 
-				out["z"] = z[:]
+			@assert !isempty(lab)
 
-				out["zlabel"] = oper_  
+			out["z"] = collect(z)
 
-	
-			elseif count(size(z).>1)<=2 
+			if length(lab)==2 && oper_=="Velocity" 
 
+				out["zlabel"] = join_label(lab[1], only(lab[2])+('x'-'1'), sep1=" ")
 
-				@assert size(z,VECTOR_STORE_DIM)==length(out["y"])
+			else 
 
-			 	dim2 = [2,1][VECTOR_STORE_DIM]
+				out["zlabel"] = join_label(lab)
 
-				i = min(size(z, dim2),get(P,"obs_i",1))
+			end  
 
-
-				if oper_=="Velocity" 
-
-					out["zlabel"] = string(oper_, " ", "xyz"[i])
-
-				else 
-
-					out["zlabel"] = "$oper_/Part $i"
-
-				end
-
-				out["z"] = collect(selectdim(z, dim2, i))
-
-			end 
-	
 		elseif oper_=="weights" && haskey(P, "Energy")
 	
 			out["z"] = Transforms.SamplingWeights(P; Data=Data, get_k=true)
