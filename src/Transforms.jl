@@ -159,41 +159,58 @@ end
 
 
 
-function DOSatEvsK1D(P::AbstractDict, Data::AbstractDict;
+
+
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+function label_convol_en(P::AbstractDict)::String 
+
+	"E=" * string(round(P["Energy"],digits=2))
+
+end 
+
+
+function DOSatEvsK1D(P::AbstractDict, Data::AbstractDict, label...;
 										 ks::AbstractVector{<:Real}, kwargs...
-										 )::Tuple{Vector{Float64},Matrix{Float64}}
-
-#	if !all(isapprox.(extrema(ks), extrema(Data["kLabels"])))
-
-#		Data["kLabels"] = Utils.Rescale(Data["kLabels"], ks)
-
-#	end 
-
+										 )::Tuple{Tuple{Vector{Float64},
+																		Matrix{Float64}},
+															Vector{String}}
 
 	weights = SamplingWeights(Utils.adapt_merge(P, "k"=>ks); 
 														Data=Data, get_k=true)
 
-	return dropdims(sum(weights, dims=2), dims=2), weights
+	DOS = dropdims(sum(weights, dims=2), dims=2) 
+	
+	return ( (DOS, weights), vcat(label..., label_convol_en(P)))
 
 end 
 
 
 function DOSatEvsK1D(P::AbstractDict,
-										 (Data,oper)::Tuple{<:AbstractDict,<:AbstractString};
+										 (Data,oper)::Tuple{<:AbstractDict,<:AbstractString},
+										 label...;
 										 ks::AbstractVector{<:Real}, kwargs...
-										 )::Tuple{Vector{Float64},
-															<:Union{Nothing,Vector{Float64}}}
+										 )::Tuple{Tuple{Vector{Float64},
+																		<:Union{Nothing,Vector{Float64}}},
+															Vector{String}}
 
-	DOS, weights = DOSatEvsK1D(P, Data; ks=ks)
+	(DOS, weights), lab = DOSatEvsK1D(P, Data, label...; ks=ks)
 
-	if !(haskey(Data, oper) && count(size(Data[oper]).!=1)<=1)
+	!haskey(Data, oper) && return (DOS, nothing), lab
 
-		return DOS, nothing 
+	z, lab = choose_color_i(P, Data[oper], vcat(lab, oper); kwargs...)
 
-	end 
-
-	return (DOS, dropdims(sum(reshape(Data[oper],1,:).*weights;
-														dims=2), dims=2)./DOS)
+	@assert z isa AbstractVector 
+	
+	return (DOS, (weights*z)./DOS), lab
 
 end 
 
@@ -334,8 +351,7 @@ function Vec2Scalar(data::AbstractVector{<:Number}, args...
 
 end 
 
-function Vec2Scalar(data::AbstractMatrix{<:Number}, dim::Nothing,
-										args...
+function Vec2Scalar(data::AbstractMatrix{<:Number}, ::Nothing, args...
 									 )::Vector{<:Number}
 
 	Vec2Scalar(data, args...)
@@ -628,8 +644,8 @@ function (pd::ProcessData)(P::AbstractDict,
 
 	new_Data, new_label = pd.calc(P, Data; pd.kwargs..., kwargs...)
 
-	return (new_Data, vcat(label, string(new_label))) 
-
+	return (new_Data, filter!(!isempty, vcat(label, string.(vcat(new_label)))))
+	
 end 
 
 
@@ -653,7 +669,34 @@ choose_obs_i = ProcessData(
 			ComputeTasks.choose_obs_i(Data; P=P, kwargs...)
 
 		end,
-					)
+					) 
+
+
+
+
+
+choose_color_i = ProcessData(choose_obs_i.check,
+
+	function calc_cci(P::AbstractDict, z::AbstractArray{T}; kwargs...
+										)::Tuple{Array{T},Any} where {T<:Real}
+	
+		z1 = dropdims(z, dims=Tuple(findall(size(z).==1)))
+	
+		ndims(z1)==0 && return [only(z1)], ""
+	
+		ndims(z1)==1 && return z, ""
+	
+		D = eachslice(z1, dims=Dict(1=>ndims(z1), 2=>1)[VECTOR_STORE_DIM])
+	
+		return ComputeTasks.choose_obs_i(Dict(enumerate(D)); P=P, kwargs...)
+	
+	end 
+	
+	 )
+
+
+
+
 
 vec2scalar = ProcessData("vec2scalar",
 												 
@@ -671,23 +714,13 @@ convol_energy = ProcessData("Energy",
 														 
 									function calc_chen(P::AbstractDict, Data; kwargs...)
 
-													(SampleVectors(Data, P; kwargs...),
-
-													 "E=" * string(round(P["Energy"],digits=2))
-
-													 )
+										(SampleVectors(Data, P; kwargs...), label_convol_en(P))
 					
-										end)
+									end) 
 
-convol_DOSatEvsK1D = ProcessData("Energy",
 
-					 function calc_daevk1(P::AbstractDict, Data; kwargs...)
+convol_DOSatEvsK1D = ProcessData("Energy", DOSatEvsK1D)
 
-						 (DOSatEvsK1D(P, Data; kwargs...),
-							"E=" * string(round(P["Energy"],digits=2)))
-
-						end 
-					 )
 
 
 

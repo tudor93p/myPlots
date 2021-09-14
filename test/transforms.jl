@@ -20,6 +20,7 @@ P = Dict{Any,Any}("Energy"=>0.1)
 println()
 
 P["k"] = 0.3
+P["k_width"] = 0.1
 
 Data = Dict("kLabels"=>rand(NR_ENERGIES))
 
@@ -273,17 +274,91 @@ end
 
 
 
+println()
+
+@testset "choose component" begin 
+
+
+z = rand(3)
+
+z1,lab = myPlots.Transforms.choose_color_i(Dict("obs_i"=>1), z)
+
+@show size(z1) lab 
+@test isapprox(z,z1)
+
+
+z = rand(2,3)
+
+z1,lab = myPlots.Transforms.choose_color_i(Dict("obs_i"=>1), z)
+
+@show size(z1) lab 
+@test isapprox(z[1,:],z1)
+
+
+z = rand(5,2,3)
+
+z1,lab = myPlots.Transforms.choose_color_i(Dict("obs_i"=>4), z)
+
+@show size(z1) lab 
+@test isapprox(z[4,:,:],z1)
+
+
+end 
 
 
 
 
 
 
+println()
+
+@testset "Fermi surface" begin 
+
+P = Dict("Energy"=>rand(),"k_width"=>0.1)
+
+Data=Dict{String,Any}("Energy"=>sort(rand(100)),"kLabels"=>sort(rand(100)))
+ks = sort(rand(47)) 
+
+(DOS,Z),label = myPlots.Transforms.convol_DOSatEvsK1D(P, Data; ks=ks)
+
+@show label 
+@test Z isa AbstractMatrix && size(Z)==(47,100) 
+
+@test size(DOS)==(47,)
 
 
 
+(DOS,Z),label2 = myPlots.Transforms.convol_DOSatEvsK1D(P, (Data,"X"); ks=ks)
+
+@test label==label2
+
+@test isnothing(Z)
+
+@test size(DOS)==(47,)
 
 
+Data["X"]= rand(2,100)
+
+P["obs_i"]=2
+
+(DOS,Z),label3 = myPlots.Transforms.convol_DOSatEvsK1D(P, (Data,"X"); ks=ks,f="first")
+
+
+
+@test length(DOS)==length(Z)==47 
+
+@show label3
+
+Data["X"]= rand(100)
+
+(DOS,Z),label3 = myPlots.Transforms.convol_DOSatEvsK1D(P, (Data,"X"); ks=ks,f="first")
+
+
+@test length(DOS)==length(Z)==47 
+
+@show label3
+
+end 
 
 
 

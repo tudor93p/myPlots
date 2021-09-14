@@ -5,9 +5,9 @@ import myPlots
 
 #include("myplots.jl")
 
-include("plotlatt.jl")
+#include("plotlatt.jl")
 
-#include("transforms.jl")
+include("transforms.jl")
 
 
 
