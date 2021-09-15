@@ -22,7 +22,7 @@ add_sliders, read_sliders = addread_sliders(*common_sliders)
 
 
 
-def plot(Ax, get_plotdata, dotsize=10, fontsize=12, show_colorbar=True,
+def plot(Ax, get_plotdata, dotsize=10, fontsize=12, 
             cmap="PuBu", zorder0=0, **kwargs): 
 
     ax0 = Ax[0]
@@ -43,12 +43,9 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12, show_colorbar=True,
     L = Utils.Assign_Value(d("label"), np.repeat(None, len(Y)))
 
 
-    xlim,ylim,zlim = deduce_axislimits(
-                        [X,Y,Z],
-                        [get_val("xlim"),get_val("ylim"),get_val("zlim")])
+    xlim,ylim,zlim = deduce_axislimits([X,Y,Z], 
+                                  [get_val(c+"lim") for c in ["x","y","z"]])
 
-        
-    
     nr_col = 0
 
 
@@ -68,7 +65,7 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12, show_colorbar=True,
 
             P = ax0.scatter(x, y, s=S, c=z, cmap=cmap, zorder=zorder0+2, vmax=zlim[1], vmin=zlim[0], label=l, alpha=0.8)
        
-            if i==0 and show_colorbar:
+            if i==0 and get_val("show_colorbar", True):
 
                 Plot.good_colorbar(P, zlim, ax0, data.get("zlabel",""), fontsize=fontsize)
             

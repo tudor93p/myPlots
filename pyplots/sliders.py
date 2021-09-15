@@ -90,7 +90,7 @@ def zoom_choose_energy():
         fig.add_text(label="Energy",key="Energy",text="")
 
 
-        fig.add_text(label="Sample window E",key="sample_states_width_E",text="")
+        fig.add_text(label="Window E",key="sample_states_width_E",text="")
     
         fig.add_combobox(["Lorentzian","Gaussian","Rectangle"],label="Sample method",key="sample_states_method")
 
@@ -158,7 +158,7 @@ def choose_k():
    
         fig.add_text(label="Eigenvalue index",key="kpoint",text="")
 
-        fig.add_text(label="Sample window k",key="sample_states_width_k",text="")
+        fig.add_text(label="Window k",key="sample_states_width_k",text="")
     
         fig.add_combobox(["Lorentzian","Gaussian","Rectangle"],
                     label="Sample states method",key="sample_states_method")

@@ -254,76 +254,81 @@ def get_paramsuser(obj,params):
 
 
 
+def getlim(dat,f=lambda u:u):
 
-def deduce_axislimits(data=None, limits=None, z="not_provided", zlim="not_provided"):
 
-   
+    if dat is None: 
+        
+        return [None,None]
+
+    if isinstance(dat, float) or isinstance(dat, int):
+        return [dat,dat] 
+
+    for d in dat:
+        if d is None:
+            return [None,None]
+
+
+    if isinstance(dat, np.ndarray):
+
+        return Algebra.minmax(f(dat))
+
+    return Algebra.minmax([Algebra.minmax(f(di)) for di in dat])
+
+
+
+def deduce_axislimits(data=None, limits=None):
+
     data = Utils.Assign_Value(data, [None,None])
 
-    limits = Utils.Assign_Value(limits, np.repeat(None,len(data)))
+    limits = Utils.Assign_Value(limits, np.repeat(None,len(data))) 
+
+    limits = [Utils.Assign_Value(lim, [None,None]) for lim in limits]
 
 
     if len(data)==3 and len(limits)==3:
 
-        return deduce_axislimits(data[0:2], limits[0:2], 
-                                 z=data[2], zlim=limits[2])
+        xlim, ylim = deduce_axislimits(data[0:2], limits[0:2])
+
+        zlim = []
+
+        for (l1, l2) in zip(limits[2], getlim(data[2])):
+
+            zlim.append(l2 if l1 is None else l1)
+
+        return xlim,ylim,zlim
+
+
 
     if len(data)!=2 or len(limits)!=2:
 
         raise
 
+    
+    limits_given = [False, False]
+    
+    for i,lim in enumerate(limits): 
 
+        if lim is not None and len(lim)==2:
+            
+            if all([isinstance(l,int) or isinstance(l,float) for l in lim]):
+            
+                limits_given[i] = True 
 
-    z_given = True 
-
-    for item in (z,zlim):
-
-        if isinstance(item,str) and item=="not_provided":
-
-            z_given = False
-
-
-
-    limits_given = [lim is not None for lim in limits]
 
     nr_lim = sum(limits_given)
 
-    def getlim(dat,f=lambda u:u):
- 
-
-        if dat is None: 
-            
-            return [None,None]
-
-        for d in dat:
-            if d is None:
-                return [None,None]
 
 
+    if nr_lim==2:
 
-        if isinstance(dat, np.ndarray):
-
-            return Algebra.minmax(f(dat))
-
+        return limits 
 
 
-        return Algebra.minmax([Algebra.minmax(f(di)) for di in dat])
+    elif nr_lim==0:
 
+        return [Plot.extend_limits(getlim(d)) for d in data]
 
-
-    
-
-    if nr_lim in [0,2]:
-
-        if nr_lim==0:
-
-            limits = [Plot.extend_limits(getlim(d)) for d in data]
-
-        if z_given:
-
-            zlim = update_vminmax(zlim, getlim(z))
-        
-         
 
     else:
 
@@ -346,20 +351,10 @@ def deduce_axislimits(data=None, limits=None, z="not_provided", zlim="not_provid
     
 
 
-
         limits[ng] = getlim(list(zip(data[g],data[ng])), restrict)
   
-        if z_given:
-
-            zlim = update_vminmax(zlim, getlim(list(zip(data[g], z)), restrict))
-
-
-    if not z_given:
-
         return limits 
    
-
-    return [limits[0], limits[1], zlim]
 
 
 
@@ -404,29 +399,29 @@ def set_xylabels(ax, get_label, **kwargs):
 
 
 #def update_vminmax(imposed_min, imposed_max, actual_min, actual_max):
-def update_vminmax(imposed_minmax, actual_minmax):
-
-                            # if it exists and makes sense
-
-    imposed_min,imposed_max = Utils.Assign_Value(imposed_minmax, [None,None])
-
-    actual_min,actual_max = Utils.Assign_Value(actual_minmax, [None,None])
-
-    if imposed_min is not None:
-
-        if actual_max is None or imposed_min < actual_max:
-                
-            actual_min = imposed_min
-            
-    if imposed_max is not None:
-        
-        if actual_min is None or imposed_max > actual_min:
-            
-            actual_max = imposed_max 
-
-            
-    return actual_min, actual_max
-
+#def update_vminmax(imposed_minmax, actual_minmax):
+#
+#                            # if it exists and makes sense
+#
+#    imposed_min,imposed_max = Utils.Assign_Value(imposed_minmax, [None,None])
+#
+#    actual_min,actual_max = Utils.Assign_Value(actual_minmax, [None,None])
+#
+#    if imposed_min is not None:
+#
+#        if actual_max is None or imposed_min < actual_max:
+#                
+#            actual_min = imposed_min
+#            
+#    if imposed_max is not None:
+#        
+#        if actual_min is None or imposed_max > actual_min:
+#            
+#            actual_max = imposed_max 
+#
+#            
+#    return actual_min, actual_max
+#
 
 
 #
