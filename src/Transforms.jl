@@ -198,7 +198,7 @@ function DOSatEvsK1D(P::AbstractDict,
 										 (Data,oper)::Tuple{<:AbstractDict,<:AbstractString},
 										 label...;
 										 ks::AbstractVector{<:Real}, 
-										 normalize=true, kwargs...
+										 normalize::Bool=true, kwargs...
 										 )::Tuple{Tuple{Vector{Float64},
 																		<:Union{Nothing,Vector{Float64}}},
 															Vector{String}}
