@@ -197,7 +197,8 @@ end
 function DOSatEvsK1D(P::AbstractDict,
 										 (Data,oper)::Tuple{<:AbstractDict,<:AbstractString},
 										 label...;
-										 ks::AbstractVector{<:Real}, kwargs...
+										 ks::AbstractVector{<:Real}, 
+										 normalize=true, kwargs...
 										 )::Tuple{Tuple{Vector{Float64},
 																		<:Union{Nothing,Vector{Float64}}},
 															Vector{String}}
@@ -208,7 +209,8 @@ function DOSatEvsK1D(P::AbstractDict,
 
 	z, lab = choose_color_i(P, Data[oper], vcat(lab, oper); kwargs...)
 
-	return (DOS, (weights*z)./DOS), lab
+
+	return (DOS, (weights*z)./(normalize ? DOS : 1)), lab
 
 end 
 
