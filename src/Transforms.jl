@@ -206,14 +206,8 @@ function DOSatEvsK1D(P::AbstractDict,
 
 	!haskey(Data, oper) && return (DOS, nothing), lab
 
-	@show oper size(Data[oper])
-
 	z, lab = choose_color_i(P, Data[oper], vcat(lab, oper); kwargs...)
 
-	@show size(z) lab 
-
-	@assert z isa AbstractVector 
-	
 	return (DOS, (weights*z)./DOS), lab
 
 end 
