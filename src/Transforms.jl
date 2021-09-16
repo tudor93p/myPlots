@@ -214,14 +214,14 @@ function DOSatEvsK1D(P::AbstractDict,
 
 	function prep_sizes(v::AbstractVector{Float64}, c)::Tuple#{T,T,Function}
 	
-		prep_sizes(Utils.VecAsMat(v, COMP_STORE_DIM), c,
-							 Utils.sel(COMP_STORE_DIM, 1),
+		prep_sizes(Utils.VecAsMat(v, COMP_STORE_DIM), c, true
+#							 Utils.sel(COMP_STORE_DIM, 1),
 							 )
 
 	end 
 
 
-	function prep_sizes(v::AbstractMatrix{Float64}, c, f::Function=identity
+	function prep_sizes(v::AbstractMatrix{Float64}, c, f::Bool=false#Function=identity
 											)::Tuple#{T,T,Function}
 
 		@assert size(c)==(length(DOS),size(v,VECTOR_STORE_DIM)) 
@@ -237,21 +237,33 @@ function DOSatEvsK1D(P::AbstractDict,
 	#linear combinations of the vectors in z with coefficients weights 
 
 
-	function CombsOfVecs(v, c, restore_size::Function, ::Nothing=nothing)#::T
+	function CombsOfVecs(v, c, reduce_dim::Bool, ::Nothing=nothing)#::T
 
-		Utils.CombsOfVecs(v, c; dim=VECTOR_STORE_DIM) |> restore_size
+		A = Utils.CombsOfVecs(v, c; dim=VECTOR_STORE_DIM)# |> reduce_dim 
+
+		return reduce_dim ? selectdim(A, COMP_STORE_DIM, 1) : A
 
 	end  
 	
-	function CombsOfVecs(v, c, restore_size::Function, f::Function)#::T
+	function CombsOfVecs(v, c, reduce_dim::Bool, f::Function)#::T
 
-		inds = f.(eachslice(v, dims=VECTOR_STORE_DIM))
+		inds = if reduce_dim 
+
+			f.(selectdim(v, COMP_STORE_DIM, 1))
+
+						else 
+
+			f.(eachslice(v, dims=VECTOR_STORE_DIM))
+
+						end 
 
 #		print(Int(round(100*count(inds)/length(inds))), " ")
 
 		any(inds) && return CombsOfVecs(selectdim(v, VECTOR_STORE_DIM, inds),
 																		selectdim(c, COMP_STORE_DIM, inds),
-																		restore_size)
+																		reduce_dim)
+
+		reduce_dim && return zeros(size(c, VECTOR_STORE_DIM))
 
 		outshape = [0, 0]
 
@@ -259,7 +271,7 @@ function DOSatEvsK1D(P::AbstractDict,
 
 		outshape[VECTOR_STORE_DIM] = size(c, VECTOR_STORE_DIM) 
 
-		return zeros(outshape...) |> restore_size
+		return zeros(outshape...) 
 
 	end 
 
