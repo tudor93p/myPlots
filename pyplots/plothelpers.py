@@ -299,9 +299,16 @@ def deduce_axislimits(data=None, limits=None):
 
         zlim = []
 
-        for (l1, l2) in zip(limits[0], getlim(data[0])):
+        for ls in zip(limits[0], getlim(data[0])):
 
-            zlim.append(l2 if l1 is None else l1)
+            for l in ls:
+
+                if l is not None:
+
+                    zlim.append(l)
+
+                    break 
+
 
         return sorted(zlim)
 

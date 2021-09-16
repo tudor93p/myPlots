@@ -209,8 +209,9 @@ function DOSatEvsK1D(P::AbstractDict,
 
 	z, lab = choose_color_i(P, Data[oper], vcat(lab, oper); kwargs...)
 
+	normalize || return (DOS, weights*z), lab
 
-	return (DOS, (weights*z)./(normalize ? DOS : 1)), lab
+	return (DOS, (weights*z)./(DOS.+1e-12)), lab
 
 end 
 
