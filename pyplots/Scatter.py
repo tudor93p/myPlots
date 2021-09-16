@@ -46,11 +46,6 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
     xlim,ylim,zlim = deduce_axislimits([X,Y,Z], 
                                   [get_val(c+"lim") for c in ["x","y","z"]])
 
-    if Z[0] is not None:
-        print(Z[0][:5])
-    print(Algebra.minmax([Algebra.minmax(z) for z in Z]))
-    print(get_val("zlim"))
-    print(zlim)
 
     nr_col = 0
 

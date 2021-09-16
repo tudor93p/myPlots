@@ -84,7 +84,7 @@ def zoom_choose_energy():
                     vs=np.linspace(1,0,80)*(np.max(enlim) - np.mean(enlim))
                     )
         
-            fig.add_slider(label="Energy", key="sEnergy", vs=np.linspace(0,1,61), columnSpan=5, v0=30)
+            fig.add_slider(label="Energy", key="sEnergy", vs=np.linspace(0,1,61), columnSpan=4, v0=30)
 
 
         fig.add_text(label="Energy",key="Energy",text="")
@@ -646,7 +646,11 @@ def colormap():
 
     def add(fig, **kwargs):
 
-        fig.add_combobox(["cool","PuBuGn","YlGnBu","plasma","coolwarm","Spectral","viridis","twilight","hsv"],label="Color map",key="cmap")
+        fig.add_combobox(["cool",
+                "PuBuGn","YlGnBu","copper",
+                "plasma","coolwarm","Spectral","viridis",
+                "twilight","hsv"
+                ],label="Color map",key="cmap")
 
     def read(obj):
         

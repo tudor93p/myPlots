@@ -6,8 +6,8 @@ import LinearAlgebra, FFTW
 import myLibs: Utils, Algebra, ArrayOps, ComputeTasks
 
 
-
-using Constants: ENERGIES, VECTOR_STORE_DIM, HOPP_CUTOFF, SYST_DIM, MAIN_DIM
+using Constants: ENERGIES, VECTOR_STORE_DIM, COMP_STORE_DIM
+using Constants: HOPP_CUTOFF, SYST_DIM, MAIN_DIM
 
 
 
@@ -198,10 +198,11 @@ function DOSatEvsK1D(P::AbstractDict,
 										 (Data,oper)::Tuple{<:AbstractDict,<:AbstractString},
 										 label...;
 										 ks::AbstractVector{<:Real}, 
+										 restrict_oper=nothing,
 										 normalize::Bool=true, kwargs...
 										 )::Tuple{Tuple{Vector{Float64},
-																		<:Union{Nothing,Vector{Float64}}},
-															Vector{String}}
+																		<:Union{Nothing,Array{Float64}}},
+															Vector{String}} #where T<:AbstractMatrix{Float64}
 
 	(DOS, weights), lab = DOSatEvsK1D(P, Data, label...; ks=ks)
 
@@ -209,9 +210,69 @@ function DOSatEvsK1D(P::AbstractDict,
 
 	z, lab = choose_color_i(P, Data[oper], vcat(lab, oper); kwargs...)
 
-	normalize || return (DOS, weights*z), lab
 
-	return (DOS, (weights*z)./(DOS.+1e-12)), lab
+
+	function prep_sizes(v::AbstractVector{Float64}, c)::Tuple#{T,T,Function}
+	
+		prep_sizes(Utils.VecAsMat(v, COMP_STORE_DIM), c,
+							 Utils.sel(COMP_STORE_DIM, 1),
+							 )
+
+	end 
+
+
+	function prep_sizes(v::AbstractMatrix{Float64}, c, f::Function=identity
+											)::Tuple#{T,T,Function}
+
+		@assert size(c)==(length(DOS),size(v,VECTOR_STORE_DIM)) 
+		# (nr_ks, nr_eigenstates)
+
+	  c1 = Algebra.normalizeDistrib(c, Utils.Add1Dim(DOS,2), normalize)
+
+		return v, (VECTOR_STORE_DIM==1 ? c1 : transpose(c1)), f
+
+	end 
+
+
+	#linear combinations of the vectors in z with coefficients weights 
+
+
+	function CombsOfVecs(v, c, restore_size::Function, ::Nothing=nothing)#::T
+
+		Utils.CombsOfVecs(v, c; dim=VECTOR_STORE_DIM) |> restore_size
+
+	end  
+	
+	function CombsOfVecs(v, c, restore_size::Function, f::Function)#::T
+
+		inds = f.(eachslice(v, dims=VECTOR_STORE_DIM))
+
+#		print(Int(round(100*count(inds)/length(inds))), " ")
+
+		any(inds) && return CombsOfVecs(selectdim(v, VECTOR_STORE_DIM, inds),
+																		selectdim(c, COMP_STORE_DIM, inds),
+																		restore_size)
+
+		outshape = [0, 0]
+
+		outshape[COMP_STORE_DIM] = size(v, COMP_STORE_DIM) 
+
+		outshape[VECTOR_STORE_DIM] = size(c, VECTOR_STORE_DIM) 
+
+		return zeros(outshape...) |> restore_size
+
+	end 
+
+#	nr_states=size(vecs,VECTOR_STORE_DIM)==size(coeffs,COMP_STORE_DIM)
+#	dimension==size(vecs,COMP_STORE_DIM) == size(out, COMP_STORE_DIM)
+#	nr_combs==size(coeffs,VECTOR_STORE_DIM) == size(out,VECTOR_STORE_DIM)
+#	nr_combs==length(DOS)==length(ks)
+
+#@show size(z) 
+
+
+	return (DOS, CombsOfVecs(prep_sizes(z,weights)..., restrict_oper)), lab
+	
 
 end 
 
