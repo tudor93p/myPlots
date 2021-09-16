@@ -23,7 +23,7 @@ add_sliders, read_sliders = addread_sliders(*common_sliders)
 
 
 
-def plot(Ax, get_plotdata, ylim=None, cmap="viridis", fontsize=12, **kwargs): 
+def plot(Ax, get_plotdata, cmap="viridis", fontsize=12, **kwargs): 
 
     ax0 = Ax[0]
 
@@ -32,9 +32,9 @@ def plot(Ax, get_plotdata, ylim=None, cmap="viridis", fontsize=12, **kwargs):
 
     get_val = Utils.prioritized_get(kwargs, data)
 
+    zlim = deduce_axislimits([data["z"]],[get_val("zlim")])
 
-    zlim = deduce_axislimits(z=data["z"], zlim=get_val("zlim"))[2]
-    
+
     P = ax0.pcolormesh(*Utils.mgrid_from_1D(data["x"],data["y"]), data["z"],
                         cmap=cmap, edgecolors='face',
       		        zorder=2, vmax=zlim[1], vmin=zlim[0])
@@ -45,11 +45,11 @@ def plot(Ax, get_plotdata, ylim=None, cmap="viridis", fontsize=12, **kwargs):
         Plot.good_colorbar(P, zlim, ax0, data.get("zlabel",""), fontsize=fontsize)
    
 
+    for k,f in [("xlim",ax0.set_xlim),("ylim",ax0.set_ylim)]:
 
+        lim = get_val(k)
 
-    if ylim is not None:
-
-        ax0.set_ylim(ylim)
+        if lim is not None: f(lim)
 
 
 

@@ -290,13 +290,20 @@ def deduce_axislimits(data=None, limits=None):
 
         xlim, ylim = deduce_axislimits(data[0:2], limits[0:2])
 
+        zlim = deduce_axislimits(data[2:],limits[2:])
+
+        return xlim,ylim,zlim
+
+
+    if len(data)==1 and len(limits)==1:
+
         zlim = []
 
-        for (l1, l2) in zip(limits[2], getlim(data[2])):
+        for (l1, l2) in zip(limits[0], getlim(data[0])):
 
             zlim.append(l2 if l1 is None else l1)
 
-        return xlim,ylim,zlim
+        return sorted(zlim)
 
 
 
@@ -322,7 +329,7 @@ def deduce_axislimits(data=None, limits=None):
 
     if nr_lim==2:
 
-        return limits 
+        return [sorted(lim) for lim in limits]
 
 
     elif nr_lim==0:
@@ -333,7 +340,8 @@ def deduce_axislimits(data=None, limits=None):
     else:
 
         g, ng = np.argmax(limits_given), np.argmin(limits_given)
-    
+   
+        limits[g] = sorted(limits[g])
     
         def restrict(item):
     
