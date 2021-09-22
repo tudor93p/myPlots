@@ -158,11 +158,140 @@ end
 #---------------------------------------------------------------------------#
 
 
+function get_restrict_oper(m::Real, M::Real)::Tuple{Function,String}
+
+	r(x::Real)::Bool = m<=x<=M
+
+	label = string("in[",round(m,digits=2),",",round(M,digits=2))
+
+	return r,label
+
+end 
+
+function get_restrict_oper(m::Real, ::Nothing)::Tuple{Function,String}
+
+	r(x::Real)::Bool = m<=x
+	
+	label = string(">=",round(m,digits=2))
+	
+	return r,label 
+
+end  
+
+function get_restrict_oper(::Nothing, M::Real)::Tuple{Function,String}
+
+	r(x::Real)::Bool = x<=M
+	
+	label = string("<=",round(M,digits=2))
+	
+	return r,label 
+
+end 
+
+function get_restrict_oper(::Nothing, ::Nothing)::Tuple{Nothing,String}
+	
+	nothing, ""
+
+end 
 
 
+function get_restrict_oper(P::AbstractDict)::Tuple{Union{Nothing,Function},
+																									 String}
+
+	get(P, "filterstates", false) || return (nothing,"")
+
+	return get_restrict_oper(get.([P], ["opermin","opermax"], [nothing])...)
+
+end
 
 
+function iFilterStates(P::AbstractDict, 
+											 v::Union{AbstractVector,Base.Generator}
+											 )::Tuple{Union{BitVector,Colon},String}
 
+	f,label = get_restrict_oper(P)
+
+	if isnothing(f) 
+		
+		return Colon(),label
+
+	else 
+
+		return f.(v),label
+
+	end 
+
+end 
+
+#function FilterStates(P::AbstractDict,
+#											(v0,v,d)::Tuple{AbstractVector, AbstractMatrix, Int}
+#											)
+#
+#	selectdim(v, d, iFilterStates(P, v0))
+#
+#end 
+#
+#
+#function FilterStates(P::AbstractDict,
+#											(v,d)::Tuple{AbstractMatrix,Int}
+#											)
+#
+#	FilterStates(P, (eachslice(v, dims=d), v, d))
+#
+#end 
+
+function FilterStates(P::AbstractDict,
+											args::Tuple{Union{AbstractVector,Base.Generator},
+																	Vararg}
+											)::Vector{<:AbstractMatrix}
+
+	FilterStates(P, args[1], args[2:end]...)
+
+end 
+
+function FilterStates(P::AbstractDict,
+											v0::Union{AbstractVector,Base.Generator},
+											args...
+											)::Tuple{Vector{<:AbstractArray},String}
+
+	for (i,a) in enumerate(args)
+
+		if a isa AbstractArray 
+
+			N = ndims(a)
+
+			@assert N>0
+
+			N==1 && i<length(args) && @assert args[i+1] isa AbstractArray 
+
+			N>1 && @assert i<length(args) && args[i+1] isa Int && args[i+1] in 1:N
+
+		elseif a isa Int 
+
+			@assert i>1 && args[i-1] isa AbstractArray && a in 1:ndims(args[i-1]) 
+	
+		else 
+
+			error()
+
+		end 
+
+	end 
+
+	inds_kept_states,label = iFilterStates(P, v0) 
+
+
+	arrays = map(findall(isa.(args,AbstractArray))) do i
+
+		ndims(args[i])==1 && return args[i][inds_kept_states]
+			
+		return selectdim(args[i], args[i+1], inds_kept_states) 
+
+	end  
+
+	return arrays, label
+
+end 
 
 
 #===========================================================================#
@@ -198,30 +327,30 @@ function DOSatEvsK1D(P::AbstractDict,
 										 (Data,oper)::Tuple{<:AbstractDict,<:AbstractString},
 										 label...;
 										 ks::AbstractVector{<:Real}, 
-										 restrict_oper=nothing,
+										 restrict_oper::Bool=false,
 										 normalize::Bool=true, kwargs...
 										 )::Tuple{Tuple{Vector{Float64},
 																		<:Union{Nothing,Array{Float64}}},
 															Vector{String}} #where T<:AbstractMatrix{Float64}
 
-	(DOS, weights), lab = DOSatEvsK1D(P, Data, label...; ks=ks)
+	(DOS, weights), lab1 = DOSatEvsK1D(P, Data, label...; ks=ks)
 
-	!haskey(Data, oper) && return (DOS, nothing), lab
 
-	z, lab = choose_color_i(P, Data[oper], vcat(lab, oper); kwargs...)
+	haskey(Data, oper) || return (DOS, nothing), lab1
+
+	z, lab2 = choose_color_i(P, Data[oper], vcat(lab1, oper); kwargs...)
 
 
 
 	function prep_sizes(v::AbstractVector{Float64}, c)::Tuple#{T,T,Function}
 	
-		prep_sizes(Utils.VecAsMat(v, COMP_STORE_DIM), c, true
-#							 Utils.sel(COMP_STORE_DIM, 1),
-							 )
+		prep_sizes(Utils.VecAsMat(v, COMP_STORE_DIM), c, Val(true))
 
 	end 
 
 
-	function prep_sizes(v::AbstractMatrix{Float64}, c, f::Bool=false#Function=identity
+	function prep_sizes(v::AbstractMatrix{Float64}, c::AbstractMatrix{Float64}, 
+											reduce_dim::Val=Val(false)
 											)::Tuple#{T,T,Function}
 
 		@assert size(c)==(length(DOS),size(v,VECTOR_STORE_DIM)) 
@@ -229,41 +358,11 @@ function DOSatEvsK1D(P::AbstractDict,
 
 	  c1 = Algebra.normalizeDistrib(c, Utils.Add1Dim(DOS,2), normalize)
 
-		return v, (VECTOR_STORE_DIM==1 ? c1 : transpose(c1)), f
+		return v, (VECTOR_STORE_DIM==1 ? c1 : transpose(c1)), reduce_dim
 
 	end 
 
-
-	#linear combinations of the vectors in z with coefficients weights 
-
-
-	function CombsOfVecs(v, c, reduce_dim::Bool, ::Nothing=nothing)#::T
-
-		A = Utils.CombsOfVecs(v, c; dim=VECTOR_STORE_DIM)# |> reduce_dim 
-
-		return reduce_dim ? selectdim(A, COMP_STORE_DIM, 1) : A
-
-	end  
-	
-	function CombsOfVecs(v, c, reduce_dim::Bool, f::Function)#::T
-
-		inds = if reduce_dim 
-
-			f.(selectdim(v, COMP_STORE_DIM, 1))
-
-						else 
-
-			f.(eachslice(v, dims=VECTOR_STORE_DIM))
-
-						end 
-
-#		print(Int(round(100*count(inds)/length(inds))), " ")
-
-		any(inds) && return CombsOfVecs(selectdim(v, VECTOR_STORE_DIM, inds),
-																		selectdim(c, COMP_STORE_DIM, inds),
-																		reduce_dim)
-
-		reduce_dim && return zeros(size(c, VECTOR_STORE_DIM))
+	function zeroout(v, c, ::Val{false})
 
 		outshape = [0, 0]
 
@@ -273,17 +372,60 @@ function DOSatEvsK1D(P::AbstractDict,
 
 		return zeros(outshape...) 
 
+	end   
+
+	zeroout(v, c, ::Val{true}) = zeros(size(c, VECTOR_STORE_DIM))
+
+	v0(v, ::Val{false}) = eachslice(v, dims=VECTOR_STORE_DIM) 
+	v0(v, ::Val{true}) = selectdim(v, COMP_STORE_DIM, 1)
+
+
+	#linear combinations of the vectors in z with coefficients weights 
+
+	function CombsOfVecs(v, c, ::Val{false}=Val(false), ::Val{false}=Val(false))
+
+		Utils.CombsOfVecs(v, c; dim=VECTOR_STORE_DIM), ""
+
+	end  
+
+
+	function CombsOfVecs(v, c, ::Val{true}, ::Val{false}=Val(false))
+
+		A,lab = CombsOfVecs(v, c)
+
+		return selectdim(A, COMP_STORE_DIM, 1),lab
+
 	end 
+
+
+
+	function CombsOfVecs(v, c, reduce_dim::Val, ::Val{true})#::T
+
+		vc,lab = FilterStates(P, v0(v, reduce_dim),
+												 v, VECTOR_STORE_DIM, c, COMP_STORE_DIM)
+
+#		print(Int(round(100* length(vc[1])/length(v))), " ") 
+
+
+		any(isempty, vc) && return zeroout(v, c, reduce_dim),lab
+
+		return CombsOfVecs(vc..., reduce_dim)[1], lab
+		
+	end 
+
 
 #	nr_states=size(vecs,VECTOR_STORE_DIM)==size(coeffs,COMP_STORE_DIM)
 #	dimension==size(vecs,COMP_STORE_DIM) == size(out, COMP_STORE_DIM)
 #	nr_combs==size(coeffs,VECTOR_STORE_DIM) == size(out,VECTOR_STORE_DIM)
 #	nr_combs==length(DOS)==length(ks)
 
-#@show size(z) 
+#@jhow size(z) 
 
+	A, lab3 = CombsOfVecs(prep_sizes(z,weights)..., Val(restrict_oper))
 
-	return (DOS, CombsOfVecs(prep_sizes(z,weights)..., restrict_oper)), lab
+#	@show lab2 
+
+	return (DOS, A), vcat(lab2, lab3)
 	
 
 end 

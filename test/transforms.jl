@@ -309,6 +309,58 @@ end
 
 
 
+println()
+
+@testset "Filter states" begin 
+
+	P = Dict("opermin"=>0, "filterstates"=>true)
+
+	v = rand(2,10) .- 0.5
+
+	c = rand(10,5)
+
+	d1,d2 = 2,1 
+
+	v0 = first.(eachslice(v, dims=d1))
+
+	inds,label = T.iFilterStates(P, v0)
+
+	@show count(inds) label 
+
+	v1 = rand(10)
+
+	x,label2 = T.FilterStates(P, v0, v, d1, v1, v, d1, c, d2)
+
+	@test label==label2 
+
+	@show length(x)
+
+	@test isapprox(x[1],selectdim(v, d1, inds))
+	@test isapprox(x[2],v1[inds])
+	@test isapprox(x[3],selectdim(v, d1, inds))
+	@test isapprox(x[4],selectdim(c, d2, inds))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+end 
+
+
 
 
 println()
@@ -363,30 +415,33 @@ Data["X"]= rand(100).-0.5
 ### 
 println("\n------\n")
 
-nr_states= 113
-nr_ks = 71
+nr_states= rand(30:200)
+nr_ks = rand(20:nr_states)
+
 oper = "X"
 
 ks = sort(rand(nr_ks)) 
 
 for oper_comp in ([],[1],[2]),normalize in [true,false]
-for add in [[],["obs_i"=>1]]
-	
+	for add in [["obs_i"=>2],["obs_i"=>1]],k in ["opermin","opermax"], restrict_oper in [true,false]
+
 		Data=Dict{String,Any}("Energy"=>sort(rand(nr_states)).-0.5,
 													"kLabels"=>sort(rand(nr_states)).-0.5,
 													oper=> rand(oper_comp..., nr_states).-0.5,
 																					)
 		
-		P = Dict("Energy"=>rand(),"k_width"=>0.1) 
+		P = Dict("Energy"=>rand(),"k_width"=>0.1,"filterstates"=>true)
 
 	V = []
 
+
 	#println()
-	for x0 in range(-0.6,0.6,length=30)
-	
+	for x0 in range(-0.6,0.6,length=5)
+
+
 
 #		restrict_oper =  x->any(x.>x0)
-		restrict_oper =  x->all(x.>x0)
+#		restrict_oper =  x->all(x.>x0)
 
 	
 	## 
@@ -399,10 +454,11 @@ for add in [[],["obs_i"=>1]]
 #		@show oper_comp
 #		@show add 
 
-		p = Utils.adapt_merge(P, add...)
+p = Utils.adapt_merge(P, add..., k=>x0)#, "opermax"=>1)
 	
 		(DOS,Z),label = T.convol_DOSatEvsK1D(p, (Data, oper); ks=ks, normalize=normalize, restrict_oper=restrict_oper)
-	
+
+#		@show label 
 		@test length(DOS)==nr_ks 
 	
 		@test size(Z)[end]==nr_ks 
@@ -412,6 +468,8 @@ for add in [[],["obs_i"=>1]]
 		push!(V,LinearAlgebra.norm(Z))
 
 	end 
+
+#	println()
 
 #	println(round.(V,digits=2))
 

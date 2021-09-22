@@ -365,6 +365,21 @@ def sitevectorobs_vminmax():
 #
 #---------------------------------------------------------------------------#
 
+def read_checkbox(obj, key, key2=None):
+
+    try:
+
+        val = obj.get_checkbox(key)
+
+        k = key if key2 is None else key2 
+
+        return {k:val}
+
+    except:
+
+        return {}
+
+
 def read_slider(obj, key):
 
     try:
@@ -555,15 +570,23 @@ def oper_vminmax():
 
     def add(fig, **kwargs):
     
-        fig.add_text(label="Limits oper.",key="opermin",text="")
-        fig.add_text(key="opermax",text="")
+        fig.add_text(label="Limits oper.",key="opermin",text="") 
+
+        fig.add_text(key="opermax",text="") 
+
+        fig.add_checkbox("Filter states", key="filterstates", status=False)
+
 #        fig.add_text(label="Max val oper",key="opermax",text="")
     
     
     def read(obj):
     
-        return read_many(lambda k: read_text(obj, k), ["opermin", "opermax"])
-    
+        d = read_many(lambda k: read_text(obj, k), ["opermin", "opermax"])
+
+        d.update(read_checkbox(obj, "filterstates"))
+
+        return d
+
 
     return add,read
 
