@@ -157,12 +157,20 @@ end
 #
 #---------------------------------------------------------------------------#
 
+function nr2str(nr::Real)::String 
+
+	x = string(round(nr,digits=2))
+
+	return occursin(".",x) ? rstrip(rstrip(x,'0'),'.') : x
+
+end 
+
 
 function get_restrict_oper(m::Real, M::Real)::Tuple{Function,String}
 
 	r(x::Real)::Bool = m<=x<=M
 
-	label = string("in[",round(m,digits=2),",",round(M,digits=2))
+	label = string("in[",nr2str(m),",",nr2str(M))
 
 	return r,label
 
@@ -172,7 +180,7 @@ function get_restrict_oper(m::Real, ::Nothing)::Tuple{Function,String}
 
 	r(x::Real)::Bool = m<=x
 	
-	label = string(">=",round(m,digits=2))
+	label = string(">=",nr2str(m))
 	
 	return r,label 
 
@@ -182,7 +190,7 @@ function get_restrict_oper(::Nothing, M::Real)::Tuple{Function,String}
 
 	r(x::Real)::Bool = x<=M
 	
-	label = string("<=",round(M,digits=2))
+	label = string("<=",nr2str(M))
 	
 	return r,label 
 
@@ -217,6 +225,7 @@ function iFilterStates(P::AbstractDict,
 
 	else 
 
+
 		return f.(v),label
 
 	end 
@@ -243,7 +252,7 @@ end
 function FilterStates(P::AbstractDict,
 											args::Tuple{Union{AbstractVector,Base.Generator},
 																	Vararg}
-											)::Vector{<:AbstractMatrix}
+											)::Tuple{Vector{<:AbstractArray},String}
 
 	FilterStates(P, args[1], args[2:end]...)
 
@@ -302,7 +311,7 @@ end
 
 function label_convol_en(P::AbstractDict)::String 
 
-	"E=" * string(round(P["Energy"],digits=2))
+	"E=" * nr2str(P["Energy"])
 
 end 
 
@@ -937,7 +946,7 @@ convol_energy = ProcessData("Energy",
 
 convol_DOSatEvsK1D = ProcessData("Energy", DOSatEvsK1D)
 
-
+filter_states = ProcessData("filterstates", FilterStates)
 
 
 #===========================================================================#
@@ -985,9 +994,9 @@ pd_fourier_comp = ProcessData("transform", "Fourier comp.",
 
 			freq = get(P, "transfparam", 0)::Real 
 
-			lab = round(freq, digits=1)  
+			lab = nr2str(freq)*"pi"
 
-			return (x, fourier_comp(y, freq*pi; kwargs...)), "Fcomp($lab"*"pi)"
+			return (x, fourier_comp(y, freq*pi; kwargs...)), "Fcomp($lab)"
 
 		end)
 #===========================================================================#
@@ -1063,7 +1072,7 @@ end
 
 function dist_dw_label(R::Number)::String 
 
-	string(["x","y"][MAIN_DIM], "=", round(R, digits=1))
+	string(["x","y"][MAIN_DIM], "=", nr2str(R))
 
 end  
 

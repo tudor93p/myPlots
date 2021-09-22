@@ -120,12 +120,16 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 			"y" => Data["Energy"][:],
 	
 			)
-	
+
+
 		if haskey(Data, oper_) 
 
 			z,lab = Transforms.choose_color_i(P, Data[oper_], oper_; f="first") 
 
 			@assert ndims(z)==1 && length(z)==length(out["y"]) && !isempty(lab)
+
+			(x1,y1,z1), = Transforms.FilterStates(P, z, out["x"], out["y"], z)
+
 
 			out["z"] = collect(z)
 

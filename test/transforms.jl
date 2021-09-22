@@ -329,17 +329,24 @@ println()
 
 	v1 = rand(10)
 
-	x,label2 = T.FilterStates(P, v0, v, d1, v1, v, d1, c, d2)
+	X,label2 = T.FilterStates(P, v0, v, d1, v1, v, d1, c, d2)
+
+	Y,label3 = T.filter_states(P, (v0, v, d1, v1, v, d1, c, d2), "test")
 
 	@test label==label2 
+	@test label==label3[end]
 
+#	@show label3 
 	@show length(x)
+
+	for x in [X,Y]
 
 	@test isapprox(x[1],selectdim(v, d1, inds))
 	@test isapprox(x[2],v1[inds])
 	@test isapprox(x[3],selectdim(v, d1, inds))
 	@test isapprox(x[4],selectdim(c, d2, inds))
 
+end 
 
 
 
@@ -359,7 +366,6 @@ println()
 
 
 end 
-
 
 
 
