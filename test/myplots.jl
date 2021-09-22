@@ -237,7 +237,16 @@ end
 
 
 @show myPlots.TypicalPlots.oper(get_data)[1]
-@show myPlots.TypicalPlots.oper(get_data)[2](Dict())
+@show myPlots.TypicalPlots.oper(get_data)[2](Dict()) 
+
+for (k,v) in myPlots.TypicalPlots.oper(get_data)[2](Dict("filterstates"=>true, "oper"=>"Velocity","obs_i"=>1,"opermin"=>0.3))
+
+	print("$k: ")
+
+	v isa AbstractString ? println(v) : @show length(v)
+end 
+
+println()
 
 
 @show myPlots.obs_x_and_label("x", nothing, "x", nothing)

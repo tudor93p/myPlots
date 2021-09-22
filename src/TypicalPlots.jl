@@ -124,24 +124,35 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 
 		if haskey(Data, oper_) 
 
-			z,lab = Transforms.choose_color_i(P, Data[oper_], oper_; f="first") 
+			z,lab1 = Transforms.choose_color_i(P, Data[oper_], oper_; f="first") 
 
-			@assert ndims(z)==1 && length(z)==length(out["y"]) && !isempty(lab)
-
-			(x1,y1,z1), = Transforms.FilterStates(P, z, out["x"], out["y"], z)
+			@assert ndims(z)==1 && length(z)==length(out["y"]) && !isempty(lab1)
 
 
-			out["z"] = collect(z)
+			xyz,lab2 = Transforms.filter_states(P,
+																					(z, out["x"], out["y"], z),
+																					lab1)
 
-			if length(lab)==2 && oper_=="Velocity" 
+			for (k,v) in zip("xyz",xyz)
 
-				out["zlabel"] = join_label(lab[1], only(lab[2])+('x'-'1'), sep1=" ")
+				out[string(k)] = v 
+
+			end 
+
+			if oper_=="Velocity" 
+				
+				@assert length(lab1)==2
+
+				lab2[2] = string(only(lab2[2]) + ('x'-'1'))
+
+				out["zlabel"] = join_label(lab2, sep1=" ")
 
 			else 
 
-				out["zlabel"] = join_label(lab)
+				out["zlabel"] = join_label(lab2)
 
 			end  
+
 
 		elseif oper_=="weights" && haskey(P, "Energy")
 	

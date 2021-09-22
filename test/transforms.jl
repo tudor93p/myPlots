@@ -341,15 +341,12 @@ println()
 
 	for x in [X,Y]
 
-	@test isapprox(x[1],selectdim(v, d1, inds))
-	@test isapprox(x[2],v1[inds])
-	@test isapprox(x[3],selectdim(v, d1, inds))
-	@test isapprox(x[4],selectdim(c, d2, inds))
-
-end 
-
-
-
+		@test isapprox(x[1],selectdim(v, d1, inds))
+		@test isapprox(x[2],v1[inds])
+		@test isapprox(x[3],selectdim(v, d1, inds))
+		@test isapprox(x[4],selectdim(c, d2, inds))
+	
+	end 
 
 
 
