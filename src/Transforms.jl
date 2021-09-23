@@ -170,7 +170,7 @@ function get_restrict_oper(m::Real, M::Real)::Tuple{Function,String}
 
 	r(x::Real)::Bool = m<=x<=M
 
-	label = string("in[",nr2str(m),",",nr2str(M))
+	label = string("in[",nr2str(m),",",nr2str(M),"]")
 
 	return r,label
 
@@ -180,7 +180,7 @@ function get_restrict_oper(m::Real, ::Nothing)::Tuple{Function,String}
 
 	r(x::Real)::Bool = m<=x
 	
-	label = string(">=",nr2str(m))
+	label = string(">",nr2str(m))
 	
 	return r,label 
 
@@ -190,7 +190,7 @@ function get_restrict_oper(::Nothing, M::Real)::Tuple{Function,String}
 
 	r(x::Real)::Bool = x<=M
 	
-	label = string("<=",nr2str(M))
+	label = string("<",nr2str(M))
 	
 	return r,label 
 
@@ -342,12 +342,11 @@ function DOSatEvsK1D(P::AbstractDict,
 																		<:Union{Nothing,Array{Float64}}},
 															Vector{String}} #where T<:AbstractMatrix{Float64}
 
-	(DOS, weights), lab1 = DOSatEvsK1D(P, Data, label...; ks=ks)
+	(DOS, w), lab1 = DOSatEvsK1D(P, Data, label...; ks=ks)
 
 
 	haskey(Data, oper) || return (DOS, nothing), lab1
 
-	z, lab2 = choose_color_i(P, Data[oper], vcat(lab1, oper); kwargs...)
 
 
 
@@ -365,11 +364,40 @@ function DOSatEvsK1D(P::AbstractDict,
 		@assert size(c)==(length(DOS),size(v,VECTOR_STORE_DIM)) 
 		# (nr_ks, nr_eigenstates)
 
-	  c1 = Algebra.normalizeDistrib(c, Utils.Add1Dim(DOS,2), normalize)
-
-		return v, (VECTOR_STORE_DIM==1 ? c1 : transpose(c1)), reduce_dim
+		return v, (VECTOR_STORE_DIM==1 ? c : transpose(c)), reduce_dim
 
 	end 
+
+
+	prep_states(v, c, reduce_dim::Val, ::Val{false}) = ((v,c), "", reduce_dim)
+
+
+	function prep_states(v, c, reduce_dim::Val{false}, ::Val{true})
+
+		(FilterStates(P, eachslice(v, dims=VECTOR_STORE_DIM),
+									v, VECTOR_STORE_DIM, c, COMP_STORE_DIM)...,
+		 reduce_dim)
+
+	end 
+
+
+	function prep_states(v, c, reduce_dim::Val{true}, ::Val{true})
+
+		(FilterStates(P, selectdim(v, COMP_STORE_DIM, 1),
+									v, VECTOR_STORE_DIM, c, COMP_STORE_DIM)...,
+		 reduce_dim)
+
+	end 
+
+	function normalize_distrib((Z,W))
+
+		dos2 = sum(W, dims=COMP_STORE_DIM)
+
+		W2 = Algebra.normalizeDistrib(W, dos2, normalize)
+
+		return dropdims(dos2, dims=COMP_STORE_DIM), (Z,W2)
+	end
+
 
 	function zeroout(v, c, ::Val{false})
 
@@ -383,44 +411,25 @@ function DOSatEvsK1D(P::AbstractDict,
 
 	end   
 
-	zeroout(v, c, ::Val{true}) = zeros(size(c, VECTOR_STORE_DIM))
+	zeroout(v, c, ::Val{true}) = zeros(size(c, COMP_STORE_DIM))
 
-	v0(v, ::Val{false}) = eachslice(v, dims=VECTOR_STORE_DIM) 
-	v0(v, ::Val{true}) = selectdim(v, COMP_STORE_DIM, 1)
 
 
 	#linear combinations of the vectors in z with coefficients weights 
 
-	function CombsOfVecs(v, c, ::Val{false}=Val(false), ::Val{false}=Val(false))
+	function CombsOfVecs(vc, ::Val{false}=Val(false))
 
-		Utils.CombsOfVecs(v, c; dim=VECTOR_STORE_DIM), ""
+		Utils.CombsOfVecs(vc...; dim=VECTOR_STORE_DIM)
 
 	end  
 
 
-	function CombsOfVecs(v, c, ::Val{true}, ::Val{false}=Val(false))
+	function CombsOfVecs(vc, ::Val{true})
 
-		A,lab = CombsOfVecs(v, c)
-
-		return selectdim(A, COMP_STORE_DIM, 1),lab
+		selectdim(CombsOfVecs(vc), COMP_STORE_DIM, 1)
 
 	end 
 
-
-
-	function CombsOfVecs(v, c, reduce_dim::Val, ::Val{true})#::T
-
-		vc,lab = FilterStates(P, v0(v, reduce_dim),
-												 v, VECTOR_STORE_DIM, c, COMP_STORE_DIM)
-
-#		print(Int(round(100* length(vc[1])/length(v))), " ") 
-
-
-		any(isempty, vc) && return zeroout(v, c, reduce_dim),lab
-
-		return CombsOfVecs(vc..., reduce_dim)[1], lab
-		
-	end 
 
 
 #	nr_states=size(vecs,VECTOR_STORE_DIM)==size(coeffs,COMP_STORE_DIM)
@@ -428,14 +437,30 @@ function DOSatEvsK1D(P::AbstractDict,
 #	nr_combs==size(coeffs,VECTOR_STORE_DIM) == size(out,VECTOR_STORE_DIM)
 #	nr_combs==length(DOS)==length(ks)
 
-#@jhow size(z) 
 
-	A, lab3 = CombsOfVecs(prep_sizes(z,weights)..., Val(restrict_oper))
+	z, lab2 = choose_color_i(P, Data[oper], vcat(lab1, oper); kwargs...) 
 
-#	@show lab2 
+	zw, lab3, reduce_dim = prep_states(prep_sizes(z, w)..., Val(restrict_oper))
 
-	return (DOS, A), vcat(lab2, lab3)
-	
+#	print(Int(round(100*length(zw[2])/length(w)))," ")
+
+
+	lab4 = vcat(lab2, lab3)
+
+	if any(isempty, zw)
+
+		return (zeros(size(w,COMP_STORE_DIM)), zeroout(z,w,reduce_dim)), lab4
+
+	else 
+
+		DOS2, ZW = normalize_distrib(zw)
+
+#		@assert xor(restrict_oper, isapprox(DOS2,DOS))
+
+		return (DOS2, CombsOfVecs(ZW, reduce_dim)), lab4 
+
+	end 
+
 
 end 
 

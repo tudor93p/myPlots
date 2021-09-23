@@ -239,7 +239,7 @@ end
 @show myPlots.TypicalPlots.oper(get_data)[1]
 @show myPlots.TypicalPlots.oper(get_data)[2](Dict()) 
 
-for (k,v) in myPlots.TypicalPlots.oper(get_data)[2](Dict("filterstates"=>true, "oper"=>"Velocity","obs_i"=>1,"opermin"=>0.3))
+for (k,v) in myPlots.TypicalPlots.oper(get_data)[2](Dict("filterstates"=>true, "oper"=>"Velocity","obs_i"=>1,"opermin"=>0.4))
 
 	print("$k: ")
 

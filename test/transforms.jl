@@ -1,7 +1,7 @@
 T = myPlots.Transforms
 import LinearAlgebra
 using Constants: NR_ENERGIES
-import PyPlot
+import PyPlot, Random
 import myLibs:Utils
 using BenchmarkTools: @btime
 
@@ -418,15 +418,20 @@ Data["X"]= rand(100).-0.5
 ### 
 println("\n------\n")
 
+Random.seed!(abs(Int(round(1000time())-1000round(time()))))
+
+
 nr_states= rand(30:200)
 nr_ks = rand(20:nr_states)
+
+@show nr_ks nr_states 
 
 oper = "X"
 
 ks = sort(rand(nr_ks)) 
 
 for oper_comp in ([],[1],[2]),normalize in [true,false]
-	for add in [["obs_i"=>2],["obs_i"=>1]],k in ["opermin","opermax"], restrict_oper in [true,false]
+	for add in [["obs_i"=>1]],k in ["opermin","opermax"], restrict_oper in [true,false]
 
 		Data=Dict{String,Any}("Energy"=>sort(rand(nr_states)).-0.5,
 													"kLabels"=>sort(rand(nr_states)).-0.5,
@@ -439,7 +444,7 @@ for oper_comp in ([],[1],[2]),normalize in [true,false]
 
 
 	#println()
-	for x0 in range(-0.6,0.6,length=5)
+	for x0 in range(-0.6,0.6,length=10)
 
 
 
@@ -471,6 +476,7 @@ p = Utils.adapt_merge(P, add..., k=>x0)#, "opermax"=>1)
 		push!(V,LinearAlgebra.norm(Z))
 
 	end 
+
 
 #	println()
 

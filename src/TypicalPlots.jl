@@ -126,12 +126,11 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 
 			z,lab1 = Transforms.choose_color_i(P, Data[oper_], oper_; f="first") 
 
-			@assert ndims(z)==1 && length(z)==length(out["y"]) && !isempty(lab1)
+			@assert ndims(z)==1 && length(z)==length(out["y"])==length(out["x"])
 
 
-			xyz,lab2 = Transforms.filter_states(P,
-																					(z, out["x"], out["y"], z),
-																					lab1)
+			xyz,lab2 = Transforms.filter_states(P, (z, out["x"], out["y"], z))
+
 
 			for (k,v) in zip("xyz",xyz)
 
@@ -143,15 +142,11 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 				
 				@assert length(lab1)==2
 
-				lab2[2] = string(only(lab2[2]) + ('x'-'1'))
-
-				out["zlabel"] = join_label(lab2, sep1=" ")
-
-			else 
-
-				out["zlabel"] = join_label(lab2)
+				lab1[2] = string(only(lab1[2]) + ('x'-'1'))
 
 			end  
+
+			out["zlabel"] = join_label(join_label(lab1,sep1="_"), lab2..., sep1="")
 
 
 		elseif oper_=="weights" && haskey(P, "Energy")
