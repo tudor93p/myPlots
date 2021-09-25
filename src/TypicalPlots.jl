@@ -146,7 +146,7 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 
 			end  
 
-			out["zlabel"] = join_label(join_label(lab1,sep1="_"), lab2..., sep1="")
+			out["zlabel"] = join_label(join_label(lab1,sep1="_"), lab2..., sep1=" ")
 
 
 		elseif oper_=="weights" && haskey(P, "Energy")
