@@ -28,8 +28,9 @@ obs(get_data::Function) = ("Observables", function plot_(P::AbstractDict)
 	Data = get_data(P, mute=false, fromPlot=true, target=[obs_,obs0])
 
 	return construct_obs0obs(P, obs_,	get(Data, obs_, 	nothing),
-													 		obs0, get(Data, obs0, nothing)
+													 		obs0, get(Data, obs0, nothing) 
 													 )
+
 end)
 
 
@@ -108,8 +109,8 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 	
 	
 	  out = Dict(
-	
-			"xlabel" => haskey(Data, "kTicks") ? "k" : "Eigenvalue index",
+							 
+			"xlabel" => Data["kLabel"],
 	
 			"ylabel" => "Energy",
 	

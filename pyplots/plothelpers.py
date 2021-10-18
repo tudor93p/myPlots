@@ -320,14 +320,28 @@ def deduce_axislimits(data=None, limits=None):
 
     
     limits_given = [False, False]
-    
+   
+
     for i,lim in enumerate(limits): 
 
-        if lim is not None and len(lim)==2:
+        if lim is not None:
             
-            if all([isinstance(l,int) or isinstance(l,float) for l in lim]):
-            
-                limits_given[i] = True 
+            limits[i] = np.reshape(lim,-1)
+
+            if len(lim)==2:
+                
+                for T in [int,float,np.longlong]:
+                    
+                    if all([isinstance(l,T) for l in lim]):
+
+                        limits_given[i] = True 
+
+                        break 
+
+                if not limits_given[i] and not any([l is None for l in lim]):
+
+                    print("Invalid limit:",i,type(lim),[type(l) for l in lim])
+
 
 
     nr_lim = sum(limits_given)
@@ -364,7 +378,6 @@ def deduce_axislimits(data=None, limits=None):
 
             return w[np.logical_and(v>=limits[g][0], v<=limits[g][1])] 
     
-
 
         limits[ng] = getlim(list(zip(data[g],data[ng])), restrict)
   

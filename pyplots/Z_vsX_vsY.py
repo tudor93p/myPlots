@@ -32,8 +32,7 @@ def plot(Ax, get_plotdata, cmap="viridis", fontsize=12, **kwargs):
 
     get_val = Utils.prioritized_get(kwargs, data)
 
-    zlim = deduce_axislimits([data["z"]],[get_val("zlim")])
-
+    zlim = deduce_axislimits([data["z"]],[get_val("zlim",[None,None])])
 
     P = ax0.pcolormesh(*Utils.mgrid_from_1D(data["x"],data["y"]), data["z"],
                         cmap=cmap, edgecolors='face',

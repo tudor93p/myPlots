@@ -323,7 +323,7 @@ function construct_obs0obs(P, obs, val, obs0, val0, labels=nothing, labels0=labe
 
 	if all(in(keys(P)), ["interp_method", "Energy", "E_width"] )
 
-		out["weights"] = Transforms.SamplingWeights(P)
+		out["weights"] = Transforms.SamplingWeights(P)[:]
 
 	end
 	

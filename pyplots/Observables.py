@@ -135,7 +135,7 @@ def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, li
 
         x,y = Plot.get_plotxy(axis=1)(
                 data["y"],
-                data["weights"]/np.max(data["weights"])*xmax,
+                np.reshape(data["weights"],-1)/np.max(data["weights"])*xmax,
                 fill=0)
 
         ax0.fill(x,y, c=colors[ic], lw=0.5, zorder=1, alpha=alpha0, ec='k', label="weights")

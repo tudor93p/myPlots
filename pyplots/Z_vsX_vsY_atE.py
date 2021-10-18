@@ -7,7 +7,7 @@ from Z_vsX_vsY import nr_axes,plot
 
 
 
-common_sliders = common_sliders0 + [choose_energy]
+common_sliders = common_sliders0 + [choose_energy, obs_index, smoothen]
 
 
 add_sliders, read_sliders = addread_sliders(*common_sliders)
