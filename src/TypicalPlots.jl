@@ -110,7 +110,9 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 	
 	  out = Dict(
 							 
-			"xlabel" => Data["kLabel"],
+			"xlabel" => get(Data, "kLabel",
+											ifelse(haskey(Data,"kTicks"),
+														 "Momentum", "Eigenvalue index")),
 	
 			"ylabel" => "Energy",
 	
