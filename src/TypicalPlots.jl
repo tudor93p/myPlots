@@ -112,7 +112,8 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 							 
 			"xlabel" => get(Data, "kLabel",
 											ifelse(haskey(Data,"kTicks"),
-														 "Momentum", "Eigenvalue index")),
+														 "Momentum",
+														 "Eigenvalue index")),
 	
 			"ylabel" => "Energy",
 	

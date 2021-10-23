@@ -894,7 +894,17 @@ function (pd::ProcessData)(P::AbstractDict,
 
 	new_Data, new_label = pd.calc(P, Data; pd.kwargs..., kwargs...)
 
-	return (new_Data, filter!(!isempty, vcat(label, string.(vcat(new_label)))))
+	function good(L)::Bool 
+		
+		isnothing(L) | isempty(L) && return false
+		
+		S = string(L) 
+
+		return !isempty(S) && S=="nothing"
+
+	end 
+
+	return (new_Data, string.(filter!(good, vcat(label, new_label))))
 	
 end 
 

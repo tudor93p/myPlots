@@ -8,14 +8,14 @@ import myPlots
 
 #include("transforms.jl")
 
-include("myplots.jl")
+#include("myplots.jl")
 
 
 
 #include("Fourier_Freq.jl")
 
 
-#include("choose-obs.jl")
+include("choose-obs.jl")
 
 
 
