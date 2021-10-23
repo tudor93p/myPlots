@@ -896,7 +896,7 @@ function (pd::ProcessData)(P::AbstractDict,
 
 	function good(L)::Bool 
 		
-		isnothing(L) | isempty(L) && return false
+		(isnothing(L) || isempty(L)) && return false
 		
 		S = string(L) 
 
