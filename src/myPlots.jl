@@ -368,7 +368,7 @@ function split_label(labels::AbstractVector{<:AbstractString};
 										 kwargs...
 										 )::String
 
-	length(labels)==1 && return labels[1]
+	length(labels)==1 && return only(labels)
 
 	possib = map(1:length(labels)-1) do i
 
@@ -379,6 +379,13 @@ function split_label(labels::AbstractVector{<:AbstractString};
 		end 
 
 	end 
+
+
+	@show labels  
+
+	@show possib  
+
+	@show [abs(-(length.(p)...)) for p in possib]
 
 	return join(possib[argmin([abs(-(length.(p)...)) for p in possib])], sep2)
 

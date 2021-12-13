@@ -54,7 +54,7 @@ end
 
 
 
-function get_SamplingVars(P;	Data=Dict(), get_k=false,
+function get_SamplingVars(P;	Data=Dict(), get_k::Bool=false,
 									centers =	get(Data, "Energy", ENERGIES)[:],
 									kwargs...
 													)
