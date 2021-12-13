@@ -1,5 +1,6 @@
 import PyPlot; 
 import myLibs:Lattices
+myPlots.split_label(String[])
 
 myPlots.split_label(["A"])
 myPlots.split_label(["A","B"])

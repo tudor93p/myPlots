@@ -890,17 +890,19 @@ function (pd::ProcessData)(P::AbstractDict,
 																		 }=String[];
 												kwargs...)::Tuple{Any, Vector{String}}
 
+
 	check_pd(pd, P, Data; kwargs...) || return (Data, vcat(label))
 
 	new_Data, new_label = pd.calc(P, Data; pd.kwargs..., kwargs...)
 
+
 	function good(L)::Bool 
-		
+	
 		(isnothing(L) || isempty(L)) && return false
 		
 		S = string(L) 
 
-		return !isempty(S) && S=="nothing"
+		return !isempty(S) && S!="nothing"
 
 	end 
 
