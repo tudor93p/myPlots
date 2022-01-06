@@ -761,7 +761,7 @@ def atomsizes():
 
 
        fig.add_slider(label="Atom size", key="atomsize", 
-               vs=np.linspace(1,15,40)**2, columnSpan=3, v0=15)
+               vs=np.linspace(0.5,15,50)**2, columnSpan=3, v0=20)
 
 
     def read(obj):
@@ -780,6 +780,7 @@ def atomsizes():
 
 def arrow_parameters():
 
+    mM = ["vectormin", "vectormax"]
     def add(fig, **kwargs):
 
         vs = np.linspace(0.001,0.2,40)/10
@@ -790,6 +791,10 @@ def arrow_parameters():
 #        fig.add_slider(label="Arrow head width", key="arrow_headwidth",
 #                            vs=vs*3, columnSpan=3)
 #
+
+        fig.add_text(label="Limits vector field", key=mM[0], text="")
+        fig.add_text(key=mM[1], text="")
+
 #
 #        fig.add_slider(label="Arrow head length", key="arrow_headlength",
 #                            vs=vs*3*1.5, columnSpan=3)
@@ -798,14 +803,17 @@ def arrow_parameters():
 #                            vs=np.logspace(np.log10(0.01),np.log10(1),41),
 #                            columnSpan=3, v0=40)
 
+
+
+
         fig.add_slider(label="Arrow scale", key="arrow_scale",
                             vs=np.concatenate((
-                                np.linspace(0.01, 1, 30, endpoint=False),
-                                np.linspace(1, 2, 10))),
-                            columnSpan=3, v0=30)
+                                np.linspace(0.01, 1, 50, endpoint=False),
+                                np.linspace(1, 2, 15))),
+                            columnSpan=4, v0=50)
 
         fig.add_slider(label="Arrow min. len.", key="arrow_minlength",
-                            vs=np.append(0,np.logspace(np.log10(1e-3),np.log10(0.3),40)),
+                            vs=np.append(0,np.logspace(np.log10(1e-3),np.log10(0.5),50)),
                             columnSpan=3, v0=0)
 
         fig.add_slider(label="Arrow uniform len.", key="arrow_uniformsize",
@@ -817,12 +825,16 @@ def arrow_parameters():
 
     def read(obj):
 
-        return read_many(lambda k:obj.get_slider(k), 
+
+        out = read_many(lambda k:obj.get_slider(k), 
                     ["arrow_scale", "arrow_minlength", "arrow_uniformsize",
-#                    "arrow_width", "arrow_headwidth", "arrow_headlength", "arrow_maxlength"
+#                    "arrow_width", "arrow_headwidth", "arrow_headlength",
+#                    "arrow_maxlength"
                     ])
 
+        out.update(read_many(lambda k: read_text(obj, k), mM))
 
+        return out
 
     return add,read
 

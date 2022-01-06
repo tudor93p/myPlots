@@ -14,7 +14,7 @@ def nr_axes(**kwargs):
     return 1
 
 
-common_sliders = [arrow_parameters, colormap]
+common_sliders = [arrow_parameters, colormap, atomsizes]
 
 add_sliders, read_sliders = addread_sliders(*common_sliders)
 
@@ -36,6 +36,8 @@ def plot(Ax, get_plotdata,
         arrow_maxlength=1,#1e-3,
         arrow_uniformsize=0.0,
         cmap="YlGnBu",
+        vectormin=0,
+        vectormax=None,
         fontsize=12, 
         **kwargs):
 
@@ -48,11 +50,10 @@ def plot(Ax, get_plotdata,
 
     
 
-    if "nodes" in data:
+#    if "nodes" in data:
 
-        ax0.scatter(*data["nodes"].T[:2], c='k', s=0.2+0*atomsize, zorder=20)
+    ax0.scatter(*data["nodes"].T[:2], c='k', s=atomsize, zorder=20)
 
-        pass
 
     if "dRs" not in data:
 
@@ -73,10 +74,29 @@ def plot(Ax, get_plotdata,
 
     [xm,ym],[xM,yM] = Algebra.minmax(data["nodes"],axis=0)
 
+    if abs(yM-ym)<1e-9 or abs(xM-xm)<1e-9:
+
+        if "Rs" in data:
+            [xm,ym],[xM,yM] = Algebra.minmax(data["Rs"],axis=0)
+
+        elif abs(yM-ym)<1e-9:
+            
+            ym,yM = xm,xM 
+            
+        elif abs(xM-xm)<1e-9:
+
+            xm,xM = ym,yM 
+
+
+
+    
+    
     r = (xM-xm)/(yM-ym) 
 
-    nx,ny = np.ceil(100*np.max([[1,1],[r,1/r]],axis=0)).astype(int)
 
+    
+    nx,ny = np.ceil(100*np.max([[1,1],[r,1/r]],axis=0)).astype(int)
+    
 
     x, y = np.linspace(xm,xM,nx + (nx==ny)), np.linspace(ym,yM,ny)
 
@@ -121,12 +141,16 @@ def plot(Ax, get_plotdata,
 
 
 
-    vmin,vmax = [0,np.max(sizes)]
+#    vmin,vmax = [0,np.max(sizes)]
 
+    vmin = vectormin
+    vmax = Utils.Assign_Value(vectormax, np.max(sizes))
 
     P = ax0.pcolormesh(x_smooth-(x[1]-x[0])/2, y_smooth-(y[1]-y[0])/2,
-                arrowsize,
-                cmap=cmap, edgecolors='face', zorder=5,
+                arrowsize, #alpha = 0.6, 
+                cmap=cmap, 
+                edgecolors='face', #linewidth=0.001,#001,
+                zorder=5,
                 vmin=vmin, vmax=vmax)
 
 #    XY += np.array([x[1]-x[0],y[1]-y[0]])/2
@@ -219,7 +243,7 @@ def plot(Ax, get_plotdata,
     ax0.set_ylabel("$y$", rotation=0, fontsize=fontsize)
     
     
-
+    ax0.set_aspect(1)
 
 
 

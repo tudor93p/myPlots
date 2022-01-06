@@ -471,7 +471,7 @@ plot(task::PlotTask; kwargs...) = plot([task]; kwargs...)
 plot(tasks::Vararg{PlotTask}; kwargs...) = plot(collect(tasks); kwargs...)
 
 
-function plot(tasks::AbstractVector{PlotTask}; only_prep=false, kwargs...)
+function plot(tasks::AbstractVector{PlotTask}; only_prep::Bool=false, kwargs...)
 
 	pyplot_args = Utils.invmap(tasks,	pyplot_merged_Param,
 																		pyplot_pyjl_pairs,
