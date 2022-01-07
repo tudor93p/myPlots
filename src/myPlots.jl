@@ -294,11 +294,76 @@ end
 obs_x_and_label(::String, ::Nothing, ::String, ::Nothing)::Dict = Dict()
 
 
-function obs_x_and_label(::String, ::Nothing, args...)::Dict
+obs_x_and_label(::String, ::Nothing, args...)::Dict = Dict()
 
-	Dict()
 
-end 
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+function xlabel_curve_data(P::AbstractDict, 
+													 obs0::AbstractString,
+													 obs::AbstractVector, 
+													 val::AbstractVector
+													 )::Tuple{String,String,<:Union{AbstractVector,
+																													AbstractDict,
+																													Nothing}}
+
+	errtext = "***Error_myPlots***" 
+
+	plotted_obs = [I[1] for (o,I) in Utils.EnumUnique(obs) if !in(o,["None", obs0])] 
+
+	isempty(plotted_obs) && return ("","",nothing)
+
+	if get(P, "obs_group", "")=="SubObs" && length(plotted_obs)==1 
+
+		i = only(plotted_obs)
+	
+		return (obs[i], errtext, val[i]) 
+
+	end 
+
+
+	Vs,Ls = Utils.zipmap(plotted_obs) do i
+
+		Transforms.choose_obs_i(P, val[i], obs[i]; f="first") 
+
+	end .|> collect
+
+
+	if length(plotted_obs)==1 
+
+		L = only(Ls) 
+	
+		return (L[1], length(L)>1 ? join_label(L[2:end]) : only(L), only(Vs))
+		
+	end 
+
+
+	common_label = unique(L[end] for L in Ls)
+
+	common_lablength = unique(length.(Ls))
+
+
+	xlabel,sep_labs = if length(common_label)==1==length(common_lablength) 
+		
+		@assert only(common_lablength[1])==2 
+
+		("Sub-obs: "*only(common_label), map(first,Ls))
+
+	else
+
+		("Observables", map(join_label, Ls))
+
+	end 
+
+	return (xlabel, errtext, Dict(zip(sep_labs,Vs)))
+
+end  
+
 
 #===========================================================================#
 #
@@ -317,128 +382,34 @@ end
 function construct_obs0obs(P::AbstractDict, 
 													 obs::AbstractVector,
 													 val::AbstractVector, 
-													 obs0::AbstractString, val0, 
-													 labels=nothing, labels0=labels)
+													 obs0::AbstractString, 
+													 val0
+													 )
+
+	labels=labels0=nothing # obsolete
 
 
 # obs => val can be "DOS" => [0.3, 4.1, 0.0, ...] 		or
 #										"T" => Dict("A" => [0.3, 5.5, 0.7, ...], ...)
 
 
-	out = Dict("xlabel0" => obs0, "y" => ENERGIES, "ylabel" => "Energy")
+	out = merge!(Dict{String,Any}("xlabel0"=>obs0, 
+																"y"=>ENERGIES, "ylabel"=>"Energy"),
+							 obs_x_and_label(obs0,val0, "0", labels0))
 
-
-
-	plotted_obs = [I[1] for (o,I) in Utils.EnumUnique(obs) if !in(o,["None", obs0])]
-
-
-
-	if !isempty(plotted_obs)
-
-		#out["xlabel"] = obs 
-
-		Vs,Ls = Utils.zipmap(plotted_obs) do i
-
-			Transforms.choose_obs_i(P, val[i], obs[i]; f="first") 
-
-		end .|> collect
-
-
-		axis_label, curve_label, data = if length(plotted_obs)==1 
-
-			L = only(Ls) 
-		
-			(L[1], length(L)>1 ? join_label(L[2:end]) : only(L), only(Vs))
-			
-
-		else 
-
-			common_label = unique(L[end] for L in Ls)
-
-			common_lablength = unique(length.(Ls))
-
-
-			xlabel,sep_labs = if length(common_label)==1==length(common_lablength) 
-				
-				@assert only(common_lablength[1])==2 
-
-				("Sub-obs: "*only(common_label), map(first,Ls))
-
-			else
-
-				("Observables", map(join_label, Ls))
-
-			end 
-
-
-			(xlabel, "***Error_myPlots***", Dict(zip(sep_labs,Vs)))
-
-		end 
-
-
-#
-#
-##		axis_label,curve_labels = 
-#		
-#
-#		axis_label, X, data = if length(common_label)==length(unique(length.(Ls)))==1
-#			
-#			xlabel = only(common_label)
-#
-#
-#			if all(isempty, separate_labels)
-#
-#				@assert length(separate_labels)==1 
-#
-#				(xlabel, xlabel, only(Vs))
-#
-#			elseif all(!isempty, separate_labels)
-#
-#				(xlabel, "", Dict(zip(separate_labels,Vs)))
-#
-#			end 
-#
-#		else 
-#	
-#			("Observables", 
-#			 "74334", 
-#			 Dict(join_label(L)=>V for (V,L) in zip(Vs,Ls)))
-#
-#		end 
-
-		merge!(out, obs_x_and_label(curve_label, data, "", labels))
-
-		out["xlabel"] = axis_label 
-
-
-
-#			out["xlabel"] = "Observables"
-#
-#			obs_x_and_label("", 
-#
-#			Dict(join_label(L)=>V for (V,L) in zip(Vs,Ls)), "", labels) 
-#
-#
-#			, map(join_label, Ls))
-#
-#		merge!(out, obs_x_and_label("",
-#																Dict(zip(curve_labels,Vs)), "", labels))
-
-
-
-#		merge!(out, obs_x_and_label(get_val(obs, val)..., "", labels))
-
-	end
-
-
-
-	if all(in(keys(P)), ["interp_method", "Energy", "E_width"] )
+	if all(in(keys(P)), ["interp_method", "Energy", "E_width"])
 
 		out["weights"] = Transforms.SamplingWeights(P)[:]
 
 	end
 	
-	return merge(out, obs_x_and_label(obs0,val0, "0", labels0))
+
+	axis_label, curve_label, data = xlabel_curve_data(P, obs0, obs, val) 
+
+
+	out["xlabel"] = axis_label  
+
+	return merge!(out, obs_x_and_label(curve_label, data, "", labels))
 
 end
 

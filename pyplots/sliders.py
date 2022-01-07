@@ -624,7 +624,7 @@ def obs_group():
 
     def add(fig, **kwargs):
    
-        fig.add_combobox(["-","Prefix","Name"],
+        fig.add_combobox(["-","SubObs","Prefix","Name"],
                             label="Group", key="obs_group")
 
     def read(obj):

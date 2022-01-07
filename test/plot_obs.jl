@@ -73,6 +73,7 @@ for target in ([],
 	for (k,v) in plot_task.plot(Dict(
 																	 "obs"=>target,
 																	"obs_i"=>2,
+																	"obs_group"=>"SubObs",
 																	"interp_method"=>"Lorentzian",
 																	"Energy"=>rand()*0.35,
 																	"E_width"=>0.02,
