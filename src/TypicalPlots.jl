@@ -2,7 +2,7 @@ module TypicalPlots
 #############################################################################
 
 using myLibs.ComputeTasks: CompTask
-import myLibs: Lattices ,Utils
+import myLibs: Lattices, Utils
 
 using ..myPlots: PlotTask, construct_obs0obs, join_label
 using Constants: VECTOR_STORE_DIM 
@@ -23,15 +23,21 @@ obs(get_data::Function) = ("Observables", function plot_(P::AbstractDict)
 																	
 	obs0 = "QP-DOS"
 
-	obs_ = get(P, "obs", obs0)
+	obs_ = vcat(get(P, "obs", obs0))
 
-	Data = get_data(P, mute=false, fromPlot=true, target=[obs_,obs0])
+	Data = get_data(P, mute=false, fromPlot=true, target=vcat(obs_,obs0))
 
-	return construct_obs0obs(P, obs_,	get(Data, obs_, 	nothing),
+	return construct_obs0obs(P, obs_,	[get(Data, o_, 	nothing) for o_ in obs_],
 													 		obs0, get(Data, obs0, nothing) 
 													 )
 
-end)
+end) 
+
+
+
+
+
+
 
 
 #===========================================================================#

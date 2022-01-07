@@ -3,6 +3,7 @@ module myPlots
 
 
 import PyCall 
+using OrderedCollections: OrderedDict
 
 using myLibs: Utils, Algebra, ComputeTasks
 
@@ -277,7 +278,7 @@ function obs_x_and_label(obs::String, val, suffix::String, labels::Utils.List)::
 
 		Set(labels)==Set(K) || error("Label '$labels' does not exist")
 
-		return obs_x_and_label(obs, getv(K[1]), suffix, labels)
+		return obs_x_and_label(obs, getv(only(K)), suffix, labels)
 
 	end 
 
@@ -305,8 +306,20 @@ end
 #
 #---------------------------------------------------------------------------#
 
+#get_val_co0o(P::AbstractDict)::Function = function get_val(obs_, val_)
+#
+#		V,lab_ = Transforms.choose_obs_i(P, val_; f="first") 
+#
+#		return (isempty(lab_) ? obs_ : only(lab_), V)
+#
+#	end 
 
-function construct_obs0obs(P, obs, val, obs0, val0, labels=nothing, labels0=labels)
+function construct_obs0obs(P::AbstractDict, 
+													 obs::AbstractVector,
+													 val::AbstractVector, 
+													 obs0::AbstractString, val0, 
+													 labels=nothing, labels0=labels)
+
 
 # obs => val can be "DOS" => [0.3, 4.1, 0.0, ...] 		or
 #										"T" => Dict("A" => [0.3, 5.5, 0.7, ...], ...)
@@ -314,11 +327,109 @@ function construct_obs0obs(P, obs, val, obs0, val0, labels=nothing, labels0=labe
 
 	out = Dict("xlabel0" => obs0, "y" => ENERGIES, "ylabel" => "Energy")
 
-	if !in(obs,["None", obs0]) 
+
+
+	plotted_obs = [I[1] for (o,I) in Utils.EnumUnique(obs) if !in(o,["None", obs0])]
+
+
+
+	if !isempty(plotted_obs)
+
+		#out["xlabel"] = obs 
+
+		Vs,Ls = Utils.zipmap(plotted_obs) do i
+
+			Transforms.choose_obs_i(P, val[i], obs[i]; f="first") 
+
+		end .|> collect
+
+
+		axis_label, curve_label, data = if length(plotted_obs)==1 
+
+			L = only(Ls) 
 		
-		merge!(out, obs_x_and_label(obs, val, "", labels), Dict("xlabel" => obs)) 
+			(L[1], length(L)>1 ? join_label(L[2:end]) : only(L), only(Vs))
+			
+
+		else 
+
+			common_label = unique(L[end] for L in Ls)
+
+			common_lablength = unique(length.(Ls))
+
+
+			xlabel,sep_labs = if length(common_label)==1==length(common_lablength) 
+				
+				@assert only(common_lablength[1])==2 
+
+				("Sub-obs: "*only(common_label), map(first,Ls))
+
+			else
+
+				("Observables", map(join_label, Ls))
+
+			end 
+
+
+			(xlabel, "***Error_myPlots***", Dict(zip(sep_labs,Vs)))
+
+		end 
+
+
+#
+#
+##		axis_label,curve_labels = 
+#		
+#
+#		axis_label, X, data = if length(common_label)==length(unique(length.(Ls)))==1
+#			
+#			xlabel = only(common_label)
+#
+#
+#			if all(isempty, separate_labels)
+#
+#				@assert length(separate_labels)==1 
+#
+#				(xlabel, xlabel, only(Vs))
+#
+#			elseif all(!isempty, separate_labels)
+#
+#				(xlabel, "", Dict(zip(separate_labels,Vs)))
+#
+#			end 
+#
+#		else 
+#	
+#			("Observables", 
+#			 "74334", 
+#			 Dict(join_label(L)=>V for (V,L) in zip(Vs,Ls)))
+#
+#		end 
+
+		merge!(out, obs_x_and_label(curve_label, data, "", labels))
+
+		out["xlabel"] = axis_label 
+
+
+
+#			out["xlabel"] = "Observables"
+#
+#			obs_x_and_label("", 
+#
+#			Dict(join_label(L)=>V for (V,L) in zip(Vs,Ls)), "", labels) 
+#
+#
+#			, map(join_label, Ls))
+#
+#		merge!(out, obs_x_and_label("",
+#																Dict(zip(curve_labels,Vs)), "", labels))
+
+
+
+#		merge!(out, obs_x_and_label(get_val(obs, val)..., "", labels))
 
 	end
+
 
 
 	if all(in(keys(P)), ["interp_method", "Energy", "E_width"] )
@@ -327,7 +438,7 @@ function construct_obs0obs(P, obs, val, obs0, val0, labels=nothing, labels0=labe
 
 	end
 	
-	return merge(out, obs_x_and_label(obs0, val0, "0", labels0))
+	return merge(out, obs_x_and_label(obs0,val0, "0", labels0))
 
 end
 

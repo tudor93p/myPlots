@@ -15,9 +15,9 @@ import myPlots
 #include("Fourier_Freq.jl")
 
 
-include("choose-obs.jl")
+#include("choose-obs.jl")
 
-
+include("plot_obs.jl")
 
 
 
