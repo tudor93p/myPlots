@@ -322,7 +322,7 @@ function xlabel_curve_data(P::AbstractDict,
 
 		i = only(plotted_obs)
 	
-		return (obs[i], errtext, val[i]) 
+		return (obs[i], obs[i], val[i]) 
 
 	end 
 
@@ -352,15 +352,15 @@ function xlabel_curve_data(P::AbstractDict,
 		
 		@assert only(common_lablength[1])==2 
 
-		("Sub-obs: "*only(common_label), map(first,Ls))
+		("Sub-obs: "*only(common_label), first)
 
 	else
 
-		("Observables", map(join_label, Ls))
+		("Observables", join_label)
 
 	end 
 
-	return (xlabel, errtext, Dict(zip(sep_labs,Vs)))
+	return (xlabel, errtext, Dict(zip(map(sep_labs,Ls),Vs)))
 
 end  
 

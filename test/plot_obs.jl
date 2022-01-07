@@ -73,7 +73,7 @@ for target in ([],
 	for (k,v) in plot_task.plot(Dict(
 																	 "obs"=>target,
 																	"obs_i"=>2,
-																	"obs_group"=>"SubObs",
+#																	"obs_group"=>"SubObs",
 																	"interp_method"=>"Lorentzian",
 																	"Energy"=>rand()*0.35,
 																	"E_width"=>0.02,
@@ -84,7 +84,21 @@ for target in ([],
 		(occursin("x",k)|in(k,["label","labels"]))	|| continue 
 
 
-		println("\n$k: ", (isa(v,AbstractString) || eltype(v)<:AbstractString) ? v : length(v))
+		toprint = if isa(v,AbstractString) || eltype(v)<:AbstractString 
+		
+			for vi in vcat(v) 
+				occursin("Error",vi) && @warn "undesired error string"
+			end 
+
+			v
+		else 
+			
+			length(v)
+
+		end 
+
+		println("\n$k: $toprint")
+
 	
 	
 	end
@@ -93,7 +107,7 @@ for target in ([],
 
 end 
 
-myPlots.plot(plot_task)
+#myPlots.plot(plot_task)
 
 #@show task 
 
