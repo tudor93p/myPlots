@@ -1,5 +1,7 @@
-from plothelpers import *
-import itertools
+from plothelpers import * 
+
+import itertools 
+
 import Plot
 
 
@@ -84,7 +86,7 @@ def zoom_choose_energy():
                     vs=np.linspace(1,0,80)*(np.max(enlim) - np.mean(enlim))
                     )
         
-            fig.add_slider(label="Energy", key="sEnergy", vs=np.linspace(0,1,61), columnSpan=4, v0=30)
+#            fig.add_slider(label="Energy", key="sEnergy", vs=np.linspace(0,1,61), columnSpan=4, v0=30)
 
 
         fig.add_text(label="Energy",key="Energy",text="")
@@ -104,17 +106,17 @@ def zoom_choose_energy():
 
         except:
 
-            try:
+#            try:
+#
+#                m,M = enlim 
+#
+#                return m + (M-m)*obj.get_slider("sEnergy")
+#
+##                obj.set_text("Energy", Energy)
+#
+#            except:
 
-                m,M = enlim 
-
-                return m + (M-m)*obj.get_slider("sEnergy")
-
-#                obj.set_text("Energy", Energy)
-
-            except:
-
-                return 0.0
+            return 0.0
 
 
     def read(obj):
@@ -163,19 +165,19 @@ def choose_k():
         fig.add_combobox(["Lorentzian","Gaussian","Rectangle"],
                     label="Sample states method",key="sample_states_method")
     
-        fig.add_slider(label="Zoom k", key="zoomk", columnSpan=4,
-                    vs=np.linspace(1,0,80,endpoint=False))
+#        fig.add_slider(label="Zoom k", key="zoomk", columnSpan=4,
+#                    vs=np.linspace(1,0,80,endpoint=False))
     
     def read(obj):
    
-        out = read_slider(obj, "zoomk")
+#        out = read_slider(obj, "zoomk")
 
-        out["k_width"] = 0.02 
+        out = {"k_width" : 0.02,
+                "interp_method": obj.get_combobox("sample_states_method")}
 
         out.update(read_text(obj, "sample_states_width_k", "k_width")) 
 
 
-        out["interp_method"] = obj.get_combobox("sample_states_method")
 
         out.update(read_text(obj, "kpoint", "k"))
 
@@ -624,7 +626,7 @@ def obs_group():
 
     def add(fig, **kwargs):
    
-        fig.add_combobox(["-","SubObs","Prefix","Name"],
+        fig.add_combobox(["-", "SubObs", "Name", "Prefix"],
                             label="Group", key="obs_group")
 
     def read(obj):

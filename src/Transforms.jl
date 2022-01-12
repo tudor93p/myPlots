@@ -566,7 +566,6 @@ function parse_vec2scalar(d::AbstractString)::Function
 
 		if any(c->occursin(c,d), i-1 .+ ['x', 'X'])
 
-
 			occursin("norm", d) && return R -> R[i]/LinearAlgebra.norm(R)
 
 			occursin("^2", d) && return R->abs2(R[i])
@@ -646,18 +645,19 @@ function interp(x0::AbstractVector{<:Real},
 								y0::AbstractArray{<:Real,N},
 								interp_order::Int=3; 
 								interp_N::Int=200,  
+								smooth=0.0,
 								kwargs...
 								)::Tuple{Vector{Float64},Array{Float64, N}} where N
 
 
 	x1 = range(extrema(x0)..., length=interp_N)
 
-	N==1 && return (x1, Algebra.Interp1D(x0, y0, interp_order, x1))
+	N==1 && return (x1, Algebra.Interp1D(x0, y0, interp_order, x1; s=smooth))
 
 
 	return (x1, mapslices(y0, dims=kwargs[:dim]) do v 
 											 
-						Algebra.Interp1D(x0, v, interp_order, x1)
+						Algebra.Interp1D(x0, v, interp_order, x1; s=smooth)
 
 					end)
 	
@@ -896,15 +896,14 @@ function (pd::ProcessData)(P::AbstractDict,
 	new_Data, new_label = pd.calc(P, Data; pd.kwargs..., kwargs...)
 
 
-	function good(L)::Bool 
-	
-		(isnothing(L) || isempty(L)) && return false
-		
-		S = string(L) 
+	good(::Nothing)::Bool = false 
 
-		return !isempty(S) && S!="nothing"
+	good(S::Symbol)::Bool = good(string(S))
 
-	end 
+	good(s::AbstractString)::Bool = !isempty(s) && s!="nothing"
+
+	good(X)::Bool = isempty(X) ? false : good(string(X))
+
 
 	return (new_Data, string.(filter!(good, vcat(label, new_label))))
 	
@@ -1002,9 +1001,24 @@ pd_interp = ProcessData("transform", "Interpolate",
 
 		end 
 
-							)
+		)
 
-pd_fourier = ProcessData("transform", "|Fourier|",
+pd_smoothinterp = ProcessData("transform", "SmoothInterp.",
+
+		function calc_sm_interp(P::AbstractDict, (x,y); kwargs...)
+
+					N = max(2length(x), parse_integer(get(P, "transfparam", 10)))
+
+					return interp(x, y; interp_N=N, smooth=get(P,"smooth",0),
+												kwargs...), "smooth interp."
+
+		end 
+
+		)
+
+
+
+pd_fourier = ProcessData("transform", "|FFT|",
 												  
 		function calc_fourier(P::AbstractDict, (x,y); kwargs...)
 
@@ -1025,7 +1039,20 @@ pd_interp_fourier = ProcessData("transform", "Interp.+|FFT|",
 		end)
 
 
-pd_fourier_comp = ProcessData("transform", "Fourier comp.",
+pd_sm_interp_fourier = ProcessData("transform", "SmoothInterp.+|FFT|",
+
+		function calc_sif(P::AbstractDict, (x,y); kwargs...)
+
+			N = max(2length(x), parse_integer(get(P, "transfparam", 10)))
+		
+			return interp_and_fourier_abs(x,y; interp_N=N, 
+																		smooth=get(P,"smooth",0), 
+																		kwargs...), "si|FFT|"
+
+		end)
+
+
+pd_fourier_comp = ProcessData("transform", "FourierComp.",
 
 		function calc_fc(P::AbstractDict, (x,y); kwargs...)
 
@@ -1082,8 +1109,11 @@ end
 
 transform = ProcessData(pd_fourier_comp, 
 												pd_interp, 
+												pd_smoothinterp,
 												pd_fourier, 
-												pd_interp_fourier)
+												pd_interp_fourier,
+												pd_sm_interp_fourier,
+												)
 
 
 

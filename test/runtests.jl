@@ -6,7 +6,7 @@ import myPlots
 
 #include("plotlatt.jl")
 
-#include("transforms.jl")
+include("transforms.jl")
 
 #include("myplots.jl")
 
@@ -17,7 +17,7 @@ import myPlots
 
 #include("choose-obs.jl")
 
-include("plot_obs.jl")
+#include("plot_obs.jl")
 
 
 

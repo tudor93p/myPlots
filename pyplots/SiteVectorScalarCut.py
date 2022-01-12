@@ -13,8 +13,6 @@ common_sliders = common_sliders1 + [sitevectorobs_vminmax, vec2scalar, regions]
 add_sliders, read_sliders = addread_sliders(*common_sliders0,
                                             *common_sliders,
                                             choose_energy,
-                                            transforms,
-#                                            smoothen
                                             )
 
 
