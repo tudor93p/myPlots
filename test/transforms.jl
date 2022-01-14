@@ -369,7 +369,8 @@ false && @testset "Smooth Interpolation" begin
 end 
 
 
-
+println("------------------------")
+println()
 
 
 
@@ -405,7 +406,10 @@ end
 
 
 	@test siF1 ≈ T.pd_sm_interp_fourier(P, (x_sparse, y_noisy))[1][2]
-	
+
+	@test T.transform(P, (x_sparse, y_noisy))[2]==["si|FFT|"]
+
+
 	@test siF1 ≈ T.transform(P, (x_sparse, y_noisy))[1][2]
 
 

@@ -879,6 +879,8 @@ function check_pd(pd::ProcessData, args...; kwargs...)::Bool
 
 	isa(pd.check, Bool) && pd.check && return true 
 
+
+
 	isa(pd.check, Function) && pd.check(args...; pd.kwargs..., kwargs...)
 
 end 
@@ -891,6 +893,7 @@ function (pd::ProcessData)(P::AbstractDict,
 												kwargs...)::Tuple{Any, Vector{String}}
 
 
+	
 	check_pd(pd, P, Data; kwargs...) || return (Data, vcat(label))
 
 	new_Data, new_label = pd.calc(P, Data; pd.kwargs..., kwargs...)
@@ -1076,20 +1079,13 @@ function ProcessData(pds::Vararg{ProcessData}; kwargs0...)::ProcessData
 	function find_pd(args...; kwargs...)::Tuple{Vararg{ProcessData}}
 
 		n = filter(pd->check_pd(pd, args...; kwargs...), pds)
-		
-		@assert length(n)<=1 
+	
+		@assert length(n)<=1 n
 
 		return n
 
 	end 
 
-	function any_check(args...; kwargs...)::Bool
-
-		!isempty(find_pd(args...; kwargs...))
-
-	end 
-
-#any_check = (!isempty) ∘ find_pd 
 
 	function one_calc(args...; kwargs...)
 
@@ -1097,7 +1093,7 @@ function ProcessData(pds::Vararg{ProcessData}; kwargs0...)::ProcessData
 
 	end 
 
-	return ProcessData(any_check, one_calc, NamedTuple(kwargs0))
+	return ProcessData(!isempty ∘ find_pd, one_calc, NamedTuple(kwargs0))
 
 end 
 
@@ -1177,7 +1173,7 @@ function successive_transforms(fs::AbstractVector{Symbol},
 	isempty(fs) && return (Data, label) 
 
 	F = getproperty(@__MODULE__, fs[1])
-
+#successive
 	return successive_transforms(fs[2:end], P, F(P, Data, label; kwargs...)...;
 															kwargs...)
 	

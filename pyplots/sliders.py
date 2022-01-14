@@ -752,7 +752,7 @@ def smoothen():
     def add(fig, **kwargs):
 
        fig.add_slider(label="Smooth", key="smooth", 
-               vs=np.linspace(0,1,40), columnSpan=3)
+               vs=np.linspace(0,1,80), columnSpan=3)
 
     def read(obj):
         return {"smooth" : obj.get_slider("smooth")}

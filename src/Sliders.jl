@@ -166,7 +166,7 @@ init_transforms() = init_transforms("Interpolate",
 																		"|FFT|", 
 																		"Interp.+|FFT|",
 																		"SmoothInterp.+|FFT|",
-																		"FourierComp."
+																		"FourierComp.",
 																		)
 
 
