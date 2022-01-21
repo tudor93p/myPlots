@@ -1087,13 +1087,21 @@ function ProcessData(pds::Vararg{ProcessData}; kwargs0...)::ProcessData
 	end 
 
 
+	function any_check(args...; kwargs...)::Bool
+
+		!isempty(find_pd(args...; kwargs...))
+
+	end 
+
+#any_check = !isempty ∘ find_pd # does not work because of kwargs
+
 	function one_calc(args...; kwargs...)
 
 		find_pd(args...; kwargs...)[1].calc(args...; kwargs...)
 
 	end 
 
-	return ProcessData(!isempty ∘ find_pd, one_calc, NamedTuple(kwargs0))
+	return ProcessData(any_check, one_calc, NamedTuple(kwargs0))
 
 end 
 
