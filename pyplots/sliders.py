@@ -133,10 +133,11 @@ def zoom_choose_energy():
         try: delta = float(obj.get_text("sample_states_width_E"))
 
         except: delta = 0.02
-    
+   
+
         return {"enlim" : enlim,
                 "Energy" : get_en(obj, enlim),
-                "E_width" : delta,
+                "E_width" : max(1e-4,delta),
                 "interp_method" : obj.get_combobox("sample_states_method")
                 }
     
@@ -177,6 +178,10 @@ def choose_k():
 
         out.update(read_text(obj, "sample_states_width_k", "k_width")) 
 
+
+        if out["k_width"] < 1e-4:
+
+            out["k_width"] = 1e-4 
 
 
         out.update(read_text(obj, "kpoint", "k"))
