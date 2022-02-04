@@ -409,6 +409,9 @@ function construct_obs0obs(P::AbstractDict,
 
 	out["xlabel"] = axis_label  
 
+	@show curve_label typeof(curve_label) data typeof(data) labels typeof(labels)
+
+
 	return merge!(out, obs_x_and_label(curve_label, data, "", labels))
 
 end

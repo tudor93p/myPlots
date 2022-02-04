@@ -19,6 +19,37 @@ add_sliders, read_sliders = addread_sliders(*common_sliders)
 #---------------------------------------------------------------------------#
 
 
+def restrict(A,mM):
+    
+    if mM is not None: 
+       
+        x = [l is not None for l in mM]
+
+        if len(x)==2 and all(x):
+           
+            m,M = mM 
+
+            return np.logical_and(A>m,A<M)
+
+    return np.ones(A.shape,bool)
+
+
+def mask(x,xlim,y,ylim,z=None):
+
+    M = np.logical_and(restrict(x,xlim),restrict(y,ylim))
+
+    if (M.any() and not M.all()):
+
+        return (x[M], y[M], z if z is None else z[M])
+
+    else:
+
+        return (x, y, z)
+
+
+
+
+
 
 
 
@@ -43,14 +74,39 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
     L = Utils.Assign_Value(d("label"), np.repeat(None, len(Y)))
 
 
+#    print()
+#    for c in ["x","y","z"]:
+#
+#        s= c+"lim"
+#
+#        print(s,"=",get_val(s))
+#
+#    print()
+    
     xlim,ylim,zlim = deduce_axislimits([X,Y,Z], 
                                   [get_val(c+"lim") for c in ["x","y","z"]])
 
+#    print()
+#    for c,l in zip(["x","y","z"],xyzlims):
+#
+#        s= c+"lim"
+#
+#        print(s,"=",get_val(s))
+#        print("new lim =",l)
+#
+#
+#    print()
 
     nr_col = 0
 
 
-    for i,(x,y,z,l) in enumerate(zip(X, Y, Z, L)):
+
+
+
+    for i,(x_,y_,z_,l) in enumerate(zip(X, Y, Z, L)):
+       
+        x,y,z = mask(x_,xlim,y_,ylim,z_)
+
 
         if z is None:
     
@@ -87,3 +143,22 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
 
 
     set_xylabels(ax0, get_val, fontsize=fontsize)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

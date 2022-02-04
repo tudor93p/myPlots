@@ -112,6 +112,12 @@ def nrowscols(n, nrowcol=None, **kwargs):
 
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
 
 
 
@@ -134,6 +140,11 @@ def get_one_or_many(data):
 
     return d
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
 
 
 def is_single_element(p):
@@ -155,6 +166,9 @@ def get_single_element(val):
     return val
 
 
+
+
+
 def get_single_elements(params):
 
     out = {}
@@ -172,6 +186,14 @@ def get_single_elements(params):
     return [[p for (i,p) in enumerate(P) if i not in rem_inds] for P in params],out
 
 
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
 def printable_string(S):
 
     parts = [s for s in S.split("_") if len(s)]
@@ -179,6 +201,14 @@ def printable_string(S):
     parts[0] = parts[0][0].upper() + parts[0][1:]
 
     return " ".join(parts)
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
 
 
 def get_paramsplot(obj,libraries):
@@ -192,6 +222,14 @@ def get_paramsplot(obj,libraries):
     return param_plot
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
 def combobox_or_slider(values):
 
     if np.size(values) < 5:
@@ -201,6 +239,14 @@ def combobox_or_slider(values):
     else:
         
         return "slider"
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
 
 def key_widget(i, name):
 
@@ -224,6 +270,14 @@ def add_widget(fig, i, name, values):
     else:
 
         fig.add_slider(**kwargs, columnSpan=5+i%2)
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
 
 
 def get_widget(obj, i, name, values):
@@ -254,26 +308,88 @@ def get_paramsuser(obj,params):
 
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
 def getlim(dat,f=lambda u:u):
 
 
+    #print(dat is None,
+    #        isinstance(dat, float) or isinstance(dat, int),
+    #        isinstance(dat, np.ndarray),
+    #        isinstance(dat,list),
+    #        dat)
+
     if dat is None: 
-        
         return [None,None]
 
     if isinstance(dat, float) or isinstance(dat, int):
-        return [dat,dat] 
-
-    for d in dat:
-        if d is None:
-            return [None,None]
+        return f([dat,dat])
 
 
     if isinstance(dat, np.ndarray):
 
-        return Algebra.minmax(f(dat))
+        if np.size(dat)==0:
+            return [None,None]
 
-    return Algebra.minmax([Algebra.minmax(f(di)) for di in dat])
+        if dat.dtype in [float,int]:
+            return Algebra.minmax(f(dat))
+
+        nN = [] 
+
+        for x in dat.reshape(-1):
+
+            if isinstance(dat, float) or isinstance(dat, int):
+
+                nN.append(x)
+
+        return getlim(nN,f)
+
+
+
+#    return getlim([getlim(f(di)) for di in dat])
+#    return Algebra.minmax([Algebra.minmax(f(di)) for di in dat])
+    if isinstance(dat,list):
+
+        if len(dat)==0:# or all([d is None for d in dat]):
+            return [None,None]
+    
+        mM = [] 
+
+        for d in dat:
+
+            lim = getlim(d,f) 
+
+#            print("lim",lim)
+            if lim is None:
+                continue 
+
+            if isinstance(lim, np.ndarray) or isinstance(lim, list):
+            
+                if None in lim:
+ #                   print("None in lim")
+                    continue 
+
+            mM.append(lim)
+
+        #print("mM",mM)
+        return getlim(np.array(mM,dtype=float))
+
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
 
 
 
@@ -309,8 +425,8 @@ def deduce_axislimits(data=None, limits=None):
 
                     break 
 
-
-        return sorted(zlim)
+        return getlim(zlim)
+#        return sorted(zlim)
 
 
 
