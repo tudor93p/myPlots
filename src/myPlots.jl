@@ -324,20 +324,41 @@ function xlabel_curve_data(P::AbstractDict,
 
 	errtext = "***Error_myPlots***" 
 
-	plotted_obs = [I[1] for (o,I) in Utils.EnumUnique(obs) if !in(o,["None", obs0])] 
+#	plotted_obs = [I[1] for (o,I) in Utils.EnumUnique(obs) if !in(o,["None", obs0])] 
+
+#	@show findall(isnothing, val) 
+#	@show plotted_obs 
+	plotted_obs = Utils.mapif(!isnothing, Utils.EnumUnique(obs)) do (o,(i,))
+		
+		o!="None" && o!=obs0 && !isnothing(val[i]) && return i 
+
+		return nothing 
+
+	end  |> Vector{Int}
+
+#	@show plotted_obs  
 
 	isempty(plotted_obs) && return ("","",nothing)
 
 	if get(P, "obs_group", "")=="SubObs" && length(plotted_obs)==1 
 
 		i = only(plotted_obs)
-	
+
+#		@show i 
+
 		return (obs[i], obs[i], val[i]) 
 
 	end 
 
+#	@show P 
+
+
+
+
 
 	Vs,Ls = Utils.zipmap(plotted_obs) do i
+
+#		@show i val[i] obs[i]
 
 		Transforms.choose_obs_i(P, val[i], obs[i]; f="first") 
 
@@ -413,6 +434,7 @@ function construct_obs0obs(P::AbstractDict,
 
 	end
 	
+
 
 	axis_label, curve_label, data = xlabel_curve_data(P, obs0, obs, val) 
 

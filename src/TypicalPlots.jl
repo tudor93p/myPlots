@@ -27,6 +27,8 @@ obs(get_data::Function) = ("Observables", function plot_(P::AbstractDict)
 
 	Data = get_data(P, mute=false, fromPlot=true, target=vcat(obs_,obs0))
 
+#	@show keys(Data) obs0 obs_ 
+
 	return construct_obs0obs(P, obs_,	[get(Data, o_, 	nothing) for o_ in obs_],
 													 		obs0, get(Data, obs0, nothing) 
 													 )

@@ -72,6 +72,12 @@ labels::Nothing
 myPlots.obs_x_and_label(curve_label, data, "", labels)  |>typeof|>println
 
 
-myPlots.obs_x_and_label(curve_label, data, "", [])  |>typeof|>println
+myPlots.obs_x_and_label(curve_label, data, "", [])  |>typeof|>println 
+
+
+myPlots.xlabel_curve_data(Dict(),
+													"A",
+													["A","B","C"],
+													[rand(2),nothing,[4]]) |> println
 
 
