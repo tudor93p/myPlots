@@ -448,7 +448,7 @@ function join_label(labels::Vararg{<:Union{AbstractString,Char}}; kwargs...)::St
 
 	join_label(string.(vcat(labels...)); kwargs...)
 
-#end 
+end 
 
 function join_label(labels::AbstractVector{<:AbstractString};
 										sep1::Union{Char,AbstractString}="/")
