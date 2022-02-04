@@ -243,9 +243,13 @@ function obs_x_and_label(obs::String, val, suffix::String="", labels::Nothing=no
 
 	T,K = check_obs_type(val) 
 
+
+
 	T==1 && return Dict(x => vcat(val...), l => obs)
 
-	T==2 && return obs_x_and_label(obs, val[:], suffix)
+#	T==2 && return obs_x_and_label(obs, val[:], suffix) 
+
+	T==2 && return Dict(x=>val[:], l=>obs)
 
 	T==3 && return obs_x_and_label(obs, val, suffix, sort(K))
 
@@ -260,9 +264,15 @@ function obs_x_and_label(obs::String, val, suffix::String, labels::Utils.List)::
 
 	T,K = check_obs_type(val) 
 
-	T==1 && return obs_x_and_label("$obs "*first(labels), val, suffix)
+	if T in [1,2] 
 
-	T==2 && return obs_x_and_label(obs, val[:], suffix, labels)
+		return obs_x_and_label(join([obs;labels[1:min(end,1)]]," "),
+													 ndims(val)<=1 ? val : val[:],
+													 suffix)
+
+#		return obs_x_and_label(obs, val[:], suffix, labels)
+
+	end 
 
 
 	function getv(k)
@@ -276,7 +286,7 @@ function obs_x_and_label(obs::String, val, suffix::String, labels::Utils.List)::
 
 	if length(K)==1
 
-		Set(labels)==Set(K) || error("Label '$labels' does not exist")
+		@assert Set(labels)==Set(K) "Label '$labels' does not exist"
 
 		return obs_x_and_label(obs, getv(only(K)), suffix, labels)
 
@@ -409,7 +419,7 @@ function construct_obs0obs(P::AbstractDict,
 
 	out["xlabel"] = axis_label  
 
-	@show curve_label typeof(curve_label) data typeof(data) labels typeof(labels)
+	#@show curve_label typeof(curve_label) data typeof(data) labels typeof(labels)
 
 
 	return merge!(out, obs_x_and_label(curve_label, data, "", labels))
@@ -438,7 +448,7 @@ function join_label(labels::Vararg{<:Union{AbstractString,Char}}; kwargs...)::St
 
 	join_label(string.(vcat(labels...)); kwargs...)
 
-end 
+#end 
 
 function join_label(labels::AbstractVector{<:AbstractString};
 										sep1::Union{Char,AbstractString}="/")

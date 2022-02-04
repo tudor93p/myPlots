@@ -6,7 +6,7 @@ import myPlots
 
 #include("plotlatt.jl")
 
-include("transforms.jl")
+#include("transforms.jl")
 
 #include("myplots.jl")
 
@@ -15,7 +15,7 @@ include("transforms.jl")
 #include("Fourier_Freq.jl")
 
 
-#include("choose-obs.jl")
+include("choose-obs.jl")
 
 #include("plot_obs.jl")
 
