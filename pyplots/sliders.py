@@ -425,7 +425,15 @@ def read_text(obj, key, dict_key=None):#, f=None):
 
         k = key if dict_key is None else dict_key
 
-        return {k: float(obj.get_text(key))}
+        text = str(obj.get_text(key))
+
+        if text=="pi":
+
+            return {k: np.pi}
+
+        else:
+
+            return {k: float(text)}
             
     except:
     

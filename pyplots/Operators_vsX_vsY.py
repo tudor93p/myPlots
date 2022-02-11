@@ -3,11 +3,11 @@ from sliders import *
 from Z_vsX_vsY_atE import plot as plot0, common_sliders as common_sliders0
 from Z_vsX_vsY_atE import nr_axes
 
+from Hamilt_Diagonaliz import common_sliders as common_sliders1
 
 
-common_sliders = common_sliders0 + [observables, obs_index, obs_vminmax]
 
-add_sliders, read_sliders = addread_sliders(*common_sliders)
+add_sliders, read_sliders = addread_sliders(*common_sliders0, *common_sliders1)
 
 
 #===========================================================================#
@@ -18,10 +18,11 @@ add_sliders, read_sliders = addread_sliders(*common_sliders)
 
 
 
-def plot(Ax, get_plotdata, zlim=None, obsmin=None, obsmax=None, **kwargs):
+def plot(Ax, get_plotdata, zlim=None, opermin=None, opermax=None, **kwargs):
 
 
-    plot0(Ax, get_plotdata, zlim=[obsmin,obsmax], **kwargs) 
+
+    plot0(Ax, get_plotdata, zlim=[opermin,opermax], **kwargs) 
 
     
 
