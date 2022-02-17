@@ -2,6 +2,23 @@ using Revise, Test
 
 import myPlots
 
+for filename in ( 
+
+"transf_Fermi_surface",
+
+
+)
+
+
+
+
+println(" ************ $filename ***********")
+
+include("$filename.jl")
+
+
+end
+
 
 
 #include("plotlatt.jl")
@@ -15,7 +32,7 @@ import myPlots
 #include("Fourier_Freq.jl")
 
 
-include("choose-obs.jl")
+#include("choose-obs.jl")
 
 #include("plot_obs.jl")
 

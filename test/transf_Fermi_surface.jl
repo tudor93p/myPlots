@@ -1,4 +1,7 @@
-println()
+println() 
+
+
+T = myPlots.Transforms
 
 @testset "Filter states" begin 
 
@@ -26,9 +29,13 @@ println()
 	@test label==label3[end]
 
 #	@show label3 
-	@show length(x)
+
+
+	@test length(X)==length(Y)==4
 
 	for x in [X,Y]
+
+		@show length(x) 
 
 		@test isapprox(x[1],selectdim(v, d1, inds))
 		@test isapprox(x[2],v1[inds])
@@ -41,10 +48,19 @@ println()
 
 
 
+	P2 = Dict("opermin"=>0)#, "filterstates"=>true)
 
 
+	Z,label4 = T.filter_states(P2, (v0, v, d1, v1, v, d1, c, d2), "test")
+	
+	@test length(Z)==4 
+	@test length(label4)==1 && only(label4)=="test"
 
+	for (a,b) in zip(Z, (v, v1, v, c))
 
+		@test a≈b
+
+	end 
 
 
 
@@ -57,7 +73,7 @@ end
 
 println()
 
-
+error() 
 
 
 

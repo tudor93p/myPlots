@@ -143,6 +143,8 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 
 			xyz,lab2 = Transforms.filter_states(P, (z, out["x"], out["y"], z))
 
+			@assert length(xyz)==3 
+
 
 			for (k,v) in zip("xyz",xyz)
 

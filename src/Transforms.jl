@@ -166,6 +166,8 @@ function nr2str(nr::Real)::String
 end 
 
 
+
+
 function get_restrict_oper(m::Real, M::Real)::Tuple{Function,String}
 
 	r(x::Real)::Bool = m<=x<=M
@@ -985,7 +987,7 @@ convol_energy = ProcessData("Energy",
 
 convol_DOSatEvsK1D = ProcessData("Energy", DOSatEvsK1D)
 
-filter_states = ProcessData("filterstates", FilterStates)
+filter_states = ProcessData(FilterStates)
 
 
 #===========================================================================#
