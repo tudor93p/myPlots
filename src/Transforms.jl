@@ -3,7 +3,7 @@ module Transforms
 
 import LinearAlgebra, FFTW
 
-import myLibs: Utils, Algebra, ArrayOps, ComputeTasks
+import myLibs: Utils, Algebra, ArrayOps, SignalProcessing, ComputeTasks
 
 
 using Constants: ENERGIES, VECTOR_STORE_DIM, COMP_STORE_DIM
@@ -182,7 +182,7 @@ function get_restrict_oper(m::Real, ::Nothing)::Tuple{Function,String}
 
 	r(x::Real)::Bool = m<=x
 	
-	label = string(">",nr2str(m))
+	label = string(">=",nr2str(m))
 	
 	return r,label 
 
@@ -192,7 +192,7 @@ function get_restrict_oper(::Nothing, M::Real)::Tuple{Function,String}
 
 	r(x::Real)::Bool = x<=M
 	
-	label = string("<",nr2str(M))
+	label = string("<=",nr2str(M))
 	
 	return r,label 
 
@@ -654,12 +654,12 @@ function interp(x0::AbstractVector{<:Real},
 
 	x1 = range(extrema(x0)..., length=interp_N)
 
-	N==1 && return (x1, Algebra.Interp1D(x0, y0, interp_order, x1; s=smooth))
+	N==1 && return (x1, SignalProcessing.Interp1D(x0, y0, interp_order, x1; s=smooth))
 
 
 	return (x1, mapslices(y0, dims=kwargs[:dim]) do v 
 											 
-						Algebra.Interp1D(x0, v, interp_order, x1; s=smooth)
+						SignalProcessing.Interp1D(x0, v, interp_order, x1; s=smooth)
 
 					end)
 	
@@ -794,21 +794,21 @@ end
 function fourier_comp(V::AbstractVector{<:Number}, freq::Real;  
 											kwargs...)::Vector{ComplexF64}
 
-	Algebra.fft(V, freq; addup=false)[1,:]
+	SignalProcessing.fft(V, freq; addup=false)[1,:]
 
 end 
 
 function fourier_comp(A::AbstractMatrix{<:Number}, freq::Real;  
 											dim::Int, kwargs...)::Matrix{ComplexF64}
 
-	Algebra.fft(A, freq; addup=false, dim=dim)
+	SignalProcessing.fft(A, freq; addup=false, dim=dim)
 
 end 
 
 
 #function fourier_comp(a::AbstractVecOrMat, freq::Real; dim::Int, rtol=0)
 #
-#	A = real(Algebra.fft(a, freq, addup=false, dim=dim)) 
+#	A = real(fft(a, freq, addup=false, dim=dim)) 
 #	
 #	rtol>0 && Utils.ReplaceByNeighbor!(isapprox(0, atol=rtol*maximum(abs,A)), A)
 #
