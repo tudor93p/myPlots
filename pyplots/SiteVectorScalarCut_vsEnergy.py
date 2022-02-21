@@ -27,7 +27,7 @@ def plot(Ax, get_plotdata,
     plot0(Ax, get_plotdata, zlim=[sitevectorobsmin,sitevectorobsmax],
             **kwargs)
 
-
+    
 
 
 

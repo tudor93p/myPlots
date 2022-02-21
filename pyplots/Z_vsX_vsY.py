@@ -44,6 +44,13 @@ def plot(Ax, get_plotdata, cmap="viridis", fontsize=12, **kwargs):
         Plot.good_colorbar(P, zlim, ax0, data.get("zlabel",""), fontsize=fontsize)
    
 
+    if ("x_plot" in data) and ("y_plot" in data):
+
+        ax0.plot(data["x_plot"], data["y_plot"], zorder=10, color="red", lw=2, ls="--", alpha=0.7) 
+
+
+
+
     for k,f in [("xlim",ax0.set_xlim),("ylim",ax0.set_ylim)]:
 
         lim = get_val(k)
