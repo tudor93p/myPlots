@@ -7,7 +7,7 @@ def nr_axes(**kwargs):
     return 1
 
 
-common_sliders = [dotsizes, colormap]
+common_sliders = [dotsizes, colormap, smoothen]
 
 add_sliders, read_sliders = addread_sliders(*common_sliders)
 
@@ -120,7 +120,7 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
           
             
 
-            P = ax0.scatter(x, y, s=S, c=z, cmap=cmap, zorder=zorder0+2, vmax=zlim[1], vmin=zlim[0], label=l, alpha=0.8)
+            P = ax0.scatter(x, y, s=S, c=z, cmap=cmap, zorder=zorder0+2, vmax=zlim[1], vmin=zlim[0], label=l)#, alpha=0.8)
        
             if i==0 and get_val("show_colorbar", True):
 

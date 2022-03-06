@@ -368,7 +368,7 @@ function xlabel_curve_data(P::AbstractDict,
 	if length(plotted_obs)==1 
 
 		L = only(Ls) 
-	
+
 		return (L[1], length(L)>1 ? join_label(L[2:end]) : only(L), only(Vs))
 		
 	end 

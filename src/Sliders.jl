@@ -18,13 +18,14 @@ pick_bondvector(obs_list) = filter(o->occursin("BondVector",o),obs_list)
 
 pick_sitevector(obs_list) = filter(o->occursin("SiteVector",o),obs_list)
 
+pick_cc(obs_list)  = filter(o->occursin("CaroliCurrent",o), obs_list)
 
 
-function pick_nonlocal(obs_list)
+function pick_nonlocal(obs_list::AbstractVector{<:AbstractString})::Vector{String}
 
 	rest = copy(obs_list)
 
-	for f in [pick_local, pick_bondvector, pick_sitevector]
+	for f in [pick_local, pick_bondvector, pick_sitevector, pick_cc]
 
 		setdiff!(rest, f(obs_list))
 

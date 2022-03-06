@@ -2,7 +2,7 @@ using Constants: NR_ENERGIES, ENERGIES
 using myLibs.ComputeTasks: CompTask 
 import myLibs: Lattices
 
-obs_list = ["Intruder", "LocalA", "BondVector1", "SiteVectorV", "Obs1"]
+obs_list = ["Intruder", "LocalA", "BondVector1", "SiteVectorV", "Obs1", "CaroliCurrent_5"]
 
 
 
@@ -15,6 +15,8 @@ obs_list = ["Intruder", "LocalA", "BondVector1", "SiteVectorV", "Obs1"]
 @show myPlots.Sliders.pick_sitevector(obs_list) 
 
 @show myPlots.Sliders.pick_nonlocal(obs_list)
+
+@show myPlots.Sliders.pick_cc(obs_list)
 
 
 @show myPlots.Sliders.init_obs(obs_list)(Dict())
@@ -82,7 +84,7 @@ P["E_width"] =0.2
 @show P 
 
 #@show 
-myPlots.construct_obs0obs(P, "Obs", [1,2,3], "Obs0", [30,10,20]);
+myPlots.construct_obs0obs(P, ["Obs"], [[1,2,3]], "Obs0", [30,10,20]);
 
 
 println()

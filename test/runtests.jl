@@ -2,13 +2,13 @@ using Revise, Test
 
 import myPlots
 
-for filename in ( 
+for filename in [
 
-"transf_Fermi_surface",
+#"transf_Fermi_surface",
 
+"myplots",
 
-)
-
+]
 
 
 
@@ -25,7 +25,6 @@ end
 
 #include("transforms.jl")
 
-#include("myplots.jl")
 
 
 
