@@ -1,50 +1,52 @@
 import Scatter 
 import numpy as np 
 import matplotlib.pyplot as plt 
-
-A = np.random.rand(10)
-
-
-print(A) 
-
-print(Scatter.restrict(A,None))
-
-print(Scatter.restrict(A,[None]))
-
-print(Scatter.restrict(A,(0.2,0.8)))
-
-print(Scatter.restrict(A,(-1,3))) 
+import time 
 
 
 
-x,y,z = Scatter.mask(np.linspace(0,1,20),[0.2,0.8],np.linspace(3,4,20),[3.5,5],np.random.rand(20)) 
+#A = np.random.rand(10)
+#
+#
+#print(A) 
+#
+#print(Scatter.restrict(A,None))
+#
+#print(Scatter.restrict(A,[None]))
+#
+#print(Scatter.restrict(A,(0.2,0.8)))
+#
+#print(Scatter.restrict(A,(-1,3))) 
+#
+#
+#
+#x,y,z = Scatter.mask(np.linspace(0,1,20),[0.2,0.8],np.linspace(3,4,20),[3.5,5],np.random.rand(20)) 
+#
+#print(x)
+#print(y)
+#print(z)
+#
+#x,y,z = Scatter.mask(np.linspace(0,1,20),[-1,2],np.linspace(3,4,20),[-1,15],np.random.rand(20)) 
+#
+#print(x)
+#print(y)
+#print(z)
+#
+#
+#
+#print()
+#print()
+#print() 
 
-print(x)
-print(y)
-print(z)
-
-x,y,z = Scatter.mask(np.linspace(0,1,20),[-1,2],np.linspace(3,4,20),[-1,15],np.random.rand(20)) 
-
-print(x)
-print(y)
-print(z)
 
 
 
-print()
-print()
-print() 
-
-
-
-
-
-fig,ax = plt.subplots()
 
 
 
 def get_plotdata(*args,**kwargs):
 
+    time.sleep(2)
 
     X = np.linspace(0,2,500)
 
@@ -53,11 +55,14 @@ def get_plotdata(*args,**kwargs):
     return {"x":X, "y":Y}
 
 
+if __name__ == '__main__': 
 
-Scatter.plot([ax], get_plotdata, ylim=[-3,1])
-
-plt.show()
-
+    fig,ax = plt.subplots()
+    
+    Scatter.plot([ax], get_plotdata, ylim=[-3,1])
+    
+    plt.show()
+    
 
 
 

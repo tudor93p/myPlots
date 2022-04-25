@@ -26,7 +26,7 @@ add_sliders,read_sliders = addread_sliders(*common_sliders)
 
 
 
-def plot(Ax, get_plotdata, linewidth=1, fontsize=12, zorder0=0, **kwargs):
+def plot(Ax, get_plotdata, linewidth=1, fontsize=12, zorder0=0, dotsize=35, **kwargs):
 
             
     data = get_plotdata(kwargs)
@@ -86,7 +86,7 @@ def plot(Ax, get_plotdata, linewidth=1, fontsize=12, zorder0=0, **kwargs):
 
             else:
 
-                ax0.scatter(*xy[:,0], c=c, s=30, zorder=3*ils+zorder0+2+z*2, alpha=alpha, label=l,marker="X")
+                ax0.scatter(*xy[:,0], c=c, s=dotsize, zorder=3*ils+zorder0+2+z*2, alpha=alpha, label=l,marker="X")
 
 
 

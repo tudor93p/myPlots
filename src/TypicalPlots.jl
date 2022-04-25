@@ -76,7 +76,7 @@ localobs(task::Union{CompTask,PlotTask}, arg...; kwargs...) = localobs(task.get_
 #localobs(get_data::Function, lattice_::Module; kwargs...) = localobs(get_data, lattice_.Latt; kwargs...)
 
 
-localobs(get_data::Function, PosAtoms::Function) = ("LocalObservables", function plot_(P::AbstractDict)
+localobs(get_data::Function, PosAtoms::Function) = ("LocalObservables", function plot_(P::AbstractDict)::Dict
 	
 	localobs_ = get(P, "localobs", "QP-LocalDOS")::AbstractString
 	
@@ -109,7 +109,7 @@ oper(task::Union{CompTask,PlotTask}) = oper(task.get_data)
 
 oper(get_data::Function) = ("Hamilt_Diagonaliz", 
 
-	function plot_(P::AbstractDict)
+	function plot_(P::AbstractDict)::Dict
 
 		oper_ = get(P, "oper", nothing)
 	

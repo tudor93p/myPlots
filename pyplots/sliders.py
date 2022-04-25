@@ -79,10 +79,10 @@ def zoom_choose_energy():
 
         if enlim is not None:
     
-#            fig.add_slider(label="Center energy", key="shift", columnSpan=4,
-#                    vs = np.linspace(*enlim,51), v0 = 25)
+            fig.add_slider(label="Center energy", key="shift", columnSpan=3,
+                    vs = np.linspace(np.min(enlim),np.max(enlim),51), v0 = 25)
 
-            fig.add_slider(label="Zoom energy", key="zoom", columnSpan=5,
+            fig.add_slider(label="Zoom energy", key="zoom", columnSpan=4,
                     vs=np.linspace(1,0,80)*(np.max(enlim) - np.mean(enlim))
                     )
         
@@ -780,7 +780,7 @@ def dotsizes():
 
 
        fig.add_slider(label="Dot size", key="dotsize", 
-               vs=np.linspace(1,40,40), columnSpan=3, v0=5)
+               vs=np.linspace(1,50,40), columnSpan=3, v0=5)
 
 
     def read(obj):

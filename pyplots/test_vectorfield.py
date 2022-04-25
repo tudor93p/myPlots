@@ -5,7 +5,7 @@ import Curves_yofx
 import PlotPyQt
 import matplotlib.pyplot as plt
 from sliders import fontsizes
-
+import time 
 
 
 
@@ -70,6 +70,7 @@ def E(obs_points, sources, restrict=None):
 
 def get_plotdata(kwargs):
 
+    time.sleep(5)
     out = {}
    
     n = kwargs.get("n",3)
@@ -82,7 +83,7 @@ def get_plotdata(kwargs):
 
     charges = R(1, theta, phi) 
 
-    print("charges",charges.shape)
+#    print("charges",charges.shape)
     theta2 = np.linspace(0, np.pi, 50, endpoint=False) + np.random.rand()*np.pi 
 
 #    theta2 = np.pi/2
@@ -91,7 +92,7 @@ def get_plotdata(kwargs):
 
     surface = R(0.8, theta2, phi2) 
 
-    print("surface",surface.shape)
+#    print("surface",surface.shape)
 
     out["surface"] = surface
     out["charges"] = charges
@@ -111,9 +112,9 @@ def get_plotdata(kwargs):
    
     Es = E(surface, charges)[1]
 
-    print("E on surface",Es.shape)
+#    print("E on surface",Es.shape)
 
-    print(np.sum(surface*Es))
+#    print(np.sum(surface*Es))
 
 
     return out 
@@ -133,6 +134,7 @@ def get_plotdata(kwargs):
 
 
 def get_plotdata2(kwargs):
+
 
     out = {}
    
@@ -199,16 +201,19 @@ def figure(obj, Fig, Axes):
 
         ax.yaxis.label.set_size(fontsize) 
 
-fig = PlotPyQt.Figure(figure, 1, 1)
-
-for lib in [VectorField]:#, Curves_yofx]:
-    lib.add_sliders(fig)
-
-add_font(fig)
+if __name__ == '__main__': 
 
 
-fig.add_slider(label="Size",key="n",vs=range(1,150))
-
-fig.show()
-
-
+    fig = PlotPyQt.Figure(figure, 1, 1)
+    
+    for lib in [VectorField]:#, Curves_yofx]:
+        lib.add_sliders(fig)
+    
+    add_font(fig)
+    
+    
+    fig.add_slider(label="Size",key="n",vs=range(1,150))
+    
+    fig.show()
+    
+    
