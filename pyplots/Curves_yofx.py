@@ -111,8 +111,16 @@ def plot(Ax, get_plotdata, linewidth=1, fontsize=12, zorder0=0, dotsize=35, **kw
 
     set_xylabels(ax0, get_val, fontsize=fontsize)
 
-    ax0.legend(fontsize=fontsize)
-    
+    nr_items_legend = len(ax0.get_legend_handles_labels()[0])
+
+    if nr_items_legend>0:
+
+        nrow = 4
+
+        ncol = (nr_items_legend-1)//nrow + 1 
+
+        ax0.legend(fontsize=fontsize, ncol=ncol, columnspacing=1)
+       
     ax0.tick_params(labelsize=fontsize)
 
     plot_levellines(ax0, get_val, zorder=zorder0+5, color="k", lw=1, alpha=0.6) 

@@ -79,7 +79,7 @@ linestyles=['-',':','--','-.']
 
 colors = np.roll([["brown","red","coral","peru"],["gold","olive","forestgreen","lightseagreen"],["dodgerblue","midnightblue","darkviolet","deeppink"]],1,axis=1).T.reshape(-1)
 
-colors = np.append(colors,colors)
+colors = np.concatenate((colors,colors,colors))
 
 #def clslw(D):
 #

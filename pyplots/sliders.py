@@ -75,14 +75,14 @@ def zoom_choose_energy():
     def add(fig, enlim=None, **kwargs):
    
         
-#        fig.add_text(label="Center energy", key="shift", text="")
 
         if enlim is not None:
     
-            fig.add_slider(label="Center energy", key="shift", columnSpan=3,
-                    vs = np.linspace(np.min(enlim),np.max(enlim),51), v0 = 25)
+            fig.add_text(label="Center energy", key="shift", text="")
+#            fig.add_slider(label="Center energy", key="shift", columnSpan=4,
+#                    vs = np.linspace(*enlim,51), v0 = 25)
 
-            fig.add_slider(label="Zoom energy", key="zoom", columnSpan=4,
+            fig.add_slider(label="Zoom energy", key="zoom", columnSpan=5,
                     vs=np.linspace(1,0,80)*(np.max(enlim) - np.mean(enlim))
                     )
         
