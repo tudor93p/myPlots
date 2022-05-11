@@ -1,4 +1,3 @@
-#from plothelpers import *
 from sliders import * 
 
 from VectorField_atE import common_sliders as common_sliders0
@@ -13,12 +12,6 @@ add_sliders, read_sliders = addread_sliders(*common_sliders0,
                                             *common_sliders,
                                             )
 
-
-#===========================================================================#
-#
-#   Plot
-#
-#---------------------------------------------------------------------------#
 
 
 
