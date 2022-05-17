@@ -239,11 +239,15 @@ def plot(Ax, get_plotdata,
     ax0.set_xlim(Plot.extend_limits([xm,xM],0.03))
     ax0.set_ylim(Plot.extend_limits([ym,yM],0.03))
 
-    ax0.set_xlabel("$x$", fontsize=fontsize)
-    ax0.set_ylabel("$y$", rotation=0, fontsize=fontsize)
-    
+
+
+    ax0.set_xlabel(data.get("xlabel","$x$"), fontsize=fontsize)
+
+    ax0.set_ylabel(data.get("ylabel","$y$"), rotation=0, fontsize=fontsize)
     
     ax0.set_aspect(1)
+
+
 
 
 

@@ -83,8 +83,34 @@ def plot(Ax, get_plotdata, cmap="viridis", fontsize=12, **kwargs):
             return np.mean(vals[i:i+2])
 
     plot_levellines(ax0, get_line, zorder=5, color="k", lw=1, alpha=0.6)
-
+    
     set_xylabels(ax0, get_val, fontsize=fontsize)
+
+
+    inds = [None,None]
+
+    for (i,c) in enumerate("xy"):
+
+        L = get_val(c+"line")
+
+        if L is not None:
+
+            inds[i] = np.argmin(np.abs(data[c]-L))
+   
+
+
+    if all([i is not None for i in inds]):
+
+        z0 = np.round(data["z"][inds[0],inds[1]],2)
+
+        ax0.set_xlabel(ax0.get_xlabel() + " [$z="+str(z0)+"$]")
+
+    
+
+
+
+
+
 
 
 
