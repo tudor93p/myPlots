@@ -844,10 +844,11 @@ def arrow_parameters():
 
 
         fig.add_slider(label="Arrow scale", key="arrow_scale",
-                            vs=np.concatenate((
-                                np.linspace(0.01, 1, 50, endpoint=False),
-                                np.linspace(1, 2, 15))),
-                            columnSpan=4, v0=50)
+#                            vs=np.concatenate((
+#                                np.linspace(0.01, 1, 50, endpoint=False),
+#                                np.linspace(1, 2, 15))),
+                            vs=np.linspace(0.01,3,60),
+                            columnSpan=4, v0=20)
 
         fig.add_slider(label="Arrow min. len.", key="arrow_minlength",
                             vs=np.append(0,np.logspace(np.log10(1e-3),np.log10(0.5),50)),

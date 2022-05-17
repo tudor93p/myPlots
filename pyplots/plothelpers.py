@@ -426,7 +426,8 @@ def deduce_axislimits(data=None, limits=None):
 
                     break 
 
-        return getlim(zlim)
+        
+        return getlim(np.array(zlim).astype(float))
 #        return sorted(zlim)
 
 
