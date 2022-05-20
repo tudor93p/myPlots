@@ -14,7 +14,7 @@ def nr_axes(**kwargs):
     return 1
 
 
-common_sliders = [arrow_parameters, colormap, atomsizes]
+common_sliders = [arrow_parameters, colormap, atomsizes, smoothen]
 
 add_sliders, read_sliders = addread_sliders(*common_sliders)
 
