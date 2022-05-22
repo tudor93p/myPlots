@@ -822,19 +822,21 @@ def arrow_parameters():
 
         vs = np.linspace(0.001,0.2,40)/10
 
+#####
 #        fig.add_slider(label="Arrow width", key="arrow_width",
 #                            vs=vs, columnSpan=3)
 #
 #        fig.add_slider(label="Arrow head width", key="arrow_headwidth",
 #                            vs=vs*3, columnSpan=3)
 #
+#        fig.add_slider(label="Arrow head length", key="arrow_headlength",
+#                            vs=vs*3*1.5, columnSpan=3)
+#####
 
         fig.add_text(label="Limits vector field", key=mM[0], text="")
         fig.add_text(key=mM[1], text="")
 
 #
-#        fig.add_slider(label="Arrow head length", key="arrow_headlength",
-#                            vs=vs*3*1.5, columnSpan=3)
 #
 #        fig.add_slider(label="Arrow max. len.", key="arrow_maxlength",
 #                            vs=np.logspace(np.log10(0.01),np.log10(1),41),
@@ -847,8 +849,8 @@ def arrow_parameters():
 #                            vs=np.concatenate((
 #                                np.linspace(0.01, 1, 50, endpoint=False),
 #                                np.linspace(1, 2, 15))),
-                            vs=np.linspace(0.01,3,60),
-                            columnSpan=4, v0=20)
+                            vs=np.linspace(0.01,6,80),
+                            columnSpan=4, v0=30)
 
         fig.add_slider(label="Arrow min. len.", key="arrow_minlength",
                             vs=np.append(0,np.logspace(np.log10(1e-3),np.log10(0.5),50)),

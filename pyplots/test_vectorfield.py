@@ -14,7 +14,7 @@ add_font, read_font = fontsizes()
 
 
 
-N = 25 
+N = 15 
 
 s = np.linspace(-1,1,N)*1.9
 
@@ -24,6 +24,15 @@ XYZs = np.hstack((  np.reshape(X,(-1,1)),
                     np.reshape(Y,(-1,1)),
                     np.zeros((np.prod(X.shape),1)),
                     ))
+
+
+def vector_field_1(R):
+
+    x,y = R 
+
+    return 0.2*(-x,y,0)
+
+
 
 
 def sincos(a):
@@ -57,7 +66,8 @@ def E(obs_points, sources, restrict=None):
 
 #    [obs_point, charge, 1] # distances
 
-    out = lambda aD,ad : 0.1/len(sources)*np.sum(aD/ad,axis=1)
+#    out = lambda aD,ad : 0.1/len(sources)*np.sum(aD/ad,axis=1)
+    out = lambda aD,ad : 0.1/len(sources)*np.sum(aD,axis=1)
 
     if restrict is not None:
 
@@ -70,7 +80,7 @@ def E(obs_points, sources, restrict=None):
 
 def get_plotdata(kwargs):
 
-    time.sleep(5)
+#    time.sleep(5)
     out = {}
    
     n = kwargs.get("n",3)
@@ -108,10 +118,13 @@ def get_plotdata(kwargs):
 
 
 
-    out["nodes"], out["dRs"] = E(XYZs, charges, 0.02)
-   
-    Es = E(surface, charges)[1]
+    out["nodes"], out["dRs"] = E(XYZs, charges, .001)
+  
+#    print(out["dRs"])
+#    Es = E(surface, charges)[1]
 
+
+#    out["ylabel"]= "test"
 #    print("E on surface",Es.shape)
 
 #    print(np.sum(surface*Es))
@@ -135,7 +148,6 @@ def get_plotdata(kwargs):
 
 def get_plotdata2(kwargs):
 
-
     out = {}
    
     n = kwargs.get("n",3)
@@ -153,11 +165,17 @@ def figure(obj, Fig, Axes):
 
 
 
-    P = {"n":obj.get_slider("n")}
+    P = {"n":obj.get_slider("n"),
+            "arrow_headwidth":0.06,
+            "arrow_headlength":0.1,
+            "arrow_width":0.015,
+            }
 
 
     for lib in [VectorField]:#, Curves_yofx]:
         P.update(lib.read_sliders(obj))
+
+    P["atomsize"] = 0.25
 
     P.update(read_font(obj))
 

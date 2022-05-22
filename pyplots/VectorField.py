@@ -7,7 +7,10 @@ from sliders import *
 from scipy.interpolate import Rbf
 import matplotlib.cm
 #import Geometry
-#import time 
+#import time  
+from contrasting_cmaps import contrasting_cmap 
+
+
 
 def nr_axes(**kwargs):
 
@@ -17,6 +20,9 @@ def nr_axes(**kwargs):
 common_sliders = [arrow_parameters, colormap, atomsizes, smoothen]
 
 add_sliders, read_sliders = addread_sliders(*common_sliders)
+
+
+
 
 
 
@@ -146,6 +152,10 @@ def plot(Ax, get_plotdata,
     vmin = vectormin
     vmax = Utils.Assign_Value(vectormax, np.max(sizes))
 
+    vmin = 0 
+
+    vmax = np.max(sizes)*0.9
+
     P = ax0.pcolormesh(x_smooth-(x[1]-x[0])/2, y_smooth-(y[1]-y[0])/2,
                 arrowsize, #alpha = 0.6, 
                 cmap=cmap, 
@@ -199,21 +209,34 @@ def plot(Ax, get_plotdata,
 
 #    start=time.time()
 
+  
+#    rescale = ([0,1],Algebra.minmax(sizes))
 
-    for (R,dR,c) in zip(
+#    get_col = lambda s: get_col_(Utils.Rescale(s,*rescale))
+
+#        matplotlib.cm.get_cmap(cmap)(Utils.Rescale(sizes,[1,0])),
+
+#pair_dismatch
+
+
+
+
+    get_col = matplotlib.cm.get_cmap(cmap)
+    get_col2 = contrasting_cmap(cmap) 
+
+
+    for (R,dR,s) in zip(
         XY[inds],
         UV[inds]*np.reshape(control_size(sizes)/sizes,(-1,1)),
-        matplotlib.cm.get_cmap(cmap)(Utils.Rescale(sizes,[0,1])),
+        Utils.Rescale(sizes,[0,1])
         ):
 
         dxy = arrow_scale * dR
 
         xy = R - dxy/2
 
-
-        cc = tuple(np.append(1-np.array(c[:3]),c[3]))
-
-#        cc = tuple(1-np.array(c))
+        c = get_col(s)  
+        cc = get_col2(s)
 
         a = ax0.arrow(*xy, *dxy, 
                         length_includes_head=True,
@@ -226,24 +249,21 @@ def plot(Ax, get_plotdata,
                         )
 
 
-#    ax0.legend(handles=[a],fontsize=fontsize)
-
-
-#Algebra.minmax(
-
-
-#    print(time.time()-start)
-#    [xm,ym],[xM,yM] = Algebra.minmax(data["Rs"],axis=0)
-
 
     ax0.set_xlim(Plot.extend_limits([xm,xM],0.03))
     ax0.set_ylim(Plot.extend_limits([ym,yM],0.03))
 
-
-
     ax0.set_xlabel(data.get("xlabel","$x$"), fontsize=fontsize)
 
-    ax0.set_ylabel(data.get("ylabel","$y$"), rotation=0, fontsize=fontsize)
+    ylabel = data.get("ylabel","$y$")
+
+    ylabel_kwargs = {"fontsize":fontsize}
+
+    if sum([c!="$" for c in ylabel])<=1:
+
+        ylabel_kwargs["rotation"]=0
+
+    ax0.set_ylabel(ylabel, **ylabel_kwargs)
     
     ax0.set_aspect(1)
 
