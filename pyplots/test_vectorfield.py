@@ -66,8 +66,8 @@ def E(obs_points, sources, restrict=None):
 
 #    [obs_point, charge, 1] # distances
 
-#    out = lambda aD,ad : 0.1/len(sources)*np.sum(aD/ad,axis=1)
-    out = lambda aD,ad : 0.1/len(sources)*np.sum(aD,axis=1)
+    out = lambda aD,ad : 0.5/len(sources)*np.sum(aD/ad,axis=1)
+#    out = lambda aD,ad : 0.1/len(sources)*np.sum(aD,axis=1)
 
     if restrict is not None:
 
@@ -118,7 +118,7 @@ def get_plotdata(kwargs):
 
 
 
-    out["nodes"], out["dRs"] = E(XYZs, charges, .001)
+    out["nodes"], out["dRs"] = E(XYZs, charges, 1)
   
 #    print(out["dRs"])
 #    Es = E(surface, charges)[1]

@@ -107,7 +107,7 @@ def plot(Ax, get_plotdata,
     x, y = np.linspace(xm,xM,nx + (nx==ny)), np.linspace(ym,yM,ny)
 
 
-    inds = np.where(np.logical_and(sizes >= arrow_minlength*np.max(sizes), sizes <= arrow_maxlength*np.max(sizes)))[0]
+    inds = np.where(np.logical_and(sizes >= arrow_minlength*np.max(sizes), sizes <= 1e-10 + arrow_maxlength*np.max(sizes)))[0]
 
 
     with warnings.catch_warnings():
@@ -152,9 +152,6 @@ def plot(Ax, get_plotdata,
     vmin = vectormin
     vmax = Utils.Assign_Value(vectormax, np.max(sizes))
 
-    vmin = 0 
-
-    vmax = np.max(sizes)*0.9
 
     P = ax0.pcolormesh(x_smooth-(x[1]-x[0])/2, y_smooth-(y[1]-y[0])/2,
                 arrowsize, #alpha = 0.6, 
@@ -169,11 +166,10 @@ def plot(Ax, get_plotdata,
     
     if "label" in data:
     
-        label = label + "\n"+ data["label"] 
+        label += "\n"+ data["label"] 
 
 
-    Plot.good_colorbar(P, [vmin, vmax], ax0, label,
-            fontsize=fontsize)
+    Plot.good_colorbar(P, [vmin, vmax], ax0, label, fontsize=fontsize)
 
 
 
@@ -201,6 +197,8 @@ def plot(Ax, get_plotdata,
 #
 
 
+    if not any(inds):
+        return 
 
     sizes = sizes[inds]
 

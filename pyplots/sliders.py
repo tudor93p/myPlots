@@ -837,11 +837,6 @@ def arrow_parameters():
         fig.add_text(key=mM[1], text="")
 
 #
-#
-#        fig.add_slider(label="Arrow max. len.", key="arrow_maxlength",
-#                            vs=np.logspace(np.log10(0.01),np.log10(1),41),
-#                            columnSpan=3, v0=40)
-
 
 
 
@@ -856,6 +851,16 @@ def arrow_parameters():
                             vs=np.append(0,np.logspace(np.log10(1e-3),np.log10(0.5),50)),
                             columnSpan=3, v0=0)
 
+##
+
+        fig.add_slider(label="Arrow max. len.", key="arrow_maxlength",
+#                            vs=np.logspace(np.log10(0.01),np.log10(1),41),
+                            vs=np.linspace(0,1.1,56)[1:],
+                            columnSpan=3, v0=49)
+##
+
+
+
         fig.add_slider(label="Arrow uniform len.", key="arrow_uniformsize",
                             vs=np.linspace(0,1,40,endpoint=False), columnSpan=3)
 
@@ -869,8 +874,12 @@ def arrow_parameters():
         out = read_many(lambda k:obj.get_slider(k), 
                     ["arrow_scale", "arrow_minlength", "arrow_uniformsize",
 #                    "arrow_width", "arrow_headwidth", "arrow_headlength",
-#                    "arrow_maxlength"
+                    "arrow_maxlength"
                     ])
+
+        out["arrow_maxlength"] = out["arrow_minlength"] + (1-out["arrow_minlength"])*out["arrow_maxlength"]
+
+
 
         out.update(read_many(lambda k: read_text(obj, k), mM))
 
