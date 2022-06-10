@@ -44,7 +44,9 @@ def plot(Ax, get_plotdata,
         cmap="YlGnBu",
         vectormin=0,
         vectormax=None,
+#        reverse_cmap=False,
         fontsize=12, 
+        smooth=0,
         **kwargs):
 
 
@@ -56,8 +58,6 @@ def plot(Ax, get_plotdata,
 
     
 
-#    if "nodes" in data:
-
     ax0.scatter(*data["nodes"].T[:2], c='k', s=atomsize, zorder=20)
 
 
@@ -66,7 +66,9 @@ def plot(Ax, get_plotdata,
         return 
 
     def control_size(S):
-#        return S + arrow_uniformsize * (np.mean(S) - S)
+
+        if arrow_uniformsize==0:
+            return S 
 
         return Utils.Rescale(Utils.Rescale(S)**(1-arrow_uniformsize),Algebra.minmax(S))
 
@@ -75,15 +77,25 @@ def plot(Ax, get_plotdata,
 
     UV = np.array(data["dRs"])[:,0:2]
 
-    sizes = np.linalg.norm(UV, axis=1) #    scalar field 
+    sizes = np.linalg.norm(UV, axis=1) #    scalar field  -> background
+ 
+
+### 
+    csizes = control_size(sizes)
+
+    UV *= np.reshape(csizes/np.maximum(sizes,1e-8),(-1,1))  
+
+    sizes = csizes  # or comment out 
+### 
 
 
-    [xm,ym],[xM,yM] = Algebra.minmax(data["nodes"],axis=0)
+
+    [xm,ym],[xM,yM] = Algebra.minmax(data["nodes"][:,0:2],axis=0)
 
     if abs(yM-ym)<1e-9 or abs(xM-xm)<1e-9:
 
         if "Rs" in data:
-            [xm,ym],[xM,yM] = Algebra.minmax(data["Rs"],axis=0)
+            [xm,ym],[xM,yM] = Algebra.minmax(XY,axis=0)
 
         elif abs(yM-ym)<1e-9:
             
@@ -92,7 +104,6 @@ def plot(Ax, get_plotdata,
         elif abs(xM-xm)<1e-9:
 
             xm,xM = ym,yM 
-
 
 
     
@@ -109,48 +120,30 @@ def plot(Ax, get_plotdata,
 
     inds = np.where(np.logical_and(sizes >= arrow_minlength*np.max(sizes), sizes <= 1e-10 + arrow_maxlength*np.max(sizes)))[0]
 
+####
+#    if not any(inds): 
+ #       return 
+
+#    sizes = sizes[inds] 
+
+#    UV = UV[inds]*arrow_scale
+
+#    XY = XY[inds] 
+
+###
 
     with warnings.catch_warnings():
 
         warnings.simplefilter("ignore")
 
-
-#        for i in set(range(len(Z))).difference(inds):
-#            Z[i]=0
-
         x_smooth,y_smooth = Utils.mgrid_from_1D(x,y,extend=True)
 
-        arrowsize = Rbf(*XY.T, sizes, function='linear', smooth=0)(x_smooth,y_smooth)
+        arrowsize = Rbf(*XY.T, sizes, function='linear', smooth=50*smooth)(x_smooth,y_smooth)
 
 
-#        bondlengths = np.unique(la.norm(bonds,axis=1))
-            
+    vmin = vectormin 
 
-#        nr_bonds = np.count_nonzero(Algebra.OuterDist(Algebra.FlatOuterDist(Atoms,Atoms),bondlengths)<self.tol,axis=1).reshape(len(Atoms),len(Atoms)).sum(axis=0)
-
-#    SurfaceAtoms = Atoms[nr_bonds < np.max(nr_bonds),:]
-
-#        hull = alphashape.alphashape(points).exterior.coords.xy
-
-       # hull = XY[ConvexHull(XY).vertices]
-
-
-#        for (j,(xcol,ycol)) in enumerate(zip(x_smooth.T,y_smooth.T)):
-
-#            for (i,P) in enumerate(zip(xcol,ycol)):
-
-#                if not Geometry.PointInPolygon_wn(P, hull):
-
-#                    arrowsize[i,j] = 0
-
-#        arrowsize = interp2d(*XY.T, Z, kind='linear', fill_value=0)(x,y).T
-
-
-
-#    vmin,vmax = [0,np.max(sizes)]
-
-    vmin = vectormin
-    vmax = Utils.Assign_Value(vectormax, np.max(sizes))
+    vmax = max(vmin,Utils.Assign_Value(vectormax, np.max(sizes)))
 
 
     P = ax0.pcolormesh(x_smooth-(x[1]-x[0])/2, y_smooth-(y[1]-y[0])/2,
@@ -160,7 +153,6 @@ def plot(Ax, get_plotdata,
                 zorder=5,
                 vmin=vmin, vmax=vmax)
 
-#    XY += np.array([x[1]-x[0],y[1]-y[0]])/2
 
     label = "Arrow length"
     
@@ -168,82 +160,36 @@ def plot(Ax, get_plotdata,
     
         label += "\n"+ data["label"] 
 
-
     Plot.good_colorbar(P, [vmin, vmax], ax0, label, fontsize=fontsize)
 
 
 
-
-
-
-#    u = interp2d(*XY.T, UV[:,0], fill_value=0)
-
-#    v = interp2d(*XY.T, UV[:,1], fill_value=0)
-
-
-
-#    ax0.streamplot(x, y, u(x,y), v(x,y),
-#            linewidth=arrowsize*(arrowsize>arrow_minlength*np.max(arrowsize)),
-#            density=arrow_scale,
-#            arrowsize=arrow_scale,
-#            )
-
-
-#    ax0.quiver(x, y, u(x,y), v(x,y),
-#            angles='xy',
-#            color="k",
-#            zorder=10
-#            )
-#
-
-
+###
     if not any(inds):
-        return 
+        return
 
+    UV = UV[inds]*arrow_scale
+
+    XY = XY[inds] 
     sizes = sizes[inds]
 
-
-    # for loop is slow!!
-
-#    start=time.time()
-
-  
-#    rescale = ([0,1],Algebra.minmax(sizes))
-
-#    get_col = lambda s: get_col_(Utils.Rescale(s,*rescale))
-
-#        matplotlib.cm.get_cmap(cmap)(Utils.Rescale(sizes,[1,0])),
-
-#pair_dismatch
+### 
 
 
+#    get_col = matplotlib.cm.get_cmap(cmap) 
 
-
-    get_col = matplotlib.cm.get_cmap(cmap)
     get_col2 = contrasting_cmap(cmap) 
 
 
-    for (R,dR,s) in zip(
-        XY[inds],
-        UV[inds]*np.reshape(control_size(sizes)/sizes,(-1,1)),
-        Utils.Rescale(sizes,[0,1])
-        ):
+    for (xy,dxy,s) in zip(XY-UV/2,UV, Utils.Rescale(sizes,[0,1],[vmin,vmax])): 
 
-        dxy = arrow_scale * dR
-
-        xy = R - dxy/2
-
-        c = get_col(s)  
-        cc = get_col2(s)
-
-        a = ax0.arrow(*xy, *dxy, 
+        ax0.arrow(*xy, *dxy, 
                         length_includes_head=True,
                         width=arrow_width,
                         head_width=arrow_headwidth,
                         head_length=arrow_headlength,
                         zorder=15,
-                        color=cc,
-                        label=label,#data["label"],
+                        color=get_col2(s),
                         )
 
 

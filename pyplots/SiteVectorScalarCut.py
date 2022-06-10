@@ -1,17 +1,20 @@
-#from plothelpers import *
-from sliders import * 
+from sliders import *
 
-from SiteVectorScalarCut_atE import nr_axes 
-from SiteVectorScalarCut_atE import common_sliders as common_sliders0
-from SiteVectorScalarCut_atE import plot as plot0
 
-from SiteVector import common_sliders as common_sliders1
+from Curves_yofx import nr_axes, plot as plot0 
 
-common_sliders = common_sliders1 + [sitevectorobs_vminmax]
+from Curves_yofx import common_sliders as common_sliders2 
 
-add_sliders, read_sliders = addread_sliders(*common_sliders0,
-                                            *common_sliders,
-                                            )
+
+from SiteVectorScalarCut_atE import common_sliders as common_sliders3  
+
+from SiteVector import common_sliders as common_sliders0
+
+
+common_sliders = common_sliders0 + common_sliders3 + [sitevectorobs_vminmax]
+
+
+add_sliders, read_sliders = addread_sliders(*common_sliders,*common_sliders2)
 
 
 

@@ -709,12 +709,22 @@ def colormap():
         fig.add_combobox(["cool",
                 "PuBuGn","YlGnBu","copper",
                 "plasma","coolwarm","Spectral","viridis",
+                "gnuplot","terrain", 
+                "rainbow","gist_rainbow",
                 "twilight","hsv"
                 ],label="Color map",key="cmap")
 
+        fig.add_checkbox(label="reverse",key="reverse_cmap")
+
     def read(obj):
         
-        return read_combobox(obj, "cmap")
+        out = read_combobox(obj, "cmap")
+
+        if obj.get_checkbox("reverse_cmap"):
+
+            out["cmap"] += "_r"
+
+        return out 
     
 
 
@@ -855,8 +865,8 @@ def arrow_parameters():
 
         fig.add_slider(label="Arrow max. len.", key="arrow_maxlength",
 #                            vs=np.logspace(np.log10(0.01),np.log10(1),41),
-                            vs=np.linspace(0,1.1,56)[1:],
-                            columnSpan=3, v0=49)
+                            vs=np.linspace(0,1.,56)[1:],
+                            columnSpan=3, v0=54)
 ##
 
 

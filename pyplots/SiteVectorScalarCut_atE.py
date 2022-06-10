@@ -1,23 +1,14 @@
-from sliders import * 
+from sliders import *
 
-from SiteVectorScalarCut0 import nr_axes 
+from Curves_yofx import nr_axes,plot,common_sliders as common_sliders0 
 
-from SiteVectorScalarCut0 import common_sliders as common_sliders0
-
-from SiteVectorScalarCut0 import plot
-
-common_sliders = common_sliders0 + [choose_energy]
+from SiteVectorScalarCut0 import common_sliders as common_sliders1
 
 
-add_sliders, read_sliders = addread_sliders(*common_sliders) 
+common_sliders = common_sliders1 + [choose_energy]
 
 
-
-
-
-
-
-
+add_sliders, read_sliders = addread_sliders(*common_sliders,*common_sliders0)
 
 
 

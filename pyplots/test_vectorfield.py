@@ -85,20 +85,20 @@ def get_plotdata(kwargs):
    
     n = kwargs.get("n",3)
 
-    theta = np.linspace(0, np.pi, max(1,n//2), endpoint=False) + np.random.rand()*np.pi 
+    theta = np.linspace(0, np.pi, max(1,n//2), endpoint=False) #+ np.random.rand()*np.pi 
 
 #    theta = np.pi/2
 
-    phi = np.linspace(0,2*np.pi,n,endpoint=False) + np.random.rand()*2*np.pi
+    phi = np.linspace(0,2*np.pi,n,endpoint=False) #+ np.random.rand()*2*np.pi
 
     charges = R(1, theta, phi) 
 
 #    print("charges",charges.shape)
-    theta2 = np.linspace(0, np.pi, 50, endpoint=False) + np.random.rand()*np.pi 
+    theta2 = np.linspace(0, np.pi, 50, endpoint=False) #+ np.random.rand()*np.pi 
 
 #    theta2 = np.pi/2
 
-    phi2 = np.linspace(0,2*np.pi,100,endpoint=False) + np.random.rand()*2*np.pi
+    phi2 = np.linspace(0,2*np.pi,100,endpoint=False) #+ np.random.rand()*2*np.pi
 
     surface = R(0.8, theta2, phi2) 
 
@@ -118,7 +118,7 @@ def get_plotdata(kwargs):
 
 
 
-    out["nodes"], out["dRs"] = E(XYZs, charges, 1)
+    out["nodes"], out["dRs"] = E(XYZs, charges, 0.01)
   
 #    print(out["dRs"])
 #    Es = E(surface, charges)[1]
