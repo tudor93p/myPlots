@@ -74,28 +74,8 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
     L = Utils.Assign_Value(d("label"), np.repeat(None, len(Y)))
 
 
-#    print()
-#    for c in ["x","y","z"]:
-#
-#        s= c+"lim"
-#
-#        print(s,"=",get_val(s))
-#
-#    print()
-    
-    xlim,ylim,zlim = deduce_axislimits([X,Y,Z], 
-                                  [get_val(c+"lim") for c in ["x","y","z"]])
 
-#    print()
-#    for c,l in zip(["x","y","z"],xyzlims):
-#
-#        s= c+"lim"
-#
-#        print(s,"=",get_val(s))
-#        print("new lim =",l)
-#
-#
-#    print()
+    xlim,ylim,zlim = deduce_axislimits([X,Y,Z], [get_val(c+"lim") for c in ["x","y","z"]])
 
     nr_col = 0
 
@@ -109,8 +89,9 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
 
 
         if z is None:
-    
-            ax0.scatter(x, y, s=dotsize, c=colors[nr_col], label=l, zorder=zorder0+2)
+  
+
+            ax0.scatter(x, y, s=dotsize, c=colors[nr_col], label=l, zorder=zorder0+2, marker=MARKERS[nr_col],alpha=0.8)
    
             nr_col += 1
 
@@ -120,7 +101,7 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
           
             
 
-            P = ax0.scatter(x, y, s=S, c=z, cmap=cmap, zorder=zorder0+2, vmax=zlim[1], vmin=zlim[0], label=l)#, alpha=0.8)
+            P = ax0.scatter(x, y, s=S, c=z, cmap=cmap, zorder=zorder0+2, vmax=zlim[1], vmin=zlim[0], label=l, marker=MARKERS[nr_col], alpha=0.8)
        
             if i==0 and get_val("show_colorbar", True):
 
@@ -141,11 +122,17 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
     
     plot_levellines(ax0, get_val, zorder=zorder0+5, color="k", lw=1, alpha=0.6)
 
-
     set_xylabels(ax0, get_val, fontsize=fontsize)
 
+    if 'xticks' in data:
 
+        ax0.set_xticks(data['xticks'])
 
+        if 'xticklabels' in data:
+
+            ax0.set_xticklabels(data['xticklabels'])
+
+    
 
 
 

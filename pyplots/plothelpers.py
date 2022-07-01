@@ -65,6 +65,18 @@ def inset_sizes(rectangle, kwargs):
 linestyles=['-',':','--','-.']
 #linemarkers=["","o","X"]
 
+MARKERS = [
+        "o", 
+        "<", 
+        "+", 
+        "s", 
+        ".", 
+        ">", 
+        "x",
+        ]
+
+MARKERS = np.concatenate([MARKERS for i in range(10)])
+
 
 #def linekwargs(N=None):
 #
@@ -77,7 +89,9 @@ linestyles=['-',':','--','-.']
 
 #colors = ["b","r","g","orange","k","y"]
 
-colors = np.roll([["brown","red","coral","peru"],["gold","olive","forestgreen","lightseagreen"],["dodgerblue","midnightblue","darkviolet","deeppink"]],1,axis=1).T.reshape(-1)
+colors = np.roll([["brown","red","coral","peru"],["goldenrod","olive","forestgreen","lightseagreen"],["dodgerblue","midnightblue","darkviolet","deeppink"]],1,axis=1).T.reshape(-1)
+
+
 
 colors = np.concatenate((colors,colors,colors))
 
@@ -396,12 +410,16 @@ def getlim(dat,f=lambda u:u):
 
 def deduce_axislimits(data=None, limits=None):
 
+
     data = Utils.Assign_Value(data, [None,None])
+    
+
+    data = [Utils.Assign_Value(d, [None,None]) for d in data]
+
 
     limits = Utils.Assign_Value(limits, np.repeat(None,len(data))) 
 
     limits = [Utils.Assign_Value(lim, [None,None]) for lim in limits]
-
 
     if len(data)==3 and len(limits)==3:
 
@@ -433,28 +451,51 @@ def deduce_axislimits(data=None, limits=None):
 
 
     if len(data)!=2 or len(limits)!=2:
-
+        print(len(data),len(limits))
         raise
 
     
     limits_given = [False, False]
-   
+
+#    print()
+
 
     for i,lim in enumerate(limits): 
 
-        if lim is not None:
+#        print(i,lim,limits_given)
+
+        if lim is not None: 
+
+#            print("is not None")
             
             limits[i] = np.reshape(lim,-1)
 
+#            print(limits) 
+
             if len(lim)==2:
                 
-                for T in [int,float,np.longlong]:
-                    
-                    if all([isinstance(l,T) for l in lim]):
+#                print("len is 2")
 
-                        limits_given[i] = True 
+#                for T in [int,float,np.longlong]:
+                   
+#                for l in lim:
+#
+#                    for t in [int,float,np.longlong]:
+#
+#                        print(l,t,isinstance(l,t))
+#
+#                    print(any([isinstance(l,t) for t in [int,float,np.longlong]]))
 
-                        break 
+#                if all([ ]) for l in lim]):
+
+
+                if all([any([isinstance(l,t) for t in [np.int,np.int64,int,float,np.longlong]]) for l in lim]):
+
+#                    if all([isinstance(l,T) for l in lim]):
+
+                    limits_given[i] = True 
+
+                #    break 
 
                 if not limits_given[i] and not any([l is None for l in lim]):
 
@@ -508,9 +549,13 @@ def deduce_axislimits(data=None, limits=None):
 
 
 
-def plot_levellines(ax, get_line, **kwargs):
+def plot_levellines(ax, get_line, color="k", lw=1, alpha=0.6, 
+        xlim=None, ylim=None,
+        **kwargs):
 
-    xylim = [ax.get_xlim(), ax.get_ylim()]
+    xylim = [xlim if xlim is not None else ax.get_xlim(), 
+                ylim if ylim is not None else ax.get_ylim()]
+
 
 
     for (i,c) in enumerate("xy"):
@@ -523,7 +568,7 @@ def plot_levellines(ax, get_line, **kwargs):
     
             xy[i] = [line,line]
     
-            ax.plot(*xy, **kwargs)
+            ax.plot(*xy, color=color, lw=lw, alpha=alpha, **kwargs)
     
     
     for (l,f) in zip(xylim, [ax.set_xlim, ax.set_ylim]):
@@ -534,14 +579,21 @@ def plot_levellines(ax, get_line, **kwargs):
 
 def set_xylabels(ax, get_label, **kwargs):
 
-    for (c,f) in zip("xy", (ax.set_xlabel, ax.set_ylabel) ):
+    for (i,(c,f)) in enumerate(zip("xy", (ax.set_xlabel, ax.set_ylabel))):
 
-        label = get_label(c+"label")
+        label = get_label(c+"label") if callable(get_label) else get_label[i]
 
         if label is not None:
 
-            f(label, **kwargs)
+            if c=="y" and sum([s not in ["$","_"] for s in label])<=2:
+
+                f(label, **kwargs, rotation=0)
             
+            else:
+                f(label, **kwargs)
+
+            
+
 
 
 #def update_vminmax(imposed_min, imposed_max, actual_min, actual_max):

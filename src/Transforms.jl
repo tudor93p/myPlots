@@ -690,12 +690,10 @@ function fourier_freq(x::AbstractVector{<:Real}; check_step::Bool=true)::Vector{
 
 		D = diff(x)
 	
-		@assert all(D.>0)
+		@assert all(>(0),D)
 
 		dist = Utils.Unique(D, tol=1e-6)
 
-		#length(dist)>1 && return fourier_abs(interp(x, y; dim=dim)...; dim=dim)
-	
 		@assert length(dist)==1
 
 	end 
@@ -1012,7 +1010,7 @@ pd_interp = ProcessData("transform", "Interpolate",
 
 		function calc_interp(P::AbstractDict, (x,y); kwargs...)
 
-					N = max(2length(x), parse_integer(get(P, "transfparam", 10)))
+					N = max(2length(x)-1, parse_integer(get(P, "transfparam", 10)))
 
 					return interp(x, y; interp_N=N, kwargs...), "interp."
 
@@ -1024,7 +1022,7 @@ pd_smoothinterp = ProcessData("transform", "SmoothInterp.",
 
 		function calc_sm_interp(P::AbstractDict, (x,y); kwargs...)
 
-					N = max(2length(x), parse_integer(get(P, "transfparam", 10)))
+					N = max(2length(x)-1, parse_integer(get(P, "transfparam", 10)))
 
 					return interp(x, y; interp_N=N, smooth=get(P,"smooth",0),
 												kwargs...), "smooth interp."

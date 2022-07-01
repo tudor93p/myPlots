@@ -197,18 +197,23 @@ def plot(Ax, get_plotdata,
     ax0.set_xlim(Plot.extend_limits([xm,xM],0.03))
     ax0.set_ylim(Plot.extend_limits([ym,yM],0.03))
 
-    ax0.set_xlabel(data.get("xlabel","$x$"), fontsize=fontsize)
+
+    xlabel = data.get("xlabel","$x$") 
+
+#    ax0.set_xlabel(data.get("xlabel","$x$"), fontsize=fontsize)
 
     ylabel = data.get("ylabel","$y$")
 
-    ylabel_kwargs = {"fontsize":fontsize}
+#    ylabel_kwargs = {"fontsize":fontsize}
 
-    if sum([c!="$" for c in ylabel])<=1:
+#    if sum([c!="$" for c in ylabel])<=1:
 
-        ylabel_kwargs["rotation"]=0
+#        ylabel_kwargs["rotation"]=0
 
-    ax0.set_ylabel(ylabel, **ylabel_kwargs)
-    
+#    ax0.set_ylabel(ylabel, **ylabel_kwargs)
+
+    set_xylabels(ax0, [xlabel,ylabel], fontsize=fontsize)
+
     ax0.set_aspect(1)
 
 
