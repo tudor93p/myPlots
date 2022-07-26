@@ -125,6 +125,7 @@ def init_plot(libraries, initial_data=dict(), insets=dict()):
 def plot_direct_frominit(figure, insets, nr_rc, 
         figsize=None, 
         fignum=0,
+        tight_layout=True,
         **kwargs):
 
     if figsize is None:
@@ -141,7 +142,8 @@ def plot_direct_frominit(figure, insets, nr_rc,
     
     figure(Ax, **kwargs)
 
-    fig.tight_layout() 
+    if tight_layout:
+        fig.tight_layout() 
 
     return fig,Ax 
 

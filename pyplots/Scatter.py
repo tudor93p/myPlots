@@ -54,7 +54,7 @@ def mask(x,xlim,y,ylim,z=None):
 
 
 def plot(Ax, get_plotdata, dotsize=10, fontsize=12, 
-            cmap="PuBu", zorder0=0, **kwargs): 
+            cmap="cool", zorder0=0, **kwargs): 
 
     ax0 = Ax[0]
 
@@ -74,8 +74,10 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
     L = Utils.Assign_Value(d("label"), np.repeat(None, len(Y)))
 
 
+ 
 
     xlim,ylim,zlim = deduce_axislimits([X,Y,Z], [get_val(c+"lim") for c in ["x","y","z"]])
+
 
     nr_col = 0
 

@@ -127,6 +127,9 @@ def plot(Ax, get_plotdata, cmap="viridis", fontsize=12, **kwargs):
 
 
 
+    if "aspect_ratio" in data:
+
+        ax0.set_aspect(data["aspect_ratio"])
 
 
 

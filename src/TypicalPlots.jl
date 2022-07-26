@@ -116,7 +116,7 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 		Data = get_data(P, mute=false, fromPlot=true, target=oper_)
 	
 	
-	  out = Dict(
+		out = Dict{String,Any}(
 							 
 			"xlabel" => get(Data, "kLabel",
 											ifelse(haskey(Data,"kTicks"),
@@ -127,11 +127,23 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 	
 			"x" => Data["kLabels"][:],
 	
-	#		"xticks" => Data["kTicks"],
-	
 			"y" => Data["Energy"][:],
 	
 			)
+
+
+		if haskey(Data, "kTicks")
+			
+			out["xticks"] = Data["kTicks"] 
+
+			if haskey(Data, "kTicklabels") 
+
+				out["xticklabels"] = Data["kTicklabels"]
+
+			end 
+
+		end 
+
 
 
 		if haskey(Data, oper_) 
