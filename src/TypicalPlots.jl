@@ -128,6 +128,8 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 			"x" => Data["kLabels"][:],
 	
 			"y" => Data["Energy"][:],
+
+			"xlim" => extrema(Data["kLabels"]),
 	
 			)
 
