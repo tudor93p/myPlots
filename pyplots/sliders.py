@@ -706,13 +706,14 @@ def colormap():
 
     def add(fig, **kwargs):
 
-        fig.add_combobox(["cool",
-                "PuBuGn","YlGnBu","copper",
+        fig.add_combobox(sorted(["cool","winter",
+                "PuBuGn","YlGnBu","PuOr",
+                "copper","bone","Accent",
                 "plasma","coolwarm","Spectral","viridis",
                 "gnuplot","terrain", 
                 "rainbow","gist_rainbow",
                 "twilight","hsv"
-                ],label="Color map",key="cmap")
+                ]),label="Color map",key="cmap")
 
         fig.add_checkbox(label="reverse",key="reverse_cmap")
 
@@ -854,7 +855,7 @@ def arrow_parameters():
 #                            vs=np.concatenate((
 #                                np.linspace(0.01, 1, 50, endpoint=False),
 #                                np.linspace(1, 2, 15))),
-                            vs=np.linspace(0.01,6,80),
+                            vs=np.linspace(0.01,10,100),
                             columnSpan=4, v0=30)
 
         fig.add_slider(label="Arrow min. len.", key="arrow_minlength",

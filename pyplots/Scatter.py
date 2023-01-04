@@ -58,6 +58,10 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
 
     ax0 = Ax[0]
 
+    alpha0 = 1#0.6
+
+
+
     data = get_plotdata(kwargs)
 
     d = get_one_or_many(data)
@@ -93,7 +97,7 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
         if z is None:
   
 
-            ax0.scatter(x, y, s=dotsize, c=colors[nr_col], label=l, zorder=zorder0+2, marker=MARKERS[nr_col],alpha=0.8)
+            ax0.scatter(x, y, s=dotsize, c=colors[nr_col], label=l, zorder=zorder0+2, marker=MARKERS[nr_col],alpha=alpha0)
    
             nr_col += 1
 
@@ -103,7 +107,7 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
           
             
 
-            P = ax0.scatter(x, y, s=S, c=z, cmap=cmap, zorder=zorder0+2, vmax=zlim[1], vmin=zlim[0], label=l, marker=MARKERS[nr_col], alpha=0.8)
+            P = ax0.scatter(x, y, s=S, c=z, cmap=cmap, zorder=zorder0+2, vmax=zlim[1], vmin=zlim[0], label=l, marker=MARKERS[nr_col], alpha=alpha0)
        
             if i==0 and get_val("show_colorbar", True):
 
@@ -122,7 +126,7 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
     ax0.set_ylim(ylim)
 
     
-    plot_levellines(ax0, get_val, zorder=zorder0+5, color="k", lw=1, alpha=0.6)
+    plot_levellines(ax0, get_val, zorder=zorder0+5, color="k", lw=1, alpha=alpha0*0.75)
 
     set_xylabels(ax0, get_val, fontsize=fontsize)
 

@@ -598,7 +598,6 @@ function plot(tasks::AbstractVector{PlotTask}; only_prep::Bool=false, kwargs...)
 
 	only_prep && return pyplot_args 
 
-
 	pyplot("scheleton", pyplot_args...; kwargs...)
 
 end 

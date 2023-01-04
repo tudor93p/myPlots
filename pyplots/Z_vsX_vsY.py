@@ -22,6 +22,10 @@ add_sliders, read_sliders = addread_sliders(*common_sliders)
 
 def closest_data_i(X,x,n):
 
+    print(X.shape)
+    print(x)
+    print(n)
+
     if x is None:
         return [None for i in range(n)]
 
