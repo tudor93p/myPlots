@@ -112,7 +112,9 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 	function plot_(P::AbstractDict)::Dict
 
 		oper_ = get(P, "oper", nothing)
-	
+
+		@show oper_ 
+
 		Data = get_data(P, mute=false, fromPlot=true, target=oper_)
 	
 	
@@ -133,20 +135,31 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 	
 			)
 
+		@show out["xlabel"] extrema(out["x"]) extrema(out["y"]) 
+
 
 		if haskey(Data, "kTicks")
 			
 			out["xticks"] = Data["kTicks"] 
+			
+			@show out["xticks"] 
 
 			if haskey(Data, "kTicklabels") 
 
 				out["xticklabels"] = Data["kTicklabels"]
+				@show out["xticklabels"]
 
 			end 
 
 		end 
 
 
+
+		@show haskey(Data, oper_)
+
+
+		@show oper_=="weights" 
+		@show haskey(P, "Energy")
 
 		if haskey(Data, oper_) 
 
@@ -179,7 +192,9 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 
 		elseif oper_=="weights" && haskey(P, "Energy")
 	
-			out["z"] = Transforms.SamplingWeights(P; Data=Data, get_k=true)
+			out["z"] = Transforms.SamplingWeights(P; Data=Data, get_k=true) 
+
+			@show size(out["z"]) extrema(out["z"])
 
 			out["zlabel"] = oper_ 
 
