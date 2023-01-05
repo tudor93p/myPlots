@@ -113,7 +113,6 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 
 		oper_ = get(P, "oper", nothing)
 
-		@show oper_ 
 
 		Data = get_data(P, mute=false, fromPlot=true, target=oper_)
 	
@@ -135,19 +134,15 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 	
 			)
 
-		@show out["xlabel"] extrema(out["x"]) extrema(out["y"]) 
 
 
 		if haskey(Data, "kTicks")
 			
 			out["xticks"] = Data["kTicks"] 
 			
-			@show out["xticks"] 
-
 			if haskey(Data, "kTicklabels") 
 
 				out["xticklabels"] = Data["kTicklabels"]
-				@show out["xticklabels"]
 
 			end 
 
@@ -155,11 +150,8 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 
 
 
-		@show haskey(Data, oper_)
 
 
-		@show oper_=="weights" 
-		@show haskey(P, "Energy")
 
 		if haskey(Data, oper_) 
 
@@ -194,7 +186,6 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 	
 			out["z"] = Transforms.SamplingWeights(P; Data=Data, get_k=true) 
 
-			@show size(out["z"]) extrema(out["z"])
 
 			out["zlabel"] = oper_ 
 
