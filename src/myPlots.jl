@@ -565,17 +565,36 @@ function pyplot_init_sliders(tasks...)
   return fig_init
 	
 end
+ 
 
 
 
 
-function pyplot(script::AbstractString, args...; kwargs...)
+
+function retrieve_pyplot_object(script::Union{Symbol,AbstractString}, 
+																obj::Union{Symbol,AbstractString}
+																)
 
 	path = "$PATH_SNAKE/myPlots/pyplots/"
 
 	pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"), path)
 
-	PyCall.pyimport(script).plot(args...; kwargs...)
+	return getproperty(PyCall.pyimport(string(script)), Symbol(obj))
+
+end  
+
+
+function pyplot(script::AbstractString, args...; kwargs...)
+
+#	path = "$PATH_SNAKE/myPlots/pyplots/"
+#
+#	pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"), path)
+#
+#	PyCall.pyimport(script).plot(args...; kwargs...)
+	
+	F = retrieve_pyplot_object(script, :plot)
+
+	F(args...; kwargs...)
 
 end
 
@@ -588,7 +607,8 @@ plot(task::PlotTask; kwargs...) = plot([task]; kwargs...)
 plot(tasks::Vararg{PlotTask}; kwargs...) = plot(collect(tasks); kwargs...)
 
 
-function plot(tasks::AbstractVector{PlotTask}; only_prep::Bool=false, kwargs...)
+function plot(tasks::AbstractVector{PlotTask}; 
+							only_prep::Bool=false, kwargs...)
 
 	pyplot_args = Utils.invmap(tasks,	pyplot_merged_Param,
 																		pyplot_pyjl_pairs,
@@ -604,7 +624,25 @@ end
 
 
 
+init_plot(task::PlotTask; kwargs...) = init_plot([task]; kwargs...)
+init_plot(tasks::Vararg{PlotTask}; kwargs...) = init_plot(collect(tasks); kwargs...)
 
+
+function init_plot(tasks::AbstractVector{PlotTask}; 
+									kwargs...)
+
+	pyjl_pairs_ = pyplot_pyjl_pairs(tasks...)
+
+	init_slid_ = pyplot_init_sliders(tasks...)
+
+
+	F = retrieve_pyplot_object("scheleton","init_plot")
+
+	return (F(pyjl_pairs_, init_slid_; kwargs...),
+					retrieve_pyplot_object("scheleton", "plot_direct_frominit"),
+					)
+
+end
 
 
 
