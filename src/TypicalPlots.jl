@@ -7,7 +7,7 @@ import myLibs: Lattices, Utils
 using ..myPlots: PlotTask, construct_obs0obs, join_label
 using Constants: VECTOR_STORE_DIM 
 
-import ..Transforms 
+import ..Transforms, ..Sliders 
 
 #===========================================================================#
 #
@@ -17,28 +17,42 @@ import ..Transforms
 
 
 
-obs(task::Union{CompTask,PlotTask}) = obs(task.get_data) 
+obs(task::Union{CompTask,PlotTask}, args...) = obs(task.get_data, args...) 
 
-obs(get_data::Function) = ("Observables", function plot_(P::AbstractDict)
+function obs(get_data::Function)::Tuple{String,Function}
+	
+	function plot_(P::AbstractDict)
 																	
-	obs0 = "QP-DOS"
+		obs0 = "QP-DOS"
+	
+		obs_ = vcat(get(P, "obs", obs0))
+	
+		Data = get_data(P, mute=false, fromPlot=true, target=vcat(obs_,obs0))
+	
+		return construct_obs0obs(P, obs_,	[get(Data, o_, 	nothing) for o_ in obs_],
+														 		obs0, get(Data, obs0, nothing) 
+														 )
+	
+	end 
 
-	obs_ = vcat(get(P, "obs", obs0))
+	
+	return "Observables", plot_ 
 
-	Data = get_data(P, mute=false, fromPlot=true, target=vcat(obs_,obs0))
-
-#	@show keys(Data) obs0 obs_ 
-
-	return construct_obs0obs(P, obs_,	[get(Data, o_, 	nothing) for o_ in obs_],
-													 		obs0, get(Data, obs0, nothing) 
-													 )
-
-end) 
+end 
 
 
+function obs(get_data::Function,
+						 observables::AbstractVector,
+						 filter_same_::Function
+						 )::Tuple{String,Function} 
 
+	pyscript, plot_ = obs(get_data)
 
+	add_group_obs_ = Sliders.add_group_obs(observables, filter_same_)
 
+	return (pyscript, plot_∘add_group_obs_)
+
+end 
 
 
 
