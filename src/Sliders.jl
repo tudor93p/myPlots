@@ -38,6 +38,58 @@ end
 
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+function retrieve_function(f::Symbol,
+													 prefix::Union{Char,AbstractString,Symbol}
+													 )::Function  
+
+	Utils.getprop(@__MODULE__, f,
+								Utils.getprop(@__MODULE__, Symbol(string(prefix,f)))
+								)
+ 
+end  
+
+
+function add_group_obs(observables::AbstractVector, 
+												filter_same_::Function, # temp. compromise 
+												kind::Symbol=:nonlocal)::Function
+
+	kinds = [:nonlocal, :local, :bondvector, :sitevector, :cc]
+
+	if !in(kind,kinds)
+
+		@warn "The type of observable '$kind' does not exist. Please use one of $kinds. No grouping is possible."
+
+		return identity
+
+	end 
+
+	obs_group = unique(retrieve_function(kind, "pick_")(observables))
+
+	length(obs_group)==1  && return identity 
+
+
+	return function all_compat_obs(P::AbstractDict)::AbstractDict
+	
+		get(P,"obs_group","-") in ["Prefix","Name"] || return P  
+
+		out = filter_same_(P["obs_group"])(P["obs"], obs_group)
+
+#		F = Helpers.ObservableNames.filter_same_(P["obs_group"])
+	
+		return Set(out)==Set([P["obs"]]) ? P : Utils.adapt_merge(P, "obs"=>out) 
+
+	end 
+
+end 
+
+
 
 #===========================================================================#
 #
@@ -85,7 +137,7 @@ init_enlim(ys) = function (d)
 	
 		merge!(d, Dict("enlim"=> extrema(ys))) do a,b
 
-			(max(minimum(a),minimum(b)), min(maximum(a),maximum(b)))
+			((minimum(a)+minimum(b))/2,(maximum(a)+maximum(b))/2)
 
 		end 
 
@@ -178,10 +230,17 @@ init_transforms() = init_transforms("Interpolate",
 #---------------------------------------------------------------------------#
 
 
+#function retrieve_function(f::Symbol)::Function 
+#
+#	Utils.getprop(@__MODULE__, f)
+#
+#
+#end 
+
+
 function init(f::Symbol, args...)::Vector{Function}
 
-	F = Utils.getprop(@__MODULE__, f, 
-										Utils.getprop(@__MODULE__, Symbol(string("init_",f))))
+	F = retrieve_function(f,"init_")
 
 	@assert F isa Function 
 
@@ -202,7 +261,7 @@ init(fs::AbstractVector{<:Function})::Vector{Function} = fs
 
 init(fs::Vararg{<:Function})::Vector{Function} = vcat(fs...)
 
-init()::Vector{Function} = Function[]
+init()::Vector{Function} = Function[] 
 
 #############################################################################
 end

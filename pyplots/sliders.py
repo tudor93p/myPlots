@@ -94,7 +94,7 @@ def zoom_choose_energy():
 
         fig.add_text(label="Window E",key="sample_states_width_E",text="")
     
-        fig.add_combobox(["Lorentzian","Gaussian","Rectangle"],label="Sample method",key="sample_states_method")
+        fig.add_combobox(["Gaussian","Lorentzian","Rectangle"],label="Sample method",key="sample_states_method")
 
 
 

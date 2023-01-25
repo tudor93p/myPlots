@@ -47,6 +47,7 @@ def plot(Ax, get_plotdata,
 #        reverse_cmap=False,
         fontsize=12, 
         smooth=0,
+        colorbar=True,
         **kwargs):
 
 
@@ -154,13 +155,16 @@ def plot(Ax, get_plotdata,
                 vmin=vmin, vmax=vmax)
 
 
-    label = "Arrow length"
-    
-    if "label" in data:
-    
-        label += "\n"+ data["label"] 
 
-    Plot.good_colorbar(P, [vmin, vmax], ax0, label, fontsize=fontsize)
+    if colorbar: 
+
+        label = "Arrow length"
+        
+        if "label" in data:
+        
+            label += "\n"+ data["label"]  
+
+        Plot.good_colorbar(P, [vmin, vmax], ax0, label, fontsize=fontsize)
 
 
 
