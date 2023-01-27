@@ -60,7 +60,8 @@ function get_SamplingVars(P;	Data=Dict(), get_k::Bool=false,
 													)
 
 	E_SV = get_SamplingVars_(P, "Energy",
-													 get(Data, "Energy", ENERGIES)[:],
+													 centers,
+#													 get(Data, "Energy", ENERGIES)[:],
 													 "E_width",
 													 "E_width_factor")
 
