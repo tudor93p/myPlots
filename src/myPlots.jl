@@ -411,6 +411,7 @@ end
 #	end 
 
 function construct_obs0obs(P::AbstractDict, 
+													 Energy::AbstractVector,
 													 obs::AbstractVector,
 													 val::AbstractVector, 
 													 obs0::AbstractString, 
@@ -425,7 +426,7 @@ function construct_obs0obs(P::AbstractDict,
 
 
 	out = merge!(Dict{String,Any}("xlabel0"=>obs0, 
-																"y"=>ENERGIES, "ylabel"=>"Energy"),
+																"y"=>Energy, "ylabel"=>"Energy"),
 							 obs_x_and_label(obs0,val0, "0", labels0))
 
 	if all(in(keys(P)), ["interp_method", "Energy", "E_width"])

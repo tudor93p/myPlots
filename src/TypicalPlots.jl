@@ -5,7 +5,7 @@ using myLibs.ComputeTasks: CompTask
 import myLibs: Lattices, Utils
 
 using ..myPlots: PlotTask, construct_obs0obs, join_label
-using Constants: VECTOR_STORE_DIM 
+using Constants: VECTOR_STORE_DIM, ENERGIES 
 
 import ..Transforms, ..Sliders 
 
@@ -28,9 +28,12 @@ function obs(get_data::Function)::Tuple{String,Function}
 		obs_ = vcat(get(P, "obs", obs0))
 	
 		Data = get_data(P, mute=false, fromPlot=true, target=vcat(obs_,obs0))
-	
-		return construct_obs0obs(P, obs_,	[get(Data, o_, 	nothing) for o_ in obs_],
-														 		obs0, get(Data, obs0, nothing) 
+
+
+		return construct_obs0obs(P, 
+														 get(Data,"Energy",ENERGIES),
+														 obs_,	[get(Data, o_, 	nothing) for o_ in obs_],
+														 obs0, get(Data, obs0, nothing),
 														 )
 	
 	end 
