@@ -6,7 +6,13 @@ for filename in [
 
 #"transf_Fermi_surface",
 
-"myplots",
+"myplots", 
+
+"plot_obs",
+
+#"plotlatt",
+
+"transforms",
 
 ]
 

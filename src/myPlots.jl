@@ -10,7 +10,9 @@ using myLibs: Utils, Algebra, ComputeTasks
 using myLibs.ComputeTasks: CompTask
 
 
-using Constants: ENERGIES, HOPP_CUTOFF, VECTOR_STORE_DIM, MAIN_DIM, SECOND_DIM, PATH_SNAKE
+using Constants: MAIN_DIM, SECOND_DIM, PATH_SNAKE
+
+#using Constants: ENERGIES, HOPP_CUTOFF, VECTOR_STORE_DIM
 
 export PlotTask 
 
@@ -587,15 +589,7 @@ end
 
 function pyplot(script::AbstractString, args...; kwargs...)
 
-#	path = "$PATH_SNAKE/myPlots/pyplots/"
-#
-#	pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"), path)
-#
-#	PyCall.pyimport(script).plot(args...; kwargs...)
-	
-	F = retrieve_pyplot_object(script, :plot)
-
-	F(args...; kwargs...)
+	retrieve_pyplot_object(script, :plot)(args...; kwargs...)
 
 end
 

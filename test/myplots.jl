@@ -84,7 +84,7 @@ P["E_width"] =0.2
 @show P 
 
 #@show 
-myPlots.construct_obs0obs(P, ["Obs"], [[1,2,3]], "Obs0", [30,10,20]);
+myPlots.construct_obs0obs(P, ENERGIES, ["Obs"], [[1,2,3]], "Obs0", [30,10,20]);
 
 
 println()
@@ -146,6 +146,7 @@ task = myPlots.PlotTask("test plot task",
 										
 
 										 	out =myPlots.construct_obs0obs(Dict(),
+																										 ENERGIES,
 																				"Obs0",
 																				ENERGIES,
 																				"Obs0",
