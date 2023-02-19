@@ -585,6 +585,9 @@ def local_observables():
 #
 #---------------------------------------------------------------------------#
 
+
+
+
 def oper_vminmax():
 
 
@@ -630,6 +633,23 @@ def obs_vminmax():
 
     return add,read
 
+
+
+def ylim():
+
+    def add(fig, **kwargs):
+    
+        fig.add_text(label="Limits y",key="ymin",text="")
+    
+        fig.add_text(key="ymax",text="")
+    
+    
+    def read(obj):
+ 
+        return read_many(lambda k: read_text(obj, k), ["ymin", "ymax"])
+    
+
+    return add,read
 
 
 #===========================================================================#

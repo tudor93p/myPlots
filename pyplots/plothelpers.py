@@ -429,10 +429,12 @@ def deduce_axislimits(data=None, limits=None):
 
     data = [Utils.Assign_Value(d, [None,None]) for d in data]
 
-
+    #print("data:",data)
     limits = Utils.Assign_Value(limits, np.repeat(None,len(data))) 
 
     limits = [Utils.Assign_Value(lim, [None,None]) for lim in limits]
+
+    #print("lim:",limits)
 
     if len(data)==3 and len(limits)==3:
 
@@ -515,6 +517,7 @@ def deduce_axislimits(data=None, limits=None):
                     print("Invalid limit:",i,type(lim),[type(l) for l in lim])
 
 
+#    print("given:",limits_given)
 
     nr_lim = sum(limits_given)
 

@@ -50,7 +50,7 @@ limits = [[None, None]]
 Y = (np.random.rand(2, 5)-0.5)*3
 X = np.random.rand(2, 5)
 
-print(Y.max(),Y.min(), X.max(), X.min())
+#print(Y.max(),Y.min(), X.max(), X.min())
 
 data = [X,Y]
 
@@ -59,6 +59,14 @@ ylim = [-0.75, 0.75]
 limits = [[0.0,1.0],ylim]
 
 
-print(deduce_axislimits(data,limits))
+#print(deduce_axislimits(data,limits))
+
+print(deduce_axislimits([None,[1,2,3,4,5]],[None,[None,3]]))
+
+print()
+
+print(deduce_axislimits([None,[1,2,3,4,5]],[None,[2,None]]))
+
+
 
 

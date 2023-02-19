@@ -1119,11 +1119,11 @@ version = "1.6.38+0"
 
 [[deps.myLibs]]
 deps = ["Arpack", "Combinatorics", "ConcaveHull", "Dates", "DelimitedFiles", "Dierckx", "Distributed", "FFTW", "FileIO", "Graphs", "JLD", "LazySets", "LinearAlgebra", "MetaGraphs", "Optim", "OrderedCollections", "PolynomialRoots", "PyCall", "PyPlot", "QHull", "QuadGK", "Random", "Revise", "SparseArrays", "Test", "TikzGraphs", "TikzPictures"]
-git-tree-sha1 = "2c709d1fc981ef1b7f49b9bebb597e650174d9b4"
+git-tree-sha1 = "62324639531eae5f1ac42f9c9fc16ec792616113"
 repo-rev = "main"
-repo-url = "https://github.com/tudor93p/myLibs.git#main"
+repo-url = "https://github.com/tudor93p/myLibs.git"
 uuid = "0cc41259-d48e-4a81-8a6d-ec7e330e4bca"
-version = "0.1.1"
+version = "0.1.2"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
