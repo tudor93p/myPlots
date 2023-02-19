@@ -58,6 +58,7 @@ const pysliders_kwargs = Dict{String,String}(
 	"transforms"							=>	"Transforms",
 	"local_observables"				=>	"LocalObsNames",
 	"pick_systems"						=>	"more_systems",
+	"obs_group"								=>	"ObsGroups",
 	)
 
 
@@ -72,6 +73,8 @@ const pysliders_funs = Dict{String,Tuple{Vararg{Symbol}}}(
 	"Regions"							=>	(:identity, :max),
 	"Transforms"					=>	(:py_transf, ),
 	"max_obs_index"				=>	(:identity, :max),
+	"ObsGroups"						=>	(:py_obsgroups, :sortunion),
+
  )
 
 
@@ -96,10 +99,17 @@ function py_enlim(a::Ta, b::Tb)::NTuple{2,Float64} where {
 end  
 
 
+sortunion = sort∘union 
 
 function py_opers(oper::AbstractVector)::Vector{String}
 
-	["-"; pick_nonlocal(oper); "weights"]
+	sort(unique(["-"; pick_nonlocal(oper); "weights"]))
+
+end 
+
+function py_obsgroups(gr::AbstractVector)::Vector{String}
+
+	unique(vcat("-", gr))
 
 end 
 

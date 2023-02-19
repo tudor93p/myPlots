@@ -251,7 +251,7 @@ def obs_index():
 
     def add(fig, max_obs_index=11, **kwargs):
 
-        fig.add_combobox(range(1,max_obs_index),label="Observable i",key="obs_i")
+        fig.add_combobox(range(1,max_obs_index+1),label="Observable i",key="obs_i")
         
     def read(obj):
 
@@ -642,10 +642,9 @@ def obs_vminmax():
 
 def obs_group():
 
-    def add(fig, **kwargs):
+    def add(fig, ObsGroups=["-", "SubObs", "Name", "Prefix"], **kwargs):
    
-        fig.add_combobox(["-", "SubObs", "Name", "Prefix"],
-                            label="Group", key="obs_group")
+        fig.add_combobox(ObsGroups, label="Group", key="obs_group")
 
     def read(obj):
         
