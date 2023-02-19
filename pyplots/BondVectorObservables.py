@@ -6,11 +6,8 @@ from VectorField import nr_axes
 
 
 
-common_sliders = common_sliders0 + [bondvector_observables,
-                                                choose_energy, obs_index
-                                                ]
+common_sliders = common_sliders0 + [bondvector_observables, choose_energy, obs_index]
 
-add_sliders, read_sliders = addread_sliders(*common_sliders)
 
 
 #===========================================================================#

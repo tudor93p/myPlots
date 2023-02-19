@@ -7,7 +7,8 @@ from Hamilt_Diagonaliz import common_sliders as common_sliders1
 
 
 
-add_sliders, read_sliders = addread_sliders(*common_sliders0, *common_sliders1)
+local_sliders = common_sliders0 + common_sliders1 
+
 
 
 #===========================================================================#

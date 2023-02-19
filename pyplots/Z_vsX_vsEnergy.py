@@ -8,7 +8,7 @@ from Z_vsX_vsY import nr_axes
 common_sliders =   common_sliders0 + [energy_zoom]
 
 
-add_sliders, read_sliders = addread_sliders(*common_sliders, smoothen)
+local_sliders = common_sliders + [smoothen]
 
 
 

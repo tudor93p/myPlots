@@ -8,9 +8,7 @@ from Curves_yofx import plot as plot0
 
 common_sliders = [partial_observables, partobs_vminmax, boundaries, smoothen]
 
-add_sliders, read_sliders = addread_sliders(*common_sliders0, 
-                                            *common_sliders,
-                                            choose_energy)
+local_sliders = common_sliders0 + common_sliders + [choose_energy]
                 
 
 

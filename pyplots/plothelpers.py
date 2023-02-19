@@ -226,15 +226,28 @@ def printable_string(S):
 #---------------------------------------------------------------------------#
 
 
-def get_paramsplot(obj,libraries):
 
-    param_plot = libraries[0][0].read_sliders(obj)
-    
-    for (lib,f,t) in libraries[1:]:
-    
-        param_plot.update(lib.read_sliders(obj))
 
-    return param_plot
+def get_local_sliders(lib):
+
+    for k in ["local","common"]:
+        
+        s = k + "_sliders"
+    
+        if hasattr(lib,s): return getattr(lib, s)
+
+    raise Exception("The library",lib, "has no local_sliders") 
+
+
+#def get_paramsplot(obj,libraries):
+#
+#    param_plot = libraries[0][0].read_sliders(obj)
+#    
+#    for (lib,f,t) in libraries[1:]:
+#    
+#        param_plot.update(lib.read_sliders(obj))
+#
+#    return param_plot
 
 
 #===========================================================================#

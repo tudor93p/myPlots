@@ -4,13 +4,13 @@ import VectorField
 import Curves_yofx
 import PlotPyQt
 import matplotlib.pyplot as plt
-from sliders import fontsizes
+import sliders 
+from plothelpers import get_local_sliders
 import time 
 
 
 
 
-add_font, read_font = fontsizes()
 
 
 
@@ -171,13 +171,10 @@ def figure(obj, Fig, Axes):
             "arrow_width":0.015,
             }
 
-
-    for lib in [VectorField]:#, Curves_yofx]:
-        P.update(lib.read_sliders(obj))
+    P.update(read_slid(obj))
 
     P["atomsize"] = 0.25
 
-    P.update(read_font(obj))
 
     data = get_plotdata(P)
 
@@ -195,22 +192,6 @@ def figure(obj, Fig, Axes):
    
     subpos = [0.2, 0.6, 0.3, 0.3]
    
-
-#    newax2 = Plot.add_inset_axes(Axes[1], subpos, fontsize=fontsize)
-
-#    fontsize1 = Plot.inset_fontsize(subpos, fontsize)
-
-#    VectorField.plot([newax2], get_plotdata, **{**P, "fontsize":fontsize1})
-
-
-
-#    newax = Plot.add_inset_axes(Axes[0], subpos, fontsize=fontsize)
-
-#    Curves_yofx.plot([newax], get_plotdata2, **{**P, "fontsize":fontsize1})
-
-
-#    newax.set_title("title1",fontsize=fontsize1)
-
     for ax in np.reshape(Axes,-1):
         ax.set_aspect(1)
         ax.tick_params(labelsize=fontsize)
@@ -223,12 +204,10 @@ if __name__ == '__main__':
 
 
     fig = PlotPyQt.Figure(figure, 1, 1)
-    
-    for lib in [VectorField]:#, Curves_yofx]:
-        lib.add_sliders(fig)
-    
-    add_font(fig)
-    
+   
+    add_slid,read_slid = sliders.addread_sliders(get_local_sliders(VectorField))
+
+    add_slid(fig)
     
     fig.add_slider(label="Size",key="n",vs=range(1,150))
     

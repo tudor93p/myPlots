@@ -9,7 +9,6 @@ def nr_axes(**kwargs):
 
 common_sliders = [dotsizes, colormap, smoothen]
 
-add_sliders, read_sliders = addread_sliders(*common_sliders)
 
 
 #===========================================================================#

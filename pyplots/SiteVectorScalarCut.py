@@ -14,7 +14,7 @@ from SiteVector import common_sliders as common_sliders0
 common_sliders = common_sliders0 + common_sliders3 + [sitevectorobs_vminmax]
 
 
-add_sliders, read_sliders = addread_sliders(*common_sliders,*common_sliders2)
+local_sliders = common_sliders + common_sliders2 
 
 
 

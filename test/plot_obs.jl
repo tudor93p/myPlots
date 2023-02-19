@@ -50,10 +50,26 @@ comp_task = Parameters.Calculation("Simulation observables", param_flow,
 															function (args...) false end;
 															observables=observables) |> CompTask
 
+
 plot_task = myPlots.PlotTask(comp_task,
-														 [(:obs, observables), (:enlim, ENERGIES)],
+														 [("operators",["op1","op3"]),
+															(:obs, observables), 
+															(:enlim, ENERGIES), 
+															("colormap",),
+															("regions",2)],
 						myPlots.TypicalPlots.obs(get_data);
 						) 
+
+
+plot_task2 = myPlots.PlotTask(comp_task,
+														 [("operators",["op1","op2"]),
+															(:obs, observables), 
+															(:enlim, 2ENERGIES), 
+															("regions",10)],
+						myPlots.TypicalPlots.obs(get_data);
+						) 
+@show plot_task.init_sliders 
+
 
 for target in ([],
 							 ["QP-DOS"],
@@ -108,6 +124,7 @@ for target in ([],
 end 
 
 #myPlots.plot(plot_task)
+myPlots.plot(plot_task,plot_task2)
 
 #@show task 
 

@@ -13,8 +13,6 @@ common_sliders1 = [energy_zoom]
 common_sliders = common_sliders0 + common_sliders1
 
 
-add_sliders, read_sliders = addread_sliders(*common_sliders
-                                            )
 
 
 #===========================================================================#

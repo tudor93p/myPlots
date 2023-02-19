@@ -10,10 +10,8 @@ from Scatter_vsEnergy import common_sliders as common_sliders0, plot as plot0
 common_sliders = [operators, oper_vminmax, choose_k, obs_index]
 
 
-add_sliders, read_sliders = addread_sliders(
-                                            *common_sliders0,
-                                            *common_sliders,
-                                            )
+local_sliders = common_sliders0 + common_sliders 
+
 
 
 #===========================================================================#

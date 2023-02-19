@@ -12,15 +12,7 @@ def nr_axes(**kwargs):
 
 common_sliders = [local_observables, localobs_vminmax]
 
-
-
-add_sliders, read_sliders = addread_sliders(
-                                *common_sliders,
-                                *common_sliders0,
-                                choose_energy, 
-                                #choose_k, #? 
-                                atomsizes,
-                                )
+local_sliders = common_sliders + common_sliders0 + [choose_energy, atomsizes]
 
 
 

@@ -7,12 +7,8 @@ from LocalObservables import common_sliders as common_sliders1
 from sliders import *
 
 
-add_sliders, read_sliders = addread_sliders(
-                                    *common_sliders0,
-                                    *common_sliders1,
-#                                    *common_sliders,
-                                    regions,
-                                    )
+local_sliders = common_sliders0 + common_sliders1 + [regions]
+
 
 
 

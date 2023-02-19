@@ -12,12 +12,9 @@ from Hamilt_Diagonaliz import common_sliders as common_sliders3
 common_sliders = [saturation, choose_energy] + common_sliders3
 
 
+local_sliders = common_sliders1 + common_sliders2 + common_sliders 
 
-add_sliders, read_sliders = addread_sliders(*common_sliders1,
-                                            *common_sliders2,
-                                            *common_sliders,
 
-                                            )
 
 
 #===========================================================================#

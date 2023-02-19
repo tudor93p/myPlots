@@ -1,7 +1,6 @@
 from OneObs_vsX_vsY import plot as plot0
 from OneObs_vsX_vsY import common_sliders, nr_axes, addread_sliders
 
-add_sliders,read_sliders = addread_sliders(*common_sliders)
 
 def plot(Ax, get_plotdata, ylim=None, enlim=None,
                     length=None, SCDW_position=None,

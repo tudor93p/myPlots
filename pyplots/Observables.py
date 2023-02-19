@@ -13,10 +13,7 @@ def nr_axes(**kwargs):
 common_sliders = [observables, obs_group, obs_vminmax, obs_index]
 
 
-add_sliders, read_sliders = addread_sliders(*common_sliders,
-                                    linewidths,
-                                    energy_zoom, 
-                                    )
+local_sliders = common_sliders + [ linewidths, energy_zoom ]
 
 
 

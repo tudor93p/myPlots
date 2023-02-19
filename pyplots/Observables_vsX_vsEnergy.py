@@ -10,7 +10,6 @@ from Observables_vsX_vsY import common_sliders as common_sliders0
 
 common_sliders = common_sliders0 + [energy_zoom]
 
-add_sliders, read_sliders = addread_sliders(*common_sliders)
 
 
 #===========================================================================#

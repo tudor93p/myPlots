@@ -7,8 +7,8 @@ from Z_vsX_vsEnergy import common_sliders as common_sliders1, nr_axes
 from Z_vsX_vsEnergy import plot as plot0
 
 
-add_sliders, read_sliders = addread_sliders(*common_sliders0, 
-                                            *common_sliders1)
+local_sliders = common_sliders0 + common_sliders1 
+
                 
 
 

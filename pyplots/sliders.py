@@ -4,12 +4,16 @@ import itertools
 
 import Plot
 
+# sliders.addread_sliders(extra_sliders_first_string)
 
-def addread_sliders(*slider_set):
+def addread_sliders(slider_set, withfont=True):
 
     slider_functions = [s() for s in slider_set]
-   
-    add_font,read_font = fontsizes()
+    
+    if withfont:
+
+        add_font,read_font = fontsizes()
+
 
     def add_(fig, **kwargs):
       
@@ -17,15 +21,16 @@ def addread_sliders(*slider_set):
     
             add(fig, **kwargs) 
 
-            add_font(fig, **kwargs) 
+        if withfont:
+            add_font(fig, **kwargs)  
+
+
     
     def read_(obj):
     
-        out = read_font(obj)
+        out = read_font(obj) if withfont else {} 
 
-#        out = slider_functions[0][1](obj)
-        
-        for (add,read) in slider_functions:#[1:]:
+        for (add,read) in slider_functions:
     
             out.update(read(obj))
     
@@ -244,9 +249,9 @@ def observables():
 
 def obs_index():
 
-    def add(fig, **kwargs):
+    def add(fig, max_obs_index=11, **kwargs):
 
-        fig.add_combobox(range(1,10),label="Observable i",key="obs_i")
+        fig.add_combobox(range(1,max_obs_index),label="Observable i",key="obs_i")
         
     def read(obj):
 

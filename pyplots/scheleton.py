@@ -7,7 +7,6 @@ import sliders
 import matplotlib.pyplot as plt 
 
 
-#def plot_direct(params, libraries, initial_data=dict(), insets=dict()):
 def init_plot(libraries, initial_data=dict(), insets=dict()):
 
 
@@ -118,6 +117,7 @@ def init_plot(libraries, initial_data=dict(), insets=dict()):
 
     return figure, insets, nrowscols(sum(NrsAxes), **initial_data)
 
+
       # ----------------------------- #
 
 
@@ -150,6 +150,7 @@ def plot_direct_frominit(figure, insets, nr_rc,
 
 
 def plot_frominit(params, libraries, figure, insets, nr_rc, 
+        extra_sliders=[],
         initial_data=dict()):
 
     params, single_params = get_single_elements(params)
@@ -199,7 +200,7 @@ def plot_frominit(params, libraries, figure, insets, nr_rc,
     if len(insets)>0:
 
         add_sliders_insets(fig, **initial_data)
-       
+      # extra_sliders 
 
     fig.show()
 
@@ -212,11 +213,11 @@ def plot_frominit(params, libraries, figure, insets, nr_rc,
 
 
     
-def plot_(params, libraries, initial_data=dict(), insets=dict()):
+def plot_(params, libraries, extra_sliders=[], initial_data=dict(), insets=dict()):
 
     data = init_plot(libraries, initial_data, insets)
    
-    plot_frominit(params, libraries, *data, initial_data)
+    plot_frominit(params, libraries, *data, extra_sliders, initial_data)
 
     
     
@@ -234,8 +235,9 @@ def plot_(params, libraries, initial_data=dict(), insets=dict()):
 
 
 
-
-def plot(params, libraries, initial_data=dict(), insets=dict()):
+def plot(params, libraries, 
+        extra_sliders=[],
+        initial_data=dict(), insets=dict()):
 
     params, single_params = get_single_elements(params)
 
@@ -255,6 +257,24 @@ def plot(params, libraries, initial_data=dict(), insets=dict()):
 
     add_sliders_insets, read_sliders_insets = sliders.insets()
 
+   
+
+
+    extra_slid = [getattr(sliders,s) for s in extra_sliders]
+
+    lib_slid = []
+
+    for (lib,f,t) in libraries:
+
+        for S in get_local_sliders(lib):
+
+            if S not in extra_slid: lib_slid.append(S)
+
+
+    add_extra_slid,read_extra_slid = sliders.addread_sliders(extra_slid)
+    add_lib_slid,read_lib_slid = sliders.addread_sliders(lib_slid,withfont=False)
+
+# ---------------------------------- #
 
 
     def figure(obj, Fig, Axes): 
@@ -274,13 +294,22 @@ def plot(params, libraries, initial_data=dict(), insets=dict()):
 
         P = get_paramsuser(obj, params)
 
-        print("\n",P,"\n") 
+        print()
 
-        for P_ in [get_paramsplot(obj, libraries), single_params]:
+        if len(P)>0:
 
-            print(P_,"\n")
+            print(P,"\n") 
 
-            P.update(P_)
+        for P_ in [read_extra_slid(obj), read_lib_slid(obj), single_params]:
+               # get_paramsplot(obj, libraries), 
+
+            if len(P_)>0:
+
+                print(P_,"\n")
+    
+                P.update(P_) 
+
+
 
 
         fontsize = P["fontsize"]
@@ -368,10 +397,21 @@ def plot(params, libraries, initial_data=dict(), insets=dict()):
         add_widget(fig, i, name, values)
 
     fig.new_row()
-    
-    for (lib,f,t) in libraries:
+   
 
-        lib.add_sliders(fig,**initial_data)
+    add_extra_slid(fig, **initial_data)
+
+    add_lib_slid(fig, **initial_data)
+
+
+
+#    for (lib,f,t) in libraries:
+#
+#        lib.add_sliders(fig,**initial_data) 
+#
+#
+#    if len(extra_sliders)>0:
+#        add_sliders_extra(fig, **initial_data)
     
 
     if len(insets)>0:

@@ -1,12 +1,21 @@
 import numpy as np
 
 from Observables_vsLength_vsWidth import plot as plot0
-from Observables_vsLength_vsWidth import add_sliders, read_sliders
+from Observables_vsLength_vsWidth import local_sliders 
+
 
 
 def nr_axes(nrowcol,**kwargs):
    
     return np.prod(nrowcol)
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
 
 
 def plot(Ax, get_plotdata, SCDW_width=None, Lead_Width=None, fontsize=12, 

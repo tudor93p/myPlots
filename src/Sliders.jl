@@ -37,6 +37,44 @@ function pick_nonlocal(obs_list::AbstractVector{<:AbstractString})::Vector{Strin
 end
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+const pysliders_kwargs = Dict{String,String}(
+	"energy_zoom"							=> 	"enlim",
+	"choose_energy"						=>	"enlim",
+	"zoom_choose_energy"			=>	"enlim",
+	"operators"								=>	"HOperNames",
+	"observables"							=>	"ObsNames",
+	"obs_index"								=>	"max_obs_index",
+	"partial_observables"			=>	"PartialObs",
+	"regions"									=>	"Regions",
+	"bondvector_observables"	=>	"BondVectorObsNames",
+	"sitevector_observables"	=>	"SiteVectorObsNames",
+	"vec2scalar"							=>	"Vec2Scalar",
+	"transforms"							=>	"Transforms",
+	"local_observables"				=>	"LocalObsNames",
+	"pick_systems"						=>	"more_systems",
+	)
+
+
+const pysliders_funs = Dict{String,Tuple{Vararg{Symbol}}}(
+	"enlim"								=> 	(:extrema, :py_enlim),
+	"HOperNames" 					=> 	(:py_opers, ),
+	"ObsNames" 						=> 	(:pick_nonlocal,),
+	"LocalObsNames"				=> 	(:pick_local, ),
+	"BondVectorObsNames"	=> 	(:pick_bondvector, ),
+	"SiteVectorObsNames"	=>	(:pick_sitevector, ), 
+	"Vec2Scalar"					=>	(:py_vec2scalar, ),
+	"Regions"							=>	(:identity, :max),
+	"Transforms"					=>	(:py_transf, ),
+	"max_obs_index"				=>	(:identity, :max),
+ )
+
+
 
 #===========================================================================#
 #
@@ -45,14 +83,83 @@ end
 #---------------------------------------------------------------------------#
 
 
+
+function py_enlim(a::Ta, b::Tb)::NTuple{2,Float64} where {
+									T<:Union{AbstractArray{<:Real},
+													 Tuple{Vararg{<:Real}},
+													 Real},
+									Ta<:T, Tb<:T
+									}
+
+	((minimum(a)+minimum(b))/2, (maximum(a)+maximum(b))/2)
+
+end  
+
+
+
+function py_opers(oper::AbstractVector)::Vector{String}
+
+	["-"; pick_nonlocal(oper); "weights"]
+
+end 
+
+function py_vec2scalar()::Vector{String}
+
+	map(string, [([i, i*"/norm", i*"^2"] for i='x'.+(0:SYST_DIM-1))...;
+							 "Angle"; "Norm"; ])
+
+end 
+
+function py_transf(t::AbstractString...)::Vector{String} 
+
+	isempty(t) || return vcat("None",t...) 
+
+	return ["None", "Interpolate", "SmoothInterp.", "|FFT|", "Interp.+|FFT|", "SmoothInterp.+|FFT|", "FourierComp."]
+
+end  
+
+
+function get_pysliders_funs(kwarg::AbstractString
+														)::Tuple{Function,Function}
+
+	get_pysliders_funs(pysliders_funs[kwarg]...)
+
+end  
+
+function get_pysliders_funs(appone::Symbol,
+														apptwo::Union{Symbol,Function}=union 
+														)::Tuple{Function,Function}
+
+	(retrieve_function(appone), retrieve_function(apptwo))
+
+end 
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+#end 
+
+
+retrieve_function(f::Function)::Function = f
+
 function retrieve_function(f::Symbol,
-													 prefix::Union{Char,AbstractString,Symbol}
+													 prefix::Union{Char,AbstractString,Symbol}=""
 													 )::Function  
 
-	Utils.getprop(@__MODULE__, f,
-								Utils.getprop(@__MODULE__, Symbol(string(prefix,f)))
-								)
- 
+
+	for M=(@__MODULE__, Base), f_=(f,Symbol(string(prefix,f)))
+	
+		isdefined(M,f_) && return getproperty(M, f_)
+
+	end 
+
+	error("Function '$f' not found in Sliders or Base")
+	
 end  
 
 
@@ -98,6 +205,17 @@ end
 #---------------------------------------------------------------------------#
 
 
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
+
+
 init_obs(obs) = function io(d)
 
 		merge!(union, d, Dict("ObsNames" => pick_nonlocal(obs)))
@@ -130,7 +248,6 @@ init_sitevectorobs(obs) = function isvo(d)
 #
 #
 #---------------------------------------------------------------------------#
-
 
 
 init_enlim(ys) = function (d)
@@ -168,8 +285,6 @@ init_oper(oper) = function iop!(d)
 
 
 init_Vec2Scalar() = function ivs!(d::AbstractDict)
-
-	#tex(s) = "\$$s\$"
 
 	xyz = ([i, i*"/norm", i*"^2"] for i in 'x'.+(0:SYST_DIM-1))
 
@@ -230,38 +345,91 @@ init_transforms() = init_transforms("Interpolate",
 #---------------------------------------------------------------------------#
 
 
-#function retrieve_function(f::Symbol)::Function 
-#
-#	Utils.getprop(@__MODULE__, f)
-#
-#
-#end 
 
 
-function init(f::Symbol, args...)::Vector{Function}
+function init(f::Symbol, args...
+						 )::Vector{Union{Function,Tuple{String,Vararg}}} 
 
-	F = retrieve_function(f,"init_")
+	F::Function = retrieve_function(f,"init_")
+	
+	return Union{Function,Tuple{String,Vararg}}[F(args...)]
 
-	@assert F isa Function 
-
-	return [F(args...),]
 
 end 
 
-init(t::Tuple)::Vector{Function} = init(t...)
+function init(t::Tuple)::Vector{Union{Function,Tuple{String,Vararg}}}
 
-init(tuples::Vararg{Tuple})::Vector{Function} = vcat(init.(tuples)...)
+	init(t...)
 
-init(tuples::AbstractVector{<:Tuple})::Vector{Function} = init(tuples...)
+end 
+
+function init(tuples::Tuple...
+						 )::Vector{Union{Function,Tuple{String,Vararg}}}
+	
+	out = Vector{Union{Function,Tuple{String,Vararg}}}(undef, length(tuples))
+
+	for (i,t) in enumerate(tuples)
+
+		setindex!(out, init(t...), i:i)
+
+	end 
+
+	return out 
+
+end 
+
+function init(tuples::AbstractVector{<:Tuple}
+						 )::Vector{Union{Function,Tuple{String,Vararg}}} 
 
 
-init(f::Function)::Vector{Function}  = [f]
+	out = Vector{Union{Function,Tuple{String,Vararg}}}(undef, length(tuples))
 
-init(fs::AbstractVector{<:Function})::Vector{Function} = fs
+	for (i,t) in enumerate(tuples)
 
-init(fs::Vararg{<:Function})::Vector{Function} = vcat(fs...)
+		setindex!(out, init(t...), i:i)
 
-init()::Vector{Function} = Function[] 
+	end 
+
+	return out 
+
+end  
+
+
+function init(pyslider::AbstractString, args...
+						 )::Vector{Union{Function,Tuple{String,Vararg}}} 
+
+	Union{Function,Tuple{String,Vararg}}[(string(pyslider), args...)]
+
+end 
+
+
+function init(fs::AbstractVector{<:Function}
+						 )::Vector{Union{Function,Tuple{String,Vararg}}} 
+
+	fs
+
+end  
+
+function init(fs::Vararg{<:Function,N}
+						 )::Vector{Union{Function,Tuple{String,Vararg}}} where N
+
+	out = Vector{Union{Function,Tuple{String,Vararg}}}(undef, N)
+
+	for i=1:N 
+
+		out[i] = fs[i] 
+
+	end 
+
+	return  out 
+
+end 
+
+function init()::Vector{Union{Function,Tuple{String,Vararg}}} 
+	
+	[]
+
+end 
 
 #############################################################################
 end

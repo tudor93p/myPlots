@@ -6,11 +6,8 @@ from LocalObservables import common_sliders, common_sliders0
 from Z_vsX_vsY import plot as plot0
 
 
-add_sliders, read_sliders = addread_sliders(
-                                *common_sliders0,
-                                choose_energy,
-                                *common_sliders1
-                                )
+local_sliders = common_sliders0 + [choose_energy] + common_sliders1
+
 
 
 

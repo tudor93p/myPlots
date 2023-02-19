@@ -8,10 +8,8 @@ def nr_axes(**kwargs):
     return 1
 
 
+local_sliders = [atomsizes, linewidths, pick_systems]
 
-add_sliders, read_sliders = addread_sliders(atomsizes, linewidths, 
-                                            pick_systems
-                                            )
 
 #===========================================================================#
 #
