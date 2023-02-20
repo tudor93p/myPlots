@@ -199,7 +199,7 @@ println(myPlots.pyplot_extra_sliders(task3,task3))
 println(myPlots.pyplot_extra_sliders(task,task3,task2,pt0)) 
 
 
-myPlots.plot(task,task3,task2)#,only_prep=true)
+#myPlots.plot(task,task3,task2)#,only_prep=true)
 
 
 

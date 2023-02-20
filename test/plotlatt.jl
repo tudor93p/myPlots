@@ -7,7 +7,6 @@ myPlots.split_label(["A","B"])
 myPlots.split_label(["A","B","C"])
 
 
-error() 
 function do_work(nr_uc::Int,gl::Function)
 
 @show Lattices.LattDim(gl())

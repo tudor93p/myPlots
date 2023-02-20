@@ -6,17 +6,17 @@ Revise.retry()
 
 for filename in [
 
-#"transf_Fermi_surface",
+"transf_Fermi_surface",
 
-#"myplots", 
+"myplots", 
 
 "plot_obs",
 
-#"plotlatt",
+"plotlatt",
 
-#"transforms",
+"transforms",
 
-#"init-sliders",
+"init-sliders",
 
 ]
 

@@ -490,7 +490,7 @@ end
 #
 #---------------------------------------------------------------------------#
 
-function join_label(labels::Vararg{<:Union{AbstractString,Char}}; kwargs...)::String
+function join_label(labels::Union{AbstractString,Char}...; kwargs...)::String
 
 	join_label(string.(vcat(labels...)); kwargs...)
 
@@ -611,7 +611,7 @@ end
 
 
 plot(task::PlotTask; kwargs...) = plot([task]; kwargs...)
-plot(tasks::Vararg{PlotTask}; kwargs...) = plot(collect(tasks); kwargs...)
+plot(tasks::PlotTask...; kwargs...) = plot(collect(tasks); kwargs...)
 
 
 function plot(tasks::AbstractVector{PlotTask}; 
@@ -633,7 +633,7 @@ end
 
 
 init_plot(task::PlotTask; kwargs...) = init_plot([task]; kwargs...)
-init_plot(tasks::Vararg{PlotTask}; kwargs...) = init_plot(collect(tasks); kwargs...)
+init_plot(tasks::PlotTask...; kwargs...) = init_plot(collect(tasks); kwargs...)
 
 
 function init_plot(tasks::AbstractVector{PlotTask}; 

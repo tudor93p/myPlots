@@ -1,5 +1,6 @@
 println() 
-
+import Random, LinearAlgebra
+import myLibs:Utils 
 
 T = myPlots.Transforms
 
@@ -73,7 +74,6 @@ end
 
 println()
 
-error() 
 
 
 

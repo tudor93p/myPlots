@@ -1087,7 +1087,7 @@ pd_fourier_comp = ProcessData("transform", "FourierComp.",
 
 
 
-function ProcessData(pds::Vararg{ProcessData}; kwargs0...)::ProcessData
+function ProcessData(pds::ProcessData...; kwargs0...)::ProcessData
 
 	function find_pd(args...; kwargs...)::Tuple{Vararg{ProcessData}}
 

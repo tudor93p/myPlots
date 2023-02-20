@@ -333,7 +333,7 @@ end
 
 
 
-init_transforms(t::Vararg{<:AbstractString}) = function addtransf!(d)
+init_transforms(t::AbstractString...) = function addtransf!(d)
 
 	merge!(union, d, Dict("Transforms"=> vcat("None",t...)))
 
