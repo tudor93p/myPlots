@@ -496,10 +496,11 @@ function join_label(labels::Union{AbstractString,Char}...; kwargs...)::String
 
 end 
 
-function join_label(labels::AbstractVector{<:AbstractString};
+function join_label(labels::Union{AbstractVector{<:AbstractString},
+																	Tuple{Vararg{<:AbstractString}}};
 										sep1::Union{Char,AbstractString}=" / ")
-	
-	join(labels, sep1)
+
+	join(filter(!isempty,strip.(labels)), sep1)
 
 end 
 

@@ -1,5 +1,30 @@
 import PyPlot; 
-import myLibs:Lattices
+import myLibs:Lattices 
+
+
+for a in ["a","b","", "   "], b in ["a","b","", "   "]
+
+	@show myPlots.join_label(a,b)
+	@assert myPlots.join_label(a,b)==myPlots.join_label([a,b])==myPlots.join_label((a,b))
+
+end 
+
+
+
+
+
+
+
+
+error() 
+
+
+
+
+
+
+
+
 myPlots.split_label(String[])
 
 myPlots.split_label(["A"])

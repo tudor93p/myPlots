@@ -170,11 +170,11 @@ version = "1.8.0"
 
 [[deps.Constants]]
 deps = ["Revise", "myLibs"]
-git-tree-sha1 = "4edc342800c21bd48d7350b27181b7797a1720f0"
+git-tree-sha1 = "ed7c014e8127fa71237baf74c879fccc6f3cec71"
 repo-rev = "main"
 repo-url = "../Constants"
 uuid = "26e1ccdb-dc7d-4967-a216-0e9bd72dc499"
-version = "0.1.1"
+version = "0.1.2"
 
 [[deps.ConstructionBase]]
 deps = ["LinearAlgebra"]

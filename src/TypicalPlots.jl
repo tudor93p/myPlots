@@ -5,7 +5,7 @@ using myLibs.ComputeTasks: CompTask
 import myLibs: Lattices, Utils
 
 using ..myPlots: PlotTask, construct_obs0obs, join_label
-using Constants: VECTOR_STORE_DIM, ENERGIES 
+using Constants: ENERGIES 
 
 import ..Transforms, ..Sliders 
 
