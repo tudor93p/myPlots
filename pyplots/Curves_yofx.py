@@ -10,7 +10,7 @@ def nr_axes(**kwargs):
 
 
 
-common_sliders = [linewidths,smoothen,transforms]
+common_sliders = [linewidths,transforms]
 
 
 

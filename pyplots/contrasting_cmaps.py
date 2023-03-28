@@ -4,7 +4,7 @@ from numpy import array
 import scipy.optimize 
 from scipy.interpolate import CubicSpline 
 import statistics
-
+from matplotlib.colors import ListedColormap
 
 def brightness_diff(color1,color2):
     
@@ -142,27 +142,51 @@ def good_color_boundary(c0):
     c0[c0>1] = 1
     c0[c0<0] = 0 
 
-    return c0 
+    return c0  
+
+def good_cmap_arg(x):
+
+    return np.minimum(np.maximum(x,0),1)
 
 
-def get_contrasting_cmap(steps, contrasting_colors):
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
 
+def get_contrasting_cmap(steps,colors):
+    
     if len(steps)==1:
 
-        c0 = good_color_boundary(np.reshape(contrasting_colors,-1))
+        c0 = good_color_boundary(contrasting_colors,-1)
 
-        return lambda q: c0 
+        return lambda x: c0 if np.ndim(x)==0 else np.repeat(c0,len(x),axis=0) 
 
 
-    get_col2_ = CubicSpline(steps, contrasting_colors) 
+    assert abs(steps[0])<1e-10 
+   
 
-    return lambda s: good_color_boundary(get_col2_(max(0,min(s,1))))
-        
+    if steps[-1]<1:
 
-#def print_knots(cmap,steps,colors):
+        steps = np.append(steps,1) 
 
-#    print("\""+cmap+"\":")
-#    print({cmap:(steps,colors)})
+        colors = np.vstack((colors,colors[-1]))
+
+    steps[0]=-1e-10
+    steps[-1]=1+1e-10
+
+    spl = CubicSpline(steps, colors, extrapolate=False) 
+
+    return lambda x: good_color_boundary(spl(good_cmap_arg(x)))
+
+
+
+def get_listed_cmap(steps, colors, n=256): 
+
+    return ListedColormap(get_contrasting_cmap(steps, colors)(np.linspace(0,1,n)))
+
+
 
 
 #===========================================================================#
@@ -538,6 +562,20 @@ precomputed_contrasting_knots_dict = {'cool': (array([0.        , 0.05263158, 0.
        [0.6       , 1.        , 1.        ]]))}
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+def isprecomputed(cmap): 
+
+    if len(cmap)>=2 and cmap[-2:]=="_r": 
+        return isprecomputed(cmap[:-2])
+
+    return cmap in precomputed_contrasting_knots_dict
+
+
 def calc_or_load_knots(cmap):
     
     if len(cmap)>=2 and cmap[-2:]=="_r":
@@ -547,7 +585,7 @@ def calc_or_load_knots(cmap):
         return 1-steps[::-1], colors[::-1,:]
 
 
-    if cmap in precomputed_contrasting_knots_dict:
+    if isprecomputed(cmap):
         return precomputed_contrasting_knots_dict[cmap]
 
     else:
@@ -560,6 +598,12 @@ def calc_or_load_knots(cmap):
 def contrasting_cmap(cmap):
 
     return get_contrasting_cmap(*calc_or_load_knots(cmap))
+
+
+def listed_cmap(cmap):
+
+    return get_listed_cmap(*calc_or_load_knots(cmap))
+
 
 
 #===========================================================================#

@@ -1,15 +1,18 @@
 import numpy as np  
 
 import scheleton  
-import test_vectorfield, test_scatter 
+import test_vectorfield, test_scatter, test_Z
 
 pyplot_merged_Param = (["a","b","c"], 
                         [[0,1,2], np.linspace(0,3,100), ["c1","c2"]]
                         )
 
 
-pyplot_pyjl_pairs = [["Scatter",test_scatter.get_plotdata,"test1"],
-                        ["VectorField", test_vectorfield.get_plotdata, "test2"]]
+pyplot_pyjl_pairs = [
+#        ["Scatter",test_scatter.get_plotdata,"test1"],
+#        ["VectorField", test_vectorfield.get_plotdata, "test2"],
+        ["Z_vsX_vsY", test_Z.get_plotdata, "test3"],
+        ]
 
 pyplot_init_sliders = {"enlim":[-1,2]} 
 

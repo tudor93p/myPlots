@@ -2,15 +2,32 @@ import numpy as np
 import Plot,Algebra,Utils
 from plothelpers import *
 from sliders import *
+import contrasting_cmaps 
+import warnings 
+
+import matplotlib.pyplot as plt #colors 
+from matplotlib.colors import is_color_like 
 
 def nr_axes(**kwargs):
 
     return 1
 
-common_sliders = [colormap]
+common_sliders = [colormap, contour]
 
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
+def warning_on_one_line(message, category, filename, lineno, file=None, line=None):
+        return '%s:%s: %s:%s\n' % (filename, lineno, category.__name__, message)
+
+warnings.formatwarning = warning_on_one_line
 
 #===========================================================================#
 #
@@ -21,9 +38,6 @@ common_sliders = [colormap]
 
 def closest_data_i(X,x,n):
 
-    print(X.shape)
-    print(x)
-    print(n)
 
     if x is None:
         return [None for i in range(n)]
@@ -60,6 +74,47 @@ def shift_by_Dx(X, f):
 
     return X + np.append(Dx,Dx[-1])*f
 
+def get_cc(contour_color, cmap="viridis"):
+
+    if contour_color is None:
+        return {"colors":None}
+
+
+    if isinstance(contour_color,list): 
+
+        if all([is_color_like(c) for c in contour_color]):
+            return {"colors":contour_color} 
+
+
+    if not isinstance(contour_color,str):
+        warnings.warn(f"The type of the color/cmap '{contour_color}' not understood.")
+
+        return {"colors":None}
+
+
+    if contour_color == "contrasted":
+        if contrasting_cmaps.isprecomputed(cmap):
+            return {"cmap":contrasting_cmaps.listed_cmap(cmap)}
+
+    if contour_color == "reversed":
+
+        return {"cmap":Plot.reverse_cmap(cmap)}
+
+    if contour_color in plt.colormaps():
+        return {"cmap": contour_color}
+
+
+    if is_color_like(contour_color):
+
+        return {"colors":contour_color}
+
+    warnings.warn(f"The color/cmap '{contour_color}' does not exist.")
+
+    return {"colors":None}
+
+
+
+#matplotlib.colors.cnames 
 
 #===========================================================================#
 #
@@ -72,7 +127,7 @@ def shift_by_Dx(X, f):
 
 
 
-def plot(Ax, get_plotdata, cmap="viridis", fontsize=12, **kwargs): 
+def plot(Ax, get_plotdata, fontsize=12, **kwargs): 
 
     ax0 = Ax[0]
 
@@ -82,6 +137,7 @@ def plot(Ax, get_plotdata, cmap="viridis", fontsize=12, **kwargs):
 
     zlim = deduce_axislimits([data["z"]],[get_val("zlim",[None,None])])
 
+    cmap = get_val("cmap","viridis")
 
     X = shift_by_Dx(data["x"],-1/2)
     Y = shift_by_Dx(data["y"],-1/2)
@@ -89,11 +145,41 @@ def plot(Ax, get_plotdata, cmap="viridis", fontsize=12, **kwargs):
     P = ax0.pcolormesh(*Utils.mgrid_from_1D(X,Y), data["z"],
                         cmap=cmap, edgecolors='face',
       		        zorder=2, vmax=zlim[1], vmin=zlim[0])
-  
+ 
+    cbarticks = None 
+
+
+    cnlev = get_val("contour_levels")
+
+    if cnlev is not None:
+
+        if isinstance(cnlev,list) or isinstance(cnlev,np.ndarray):
+            cnlev = np.sort(cnlev)
+
+        elif isinstance(cnlev,float):
+            
+            if cnlev>0:
+
+                cnlev = np.arange(*zlim,cnlev)
+
+            else:
+                cnlev = np.arange(*reversed(zlim),cnlev)[::-1] 
+
+
+        
+
+        p = ax0.contour(*Utils.mgrid_from_1D(data["x"],data["y"],extend=False),
+                data["z"], cnlev, 
+                zorder=5,
+                **get_cc(get_val("contour_color"), cmap)
+                )
+
+        cbarticks = p.levels  
+
 
     if get_val("show_colorbar", True):
 
-        Plot.good_colorbar(P, zlim, ax0, data.get("zlabel",""), fontsize=fontsize)
+        Plot.good_colorbar(P, zlim, ax0, data.get("zlabel",""), fontsize=fontsize, ticks=cbarticks)
    
 
     if ("x_plot" in data) and ("y_plot" in data):

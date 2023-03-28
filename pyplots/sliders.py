@@ -1,10 +1,30 @@
 from plothelpers import * 
 
-import itertools 
+import itertools, json 
 
 import Plot
 
 # sliders.addread_sliders(extra_sliders_first_string)
+ 
+colormaplist = sorted(["cool","winter",
+                "PuBuGn","YlGnBu","PuOr",
+                "copper","bone","Accent",
+                "plasma","coolwarm","Spectral","viridis",
+                "gnuplot","terrain", 
+                "rainbow","gist_rainbow",
+                "twilight","hsv"
+                ])
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
 
 def addread_sliders(slider_set, withfont=True):
 
@@ -151,6 +171,32 @@ def zoom_choose_energy():
     
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+def contour():
+
+    def add(fig, **kwargs):
+   
+        fig.add_text(label="Contour",key="contour_levels",text="")
+        
+        fig.add_text(label="Contour color",key="contour_color",text="contrasted")
+        
+#        fig.add_combobox(label="Contour cmap",key="contour_cmap")
+
+    
+    def read(obj):
+             
+        out = read_text(obj, "contour_levels", accepted_types=(int,float,list))
+        out.update(read_text(obj, "contour_color", accepted_types=(str,list)))
+
+        return out 
+    
+    return add,read
 
 
 #===========================================================================#
@@ -424,25 +470,51 @@ def read_combobox(obj, key, f=None, dict_key=None):
         return {}
     
 
-def read_text(obj, key, dict_key=None):#, f=None):
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
+def read_text(obj, key, dict_key=None,
+        accepted_types=(int,float)):
+
+    k = key if dict_key is None else dict_key 
+
+    text = str(obj.get_text(key))
+
+    if text=="pi":
+
+        return {k: np.pi} 
+
 
     try:
 
-        k = key if dict_key is None else dict_key
+        out = json.loads(text) 
 
-        text = str(obj.get_text(key))
-
-        if text=="pi":
-
-            return {k: np.pi}
-
-        else:
-
-            return {k: float(text)}
+        for t in accepted_types:
+            if isinstance(out,t):
+                return {k:out}
             
     except:
+
+        if str in accepted_types:
+            return {k:text}
     
         return {}
+
+    return {}
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
 
 
 
@@ -730,14 +802,7 @@ def colormap():
 
     def add(fig, **kwargs):
 
-        fig.add_combobox(sorted(["cool","winter",
-                "PuBuGn","YlGnBu","PuOr",
-                "copper","bone","Accent",
-                "plasma","coolwarm","Spectral","viridis",
-                "gnuplot","terrain", 
-                "rainbow","gist_rainbow",
-                "twilight","hsv"
-                ]),label="Color map",key="cmap")
+        fig.add_combobox(colormaplist,label="Color map",key="cmap")
 
         fig.add_checkbox(label="reverse",key="reverse_cmap")
 

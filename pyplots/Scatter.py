@@ -7,7 +7,7 @@ def nr_axes(**kwargs):
     return 1
 
 
-common_sliders = [dotsizes, colormap, smoothen]
+common_sliders = [dotsizes, colormap]
 
 
 
@@ -37,7 +37,7 @@ def mask(x,xlim,y,ylim,z=None):
 
     M = np.logical_and(restrict(x,xlim),restrict(y,ylim))
 
-    if (M.any() and not M.all()):
+    if (M.any() and not M.all()): 
 
         return (x[M], y[M], z if z is None else z[M])
 
@@ -153,4 +153,4 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
 
 
 
-
+#mpld3.save_json(plt.gcf(),"a")

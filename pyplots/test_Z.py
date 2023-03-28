@@ -15,8 +15,8 @@ ny = 10 + np.random.randint(10)
 
 
 
-print(xmin,xmax,nx)
-print(ymin,ymax,ny) 
+print("x:",np.round(xmin,2),np.round(xmax,2),nx)
+print("y:",np.round(ymin,2),np.round(ymax,2),ny) 
 
 def get_plotdata(*args,**kwargs):
 
@@ -35,8 +35,10 @@ def get_plotdata(*args,**kwargs):
             Z[i,j] = np.sin(i*kx)*np.cos(j*ky)
 
     return {"x":X, "y":Y, "z":Z,
+            "zmax":1,
             "xlabel":"$x$",
             "ylabel":"$y$",
+            "cmap":"Spectral",
             "x_plot":[X[nx//2-1],X[nx//2+1]],
             "y_plot":[Y[ny//2-1],Y[ny//2+1]],
             }
@@ -54,6 +56,7 @@ if __name__ == '__main__':
                         xline = data["x"][nx//2-1],#np.random.choice(data["x"]),
                         yline = data["y"][ny//2+1],#np.random.choice(data["y"]),
 #                        xlim = [xmin,xmax],
+                        contour_levels = 0.3,
 #                        ylim = [ymin,ymax],
                         )
             
