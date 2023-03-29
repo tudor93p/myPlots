@@ -1,4 +1,4 @@
-import Scatter 
+import Curves_yofx 
 import numpy as np 
 import matplotlib.pyplot as plt 
 import time 
@@ -17,9 +17,9 @@ def get_plotdata(*args,**kwargs):
     Y = (np.random.rand(len(X)) - 0.5)*10
 
     return {"x":X, "y":Y,
-            "z":np.random.rand(len(X)),
+#            "z":np.random.rand(len(X)),
             "label":"test",
-            "zlabel":"rand",
+#            "zlabel":"rand",
             "yline":0,
 
             }
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     fig,ax = plt.subplots()
     
-    Scatter.plot([ax], get_plotdata, **get_kwargs())
+    Curves_yofx.plot([ax], get_plotdata, **get_kwargs())
     
     plt.show()
     

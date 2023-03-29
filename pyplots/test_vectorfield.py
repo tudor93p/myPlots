@@ -14,7 +14,7 @@ import time
 
 
 
-N = 15 
+N = 10
 
 s = np.linspace(-1,1,N)*1.9
 
@@ -161,28 +161,44 @@ def get_plotdata2(kwargs):
     return out 
 
 
-def figure(obj, Fig, Axes):
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
 
-
-
-    P = {"n":obj.get_slider("n"),
+def get_kwargs():
+    
+    P = {"n":3,
             "arrow_headwidth":0.06,
             "arrow_headlength":0.1,
             "arrow_width":0.015,
+        "atomsize": 0.25,
             }
+
+#    P.update(read_slid(obj))
+    return P
+
+
+def figure_pyqt(obj, Fig, Axes):
+
+    P = get_kwargs()
+
+    P["n"] = obj.get_slider("n") 
 
     P.update(read_slid(obj))
 
-    P["atomsize"] = 0.25
+    return figure(Axes, **P)
 
+
+def figure(ax,fontsize=12,**P):
 
     data = get_plotdata(P)
 
-    ax= Axes 
     VectorField.plot([ax], lambda aux: data, **P)
 #    Curves_yofx.plot(Axes[1:2], get_plotdata2, **P)
 
-    fontsize = P["fontsize"]
+#    fontsize = P["fontsize"]
 
     ax.scatter(*data["charges"].T[:2], zorder=10000, c='red')
 
@@ -192,18 +208,20 @@ def figure(obj, Fig, Axes):
    
     subpos = [0.2, 0.6, 0.3, 0.3]
    
-    for ax in np.reshape(Axes,-1):
-        ax.set_aspect(1)
-        ax.tick_params(labelsize=fontsize)
-    
-        ax.xaxis.label.set_size(fontsize)
+#    for ax in np.reshape(Axes,-1):
+    ax.set_aspect(1)
+    ax.tick_params(labelsize=fontsize)
+    ax.xaxis.label.set_size(fontsize)
+    ax.yaxis.label.set_size(fontsize) 
 
-        ax.yaxis.label.set_size(fontsize) 
+
+
+
 
 if __name__ == '__main__': 
 
 
-    fig = PlotPyQt.Figure(figure, 1, 1)
+    fig = PlotPyQt.Figure(figure_pyqt, 1, 1)
    
     add_slid,read_slid = sliders.addread_sliders(get_local_sliders(VectorField))
 

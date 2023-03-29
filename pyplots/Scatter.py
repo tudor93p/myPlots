@@ -51,24 +51,39 @@ def mask(x,xlim,y,ylim,z=None):
 
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
 
-def plot(Ax, get_plotdata, dotsize=10, fontsize=12, 
-            cmap="cool", zorder0=0, **kwargs): 
+def plot(Ax, get_plotdata, **kwargs):
+
+    data = get_plotdata(kwargs)
+
+    data.update(kwargs)
+
+    return plot0(Ax, **data) 
+
+
+
+def plot0(Ax, dotsize=10, fontsize=12, cmap="cool", zorder0=0, 
+        xlim=None,ylim=None,zlim=None,
+        zlabel="",
+        show_colorbar=True,
+        xticks=None, xticklabels=None,
+        **kwargs): 
 
     ax0 = Ax[0]
 
     alpha0 = 1#0.6
 
-
-
-    data = get_plotdata(kwargs)
-
-    d = get_one_or_many(data)
-
-    get_val = Utils.prioritized_get(kwargs,data)
+    d = get_one_or_many(kwargs)
 
 
     Y = d("y") # Must be there
+
+    assert Y is not None 
 
     X = Utils.Assign_Value(d("x"), [np.arange(len(y)) for y in Y])
 
@@ -77,13 +92,10 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
     L = Utils.Assign_Value(d("label"), np.repeat(None, len(Y)))
 
 
- 
-
-    xlim,ylim,zlim = deduce_axislimits([X,Y,Z], [get_val(c+"lim") for c in ["x","y","z"]])
+    xlim,ylim,zlim = deduce_axislimits([X,Y,Z], [xlim,ylim,zlim])
 
 
     nr_col = 0
-
 
 
 
@@ -108,10 +120,10 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
 
             P = ax0.scatter(x, y, s=S, c=z, cmap=cmap, zorder=zorder0+2, vmax=zlim[1], vmin=zlim[0], label=l, marker=MARKERS[nr_col], alpha=alpha0)
        
-            if i==0 and get_val("show_colorbar", True):
+            if i==0 and show_colorbar:
 
-                Plot.good_colorbar(P, zlim, ax0, data.get("zlabel",""), fontsize=fontsize)
-            
+                Plot.good_colorbar(P, zlim, ax0, zlabel, fontsize=fontsize)
+                pass            
     
     
     if len(Y) > 1 and not all([l is None for l in L]):
@@ -125,17 +137,18 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
     ax0.set_ylim(ylim)
 
     
-    plot_levellines(ax0, get_val, zorder=zorder0+5, color="k", lw=1, alpha=alpha0*0.75)
+    plot_levellines2(ax0, kwargs, zorder=zorder0+5, color="k", lw=1, alpha=alpha0*0.75
+            )
 
-    set_xylabels(ax0, get_val, fontsize=fontsize)
+    set_xylabels2(ax0, kwargs, fontsize=fontsize)
 
-    if 'xticks' in data:
+    if xticks is not None:
 
-        ax0.set_xticks(data['xticks'])
+        ax0.set_xticks(xticks)
 
-        if 'xticklabels' in data:
+        if xticklabels is not None:
 
-            ax0.set_xticklabels(data['xticklabels'])
+            ax0.set_xticklabels(xticklabels)
 
     
 
@@ -153,4 +166,3 @@ def plot(Ax, get_plotdata, dotsize=10, fontsize=12,
 
 
 
-#mpld3.save_json(plt.gcf(),"a")

@@ -163,17 +163,19 @@ def get_contrasting_cmap(steps,colors):
 
         return lambda x: c0 if np.ndim(x)==0 else np.repeat(c0,len(x),axis=0) 
 
-
-    assert abs(steps[0])<1e-10 
    
 
-    if steps[-1]<1:
+    if abs(steps[-1]-1)>1e-8:
 
         steps = np.append(steps,1) 
+        colors = np.vstack((colors,colors[-1])) 
 
-        colors = np.vstack((colors,colors[-1]))
+    if abs(steps[0])>1e-8:
+        steps = np.append(0,steps)
+        colors = np.vstack((colors[0],colors))
 
-    steps[0]=-1e-10
+
+    steps[0]= 0-1e-10
     steps[-1]=1+1e-10
 
     spl = CubicSpline(steps, colors, extrapolate=False) 

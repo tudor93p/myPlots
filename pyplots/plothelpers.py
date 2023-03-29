@@ -564,6 +564,10 @@ def deduce_axislimits(data=None, limits=None):
 
 
 
+def plot_levellines2(ax, data, *args, **kwargs):
+
+    plot_levellines(ax, lambda k:data.get(k,None), *args, **kwargs)
+
 
 def plot_levellines(ax, get_line, color="k", lw=1, alpha=0.6, 
         xlim=None, ylim=None,
@@ -592,6 +596,11 @@ def plot_levellines(ax, get_line, color="k", lw=1, alpha=0.6,
         f(l)
     
     
+
+def set_xylabels2(ax, data, **kwargs):
+    
+    return set_xylabels(ax, lambda k:data.get(k,None), **kwargs)
+
 
 def set_xylabels(ax, get_label, **kwargs):
 

@@ -19,11 +19,18 @@ pyplot_init_sliders = {"enlim":[-1,2]}
 pyplot_extra_sliders = ["choose_k"]#"zoom_choose_energy"] 
 
 
-scheleton.plot(pyplot_merged_Param,
+#scheleton.plot(pyplot_merged_Param,
+#                    pyplot_pyjl_pairs,
+#                    pyplot_extra_sliders,
+#                    pyplot_init_sliders)
+#
+#
+
+init_plot = scheleton.init_plot(
                     pyplot_pyjl_pairs,
-                    pyplot_extra_sliders,
-                    pyplot_init_sliders)
+                    pyplot_init_sliders,
+                    )
 
 
-
-
+scheleton.plot_direct_frominit(*init_plot,
+        )

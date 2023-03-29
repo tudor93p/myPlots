@@ -23,14 +23,40 @@ common_sliders = [arrow_parameters, colormap, atomsizes, smoothen]
 
 
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+def control_size(S, arrow_uniformsize):
+
+    if arrow_uniformsize==0: return S 
+
+    return Utils.Rescale(Utils.Rescale(S)**(1-arrow_uniformsize),Algebra.minmax(S))
+   
+
 
 #===========================================================================#
 #
 #   plot
 #
 #---------------------------------------------------------------------------#
+def plot(Ax, get_plotdata, **kwargs):
 
-def plot(Ax, get_plotdata, 
+    data = get_plotdata(kwargs)
+
+    data.update(kwargs)
+
+    return plot0(Ax, **data) 
+
+def plot0(Ax,
+        nodes=None,
+        dRs=None,
+        Rs=None,
+        label=None,
+        xlabel = "$x$",
+        ylabel = "$x$",
         atomsize=100, 
         arrow_width=0.1,#0.001,
         arrow_scale=1.0,
@@ -52,35 +78,23 @@ def plot(Ax, get_plotdata,
 
     ax0 = Ax[0]
 
-    data = get_plotdata(kwargs)
+    assert nodes is not None 
+
+    ax0.scatter(nodes[:,0], nodes[:,1], c='k', s=atomsize, zorder=20)
+
+    if dRs is None: return 
 
 
-    
 
-    ax0.scatter(*data["nodes"].T[:2], c='k', s=atomsize, zorder=20)
+    XY = np.array(nodes if Rs is None else Rs)[:,0:2]
 
-
-    if "dRs" not in data:
-
-        return 
-
-    def control_size(S):
-
-        if arrow_uniformsize==0:
-            return S 
-
-        return Utils.Rescale(Utils.Rescale(S)**(1-arrow_uniformsize),Algebra.minmax(S))
-
-
-    XY = np.array(data.get("Rs",data["nodes"]))[:,0:2]
-
-    UV = np.array(data["dRs"])[:,0:2]
+    UV = np.array(dRs)[:,0:2]
 
     sizes = np.linalg.norm(UV, axis=1) #    scalar field  -> background
  
 
 ### 
-    csizes = control_size(sizes)
+    csizes = control_size(sizes, arrow_uniformsize)
 
     UV *= np.reshape(csizes/np.maximum(sizes,1e-8),(-1,1))  
 
@@ -89,11 +103,11 @@ def plot(Ax, get_plotdata,
 
 
 
-    [xm,ym],[xM,yM] = Algebra.minmax(data["nodes"][:,0:2],axis=0)
+    [xm,ym],[xM,yM] = Algebra.minmax(nodes[:,0:2],axis=0)
 
     if abs(yM-ym)<1e-9 or abs(xM-xm)<1e-9:
 
-        if "Rs" in data:
+        if Rs is not None:
             [xm,ym],[xM,yM] = Algebra.minmax(XY,axis=0)
 
         elif abs(yM-ym)<1e-9:
@@ -114,10 +128,14 @@ def plot(Ax, get_plotdata,
     nx,ny = np.ceil(100*np.max([[1,1],[r,1/r]],axis=0)).astype(int)
     
 
-    x, y = np.linspace(xm,xM,nx + (nx==ny)), np.linspace(ym,yM,ny)
+    x = np.linspace(xm,xM,nx + (nx==ny))
+    y = np.linspace(ym,yM,ny)
 
 
-    inds = np.where(np.logical_and(sizes >= arrow_minlength*np.max(sizes), sizes <= 1e-10 + arrow_maxlength*np.max(sizes)))[0]
+    inds = np.where(np.logical_and(
+        sizes >= arrow_minlength*np.max(sizes), 
+        sizes <= 1e-10 + arrow_maxlength*np.max(sizes)
+        ))[0]
 
 ####
 #    if not any(inds): 
@@ -156,13 +174,13 @@ def plot(Ax, get_plotdata,
 
     if colorbar: 
 
-        label = "Arrow length"
+        label_ = "Arrow length"
         
-        if "label" in data:
+        if label is not None:
         
-            label += "\n"+ data["label"]  
+            label_ += "\n"+ label 
 
-        Plot.good_colorbar(P, [vmin, vmax], ax0, label, fontsize=fontsize)
+        Plot.good_colorbar(P, [vmin, vmax], ax0, label_, fontsize=fontsize)
 
 
 
@@ -196,23 +214,9 @@ def plot(Ax, get_plotdata,
 
 
 
-    ax0.set_xlim(Plot.extend_limits([xm,xM],0.03))
-    ax0.set_ylim(Plot.extend_limits([ym,yM],0.03))
+    ax0.set_xlim(Plot.extend_limits([xm,xM],0.02))
+    ax0.set_ylim(Plot.extend_limits([ym,yM],0.02))
 
-
-    xlabel = data.get("xlabel","$x$") 
-
-#    ax0.set_xlabel(data.get("xlabel","$x$"), fontsize=fontsize)
-
-    ylabel = data.get("ylabel","$y$")
-
-#    ylabel_kwargs = {"fontsize":fontsize}
-
-#    if sum([c!="$" for c in ylabel])<=1:
-
-#        ylabel_kwargs["rotation"]=0
-
-#    ax0.set_ylabel(ylabel, **ylabel_kwargs)
 
     set_xylabels(ax0, [xlabel,ylabel], fontsize=fontsize)
 
