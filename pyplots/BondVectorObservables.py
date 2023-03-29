@@ -16,10 +16,10 @@ common_sliders = common_sliders0 + [bondvector_observables, choose_energy, obs_i
 #
 #---------------------------------------------------------------------------#
 
-def plot(Ax, get_plotdata, **kwargs):
+def plot(Ax, **kwargs):
 
 
-    plot0(Ax, get_plotdata, **kwargs) 
+    plot0(Ax, **kwargs) 
 
    
     for ax in Ax:

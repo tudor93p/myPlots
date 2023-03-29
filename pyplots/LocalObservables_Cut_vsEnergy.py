@@ -11,10 +11,10 @@ local_sliders = common_sliders0 + common_sliders1 + [regions, transforms, smooth
 
 
 
-def plot(Ax, get_plotdata, lobsmin=None, lobsmax=None, 
+def plot(Ax, lobsmin=None, lobsmax=None, 
                             zmin=None, zmax=None, **kwargs):
 
-    plot0(Ax, get_plotdata, zmin=lobsmin, zmax=lobsmax, **kwargs)
+    plot0(Ax, zmin=lobsmin, zmax=lobsmax, **kwargs)
             
 
     

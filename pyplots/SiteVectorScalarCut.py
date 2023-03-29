@@ -24,13 +24,13 @@ local_sliders = common_sliders + common_sliders2
 #
 #---------------------------------------------------------------------------#
 
-def plot(Ax, get_plotdata, #xline=None, yline=None,
+def plot(Ax, #xline=None, yline=None,
                 #xlim=None, 
                 ylim=None,
                 sitevectorobsmin=None, sitevectorobsmax=None,
                 **kwargs):
 
-    plot0(Ax, get_plotdata, ylim=[sitevectorobsmin, sitevectorobsmax],
+    plot0(Ax, ylim=[sitevectorobsmin, sitevectorobsmax],
             **kwargs)
 
 

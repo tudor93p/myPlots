@@ -19,23 +19,19 @@ common_sliders = [atomsizes, colormap]
 #---------------------------------------------------------------------------#
 
 
-def plot(Ax, get_plotdata, cmap="PuBuGn", atomsize=100, fontsize=12, 
+def plot(Ax, cmap="PuBuGn", atomsize=100, fontsize=12, 
         zlabel=None, zlabels=None, show_colorbar=True, **kwargs):
 
     ax0 = Ax[0]
 
-    data = get_plotdata(kwargs)
 
-    d = get_one_or_many(data) 
+    d = get_one_or_many(kwargs)
 
 
-    XY,Z = d("xy"),d("z")
+    XY =  d("xy")
+    Z = d("z")
 
     L = Utils.Assign_Value(d("label"), np.repeat(None, len(XY)))
-
-
-
-
 
 
 

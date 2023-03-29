@@ -10,11 +10,10 @@ common_sliders = common_sliders0 + [energy_zoom]
 
 
 
-def plot(Ax, get_plotdata, Energy=None, yline=None, 
+def plot(Ax, Energy=None, yline=None, 
                     ylim=None, enlim=None, **kwargs):
 
-    plot0(Ax, get_plotdata, 
-            yline=Energy, ylim=enlim, ylabel="Energy", **kwargs)
+    plot0(Ax, yline=Energy, ylim=enlim, ylabel="Energy", **kwargs)
 
 
     

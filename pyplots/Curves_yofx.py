@@ -22,14 +22,14 @@ common_sliders = [linewidths]
 #   plot
 #
 #---------------------------------------------------------------------------#
-def plot(Ax, get_plotdata, **kwargs):
-
-    data = get_plotdata(kwargs)
-
-    data.update(kwargs)
-
-    return plot0(Ax, **data) 
-
+#def plot(Ax, get_plotdata, **kwargs):
+#
+#    data = get_plotdata(kwargs)
+#
+#    data.update(kwargs)
+#
+#    return plot0(Ax, **data) 
+#
 
 
 
@@ -39,7 +39,7 @@ def plot(Ax, get_plotdata, **kwargs):
 #
 #---------------------------------------------------------------------------#
 
-def plot0(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35, 
+def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35, 
         xlim=None, ylim=None, aspect_ratio=None,
         **data):
     ax0 = Ax[0]

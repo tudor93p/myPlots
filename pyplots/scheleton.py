@@ -18,6 +18,14 @@ def get_axes(Axes, inds_axes_, subplot_nr):
         
     return Axes[np.unravel_index(np.arange(*inds), Axes.shape)]
 
+def combine_data_and_P(f, P):
+
+    data = f(P)
+
+    data.update(P)
+
+    return data  
+
 
 def plot_one_timed(axes, libr, **P):
     
@@ -25,7 +33,10 @@ def plot_one_timed(axes, libr, **P):
    
     start0 = time.time()
 
-    out = lib.plot(axes, f, **P)
+#    out = lib.plot(axes, f, **P) 
+
+    out = lib.plot(axes, **combine_data_and_P(f, P))
+
 
     print(title+": "+str(int(time.time()-start0))+"s\n") 
 

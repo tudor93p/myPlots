@@ -17,11 +17,8 @@ def nr_axes(nrowcol=None, **kwargs):
 
 
 
-def plot(Ax, get_plotdata, **kwargs):
+def plot(Ax, suptitle=None, **Data):
 
-
-
-    Data = get_plotdata(kwargs)
 
     Z = Data.pop("z")
 
@@ -29,20 +26,18 @@ def plot(Ax, get_plotdata, **kwargs):
        
         return "=".join([Data[f"plot{c}label"], str(Data[f"plot{c}"][a])])
 
-    fs = dict(filter(lambda it: it[0]=="fontsize", kwargs.items()))
+    fs = dict(filter(lambda it: it[0]=="fontsize", Data.items()))
 
-    T = Data.get("suptitle", kwargs.get("suptitle", None))
+    if suptitle is not None:
 
-    if T is not None:
-
-        print(T)
+        print(suptitle)
 #        Ax[0].get_figure().suptitle(T, **fs)
 
 
 
     for (i, ax) in zip(np.ndindex(*Z.shape[2:]), Ax):
 
-        plot0([ax], lambda aux: {**Data, "z": Z[(...,*i)]}, **kwargs, show_colorbar=False)
+        plot0([ax], **Data, z=Z[(...,*i)], show_colorbar=False)
 
         Plot.disable_labels(ax)
 

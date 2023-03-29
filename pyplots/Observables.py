@@ -26,28 +26,29 @@ local_sliders = common_sliders + [ linewidths, energy_zoom ]
 
 
 
-def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, linewidth=1, fontsize=12, **kwargs):
+def plot(Ax, obsmin=None, obsmax=None, Energy=None, enlim=None, linewidth=1, fontsize=12, 
+        ylabel="",xlabel="",xlabel0="", y=None,
+        weights=None,
+        **kwargs):
 
-    data = get_plotdata({"Energy":Energy, **kwargs})
-    
-    d = get_one_or_many(data)
+    d = get_one_or_many(kwargs)
 
 
     ax0 = Ax[0]
     
     
-    ax0.set_ylabel(data["ylabel"],fontsize=fontsize)
+    ax0.set_ylabel(ylabel,fontsize=fontsize)
     
     ic = 0          # color index 
 
     zorder = 0      # zorder of curves; increases after every plott
    
 
-    restrict = np.logical_and(data["y"]>=min(enlim), data["y"]<=max(enlim))
+    restrict = np.logical_and(y>=min(enlim), y<=max(enlim))
 
-    # ------------ check if there's some x to plot ---------------- #
+    # ------------ check if there's some x_ to plot ---------------- #
 
-    show_x = ("xlabel" in data) and (data["xlabel"] != data["xlabel0"])
+    show_x = (xlabel is not None) and (xlabel != xlabel0)
 
     xm, xM = 0, 0
 
@@ -55,17 +56,17 @@ def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, li
                                 # don't show if there's no curve
         show_x = False
         
-        X = d("x")
+        X = d("x_")
 
         if X is not None:
 
-            for x in X: 
+            for x_ in X: 
         
-                if x is not None:
+                if x_ is not None:
 
                     show_x = True
 
-                    xm, xM = Algebra.minmax(np.append(np.array(x)[np.array(restrict)],[xm,xM]))
+                    xm, xM = Algebra.minmax(np.append(np.array(x_)[np.array(restrict)],[xm,xM]))
 
     plusminus = xm*xM < 0
 
@@ -76,7 +77,7 @@ def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, li
     # ------------ plot x0 ---------------- #
     
 
-    alpha0 = 0.35    # transparency of x0 vs y
+    alpha0 = 0.35    # transparency of x0 vs y_
 
     x0max = 0       # will store the maximum of x0
 
@@ -88,12 +89,12 @@ def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, li
 
         if x0 is not None:
 
-            x,y = Plot.get_plotxy(axis=1)(data["y"], x0, fill=0)
+            x_,y_ = Plot.get_plotxy(axis=1)(y, x0, fill=0)
     
-            ax0.fill(x, y, c=colors[ic], lw=0.5, zorder=zorder+1, alpha=alpha0, ec=colors[ic], label=label0)
+            ax0.fill(x_, y_, c=colors[ic], lw=0.5, zorder=zorder+1, alpha=alpha0, ec=colors[ic], label=label0)
    
             if plusminus:
-                ax0.fill(-x, y, c=colors[ic], lw=0.5, zorder=zorder, alpha=alpha0, ec=colors[ic])
+                ax0.fill(-x_, y_, c=colors[ic], lw=0.5, zorder=zorder, alpha=alpha0, ec=colors[ic])
 
             ic +=1
 
@@ -107,7 +108,7 @@ def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, li
     
     else:           # x0 has been plotted
 
-        ax0.set_xlabel(data["xlabel0"],fontsize=fontsize)
+        ax0.set_xlabel(xlabel0,fontsize=fontsize)
 
     if plusminus:
         ax0.plot([0,0], enlim, c='gray', lw=0.5, zorder=zorder)
@@ -119,7 +120,7 @@ def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, li
 
     # ------------ Energy level  ---------------- #
 
-    if Energy is not None and "weights" in data:
+    if Energy is not None and weights is not None:
 
         xmax = x0max
 
@@ -130,15 +131,15 @@ def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, li
 
             xmax = obsmax
 
-        x,y = Plot.get_plotxy(axis=1)(
-                data["y"],
-                np.reshape(data["weights"],-1)/np.max(data["weights"])*xmax,
+        x_,y_ = Plot.get_plotxy(axis=1)(
+                y,
+                np.reshape(weights,-1)/np.max(weights)*xmax,
                 fill=0)
 
-        ax0.fill(x,y, c=colors[ic], lw=0.5, zorder=1, alpha=alpha0, ec='k', label="weights")
+        ax0.fill(x_,y_, c=colors[ic], lw=0.5, zorder=1, alpha=alpha0, ec='k', label="weights")
 
         if plusminus:
-            ax0.fill(-x,y, c=colors[ic], lw=0.5, zorder=1, alpha=alpha0, ec='k')
+            ax0.fill(-x_,y_, c=colors[ic], lw=0.5, zorder=1, alpha=alpha0, ec='k')
 
         ic += 1
 
@@ -149,7 +150,7 @@ def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, li
 
 
 
-    # ------------ plot x ---------------- #
+    # ------------ plot x_ ---------------- #
 
 
     if not show_x:
@@ -176,11 +177,11 @@ def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, li
 
         LSS = [linestyles[i%len(linestyles)] for i in range(len(d("label")))]
 
-        for (x,l,lw) in zip(d("x"), d("label"), LWS):
+        for (x_,l,lw) in zip(d("x_"), d("label"), LWS):
             
-            if x is not None:
+            if x_ is not None:
                 
-                ax1.plot(x, data["y"], color=colors[ic], linewidth=lw, 
+                ax1.plot(x_, y, color=colors[ic], linewidth=lw, 
                         label=l, zorder=zorder, linestyle=LSS[ic-ils0])
    
                     
@@ -189,7 +190,7 @@ def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, li
                 zorder += 2
 
     
-        ax1.set_xlabel(data["xlabel"],fontsize=fontsize)
+        ax1.set_xlabel(xlabel,fontsize=fontsize)
         
         ax1.set_ylim(enlim)
         
@@ -219,19 +220,19 @@ def plot(Ax, get_plotdata, obsmin=None, obsmax=None, Energy=None, enlim=None, li
     
     if obsmin is not None:
         
-        x = ax.get_xlim()[1]
+        x_ = ax.get_xlim()[1]
 
-        if x>obsmin:
+        if x_>obsmin:
 
-            ax.set_xlim(obsmin,x)
+            ax.set_xlim(obsmin,x_)
     
     if obsmax is not None:
 
-        x = ax.get_xlim()[0]
+        x_ = ax.get_xlim()[0]
 
-        if x < obsmax:
+        if x_ < obsmax:
 
-            ax.set_xlim(x,obsmax)
+            ax.set_xlim(x_,obsmax)
 
     
     

@@ -19,11 +19,10 @@ common_sliders = common_sliders1 + [choose_energy ]
 #
 #---------------------------------------------------------------------------#
 
-def plot(Ax, get_plotdata, yline=None, obsmin=None,obsmax=None,
+def plot(Ax, yline=None, obsmin=None,obsmax=None,
                 ylim=None, **kwargs):
 
-    plot0(Ax, get_plotdata, ylim=[obsmin,obsmax],
-            yline=0, **kwargs)
+    plot0(Ax, ylim=[obsmin,obsmax], yline=0, **kwargs)
 
 
 

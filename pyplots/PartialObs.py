@@ -22,10 +22,10 @@ local_sliders = common_sliders0 + common_sliders + [choose_energy]
 
 
 
-def plot(Ax, get_plotdata, pobsmin=None, pobsmax=None, **kwargs):
+def plot(Ax, pobsmin=None, pobsmax=None, **kwargs):
    
 
-    plot0(Ax, get_plotdata, ylim=[pobsmin,pobsmax], **kwargs)
+    plot0(Ax, ylim=[pobsmin,pobsmax], **kwargs)
 
 
 

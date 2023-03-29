@@ -23,24 +23,23 @@ local_sliders = common_sliders + common_sliders0 + [choose_energy, atomsizes]
 #---------------------------------------------------------------------------#
 
 
-def plot(Ax, get_plotdata, localobs=None, cmap="PuBuGn", atomsize=100, 
-        lobsmin=None, lobsmax=None, fontsize=12, show_colorbar=True, **kwargs):
-
-
+def plot(Ax, localobs=None, cmap="PuBuGn", atomsize=100, 
+        lobsmin=None, lobsmax=None, fontsize=12, show_colorbar=True, 
+        z=None,xy=None,
+        **kwargs):
 
 
     ax0 = Ax[0]
 
-    data = get_plotdata({"localobs":localobs, **kwargs})
 
-    if localobs is None or not islocal(localobs) or "z" not in data:
+    if localobs is None or not islocal(localobs) or z is None:
 
-        ax0.scatter(*data["xy"][:2], s=atomsize)
+        ax0.scatter(*xy[:2], s=atomsize)
 
         return
 
 
-    vmin,vmax = Algebra.minmax(data["z"])
+    vmin,vmax = Algebra.minmax(z)
 
 
     if lobsmin is not None:
@@ -56,7 +55,7 @@ def plot(Ax, get_plotdata, localobs=None, cmap="PuBuGn", atomsize=100,
             vmax = lobsmax
     
 
-    Plot.LDOS(  [np.hstack((data["xy"][:2].T,data["z"].reshape(-1,1)))],
+    Plot.LDOS(  [np.hstack((xy[:2].T,z.reshape(-1,1)))],
                 ax_fname=ax0,
                 plotmethod="scatter",
                 axtitle="",

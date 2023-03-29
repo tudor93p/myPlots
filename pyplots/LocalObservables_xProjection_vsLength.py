@@ -17,13 +17,12 @@ local_sliders = common_sliders0 + [choose_energy] + common_sliders1
 #
 #---------------------------------------------------------------------------#
 
-def plot(Ax, get_plotdata, xline=None, yline=None, 
+def plot(Ax, xline=None, yline=None, 
         lobsmin=None, lobsmax=None, length=None, **kwargs):
 
 
 
-    plot0(Ax, get_plotdata, zmin=lobsmin, zmax=lobsmax, 
-                            yline=length, **kwargs) 
+    plot0(Ax, zmin=lobsmin, zmax=lobsmax, yline=length, **kwargs) 
 
 
 

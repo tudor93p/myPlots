@@ -18,13 +18,13 @@ local_sliders = [atomsizes, linewidths, pick_systems]
 #---------------------------------------------------------------------------#
 
 
-def plot(Ax, get_plotdata, linewidth=1, atomsize=10, fontsize=12, **kwargs):
+def plot(Ax, linewidth=1, atomsize=10, fontsize=12, **kwargs):
 
 
     ax0 = Ax[0]
 
    
-    data = get_one_or_many(get_plotdata(kwargs))
+    data = get_one_or_many(kwargs)
 
     c = 1
 

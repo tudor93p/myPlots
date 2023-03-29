@@ -57,17 +57,17 @@ def mask(x,xlim,y,ylim,z=None):
 #
 #---------------------------------------------------------------------------#
 
-def plot(Ax, get_plotdata, **kwargs):
+#def plot(Ax, get_plotdata, **kwargs):
+#
+#    data = get_plotdata(kwargs)
+#
+#    data.update(kwargs)
+#
+#    return plot0(Ax, **data) 
+#
 
-    data = get_plotdata(kwargs)
 
-    data.update(kwargs)
-
-    return plot0(Ax, **data) 
-
-
-
-def plot0(Ax, dotsize=10, fontsize=12, cmap="cool", zorder0=0, 
+def plot(Ax, dotsize=10, fontsize=12, cmap="cool", zorder0=0, 
         xlim=None,ylim=None,zlim=None,
         zlabel="",
         show_colorbar=True,

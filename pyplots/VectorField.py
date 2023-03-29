@@ -42,15 +42,15 @@ def control_size(S, arrow_uniformsize):
 #   plot
 #
 #---------------------------------------------------------------------------#
-def plot(Ax, get_plotdata, **kwargs):
+#def plot(Ax, get_plotdata, **kwargs):
+#
+#    data = get_plotdata(kwargs)
+#
+#    data.update(kwargs)
+#
+#    return plot0(Ax, **data) 
 
-    data = get_plotdata(kwargs)
-
-    data.update(kwargs)
-
-    return plot0(Ax, **data) 
-
-def plot0(Ax,
+def plot(Ax,
         nodes=None,
         dRs=None,
         Rs=None,

@@ -5,10 +5,10 @@ from sliders import *
 local_sliders = common_sliders + [choose_energy]
 
 
-def plot(Ax, get_plotdata, width=None, length=None, 
+def plot(Ax, width=None, length=None, 
                 yline=None, xline=None, **kwargs):
 
-    plot0(Ax, get_plotdata, yline=width, xline=length, **kwargs)
+    plot0(Ax, yline=width, xline=length, **kwargs)
 
 
     

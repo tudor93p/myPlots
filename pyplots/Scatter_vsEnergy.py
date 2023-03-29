@@ -22,11 +22,9 @@ common_sliders = common_sliders0 + common_sliders1
 #---------------------------------------------------------------------------#
 
 
-def plot(Ax, get_plotdata,  
-            Energy=None, yline=None, enlim=None, ylim=None,
-            **kwargs):
+def plot(Ax, Energy=None, yline=None, enlim=None, ylim=None, **kwargs):
 
-    plot0(Ax, get_plotdata, yline=Energy, ylim=enlim, **kwargs) 
+    plot0(Ax, yline=Energy, ylim=enlim, **kwargs) 
     
 
 

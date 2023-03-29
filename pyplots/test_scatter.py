@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     fig,ax = plt.subplots()
     
-    Scatter.plot([ax], get_plotdata, **get_kwargs())
+    Scatter.plot([ax], **get_plotdata(), **get_kwargs())
     
     plt.show()
     

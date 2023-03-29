@@ -17,12 +17,9 @@ local_sliders = common_sliders0 + common_sliders1
 #
 #---------------------------------------------------------------------------#
 
-def plot(Ax, get_plotdata,
-                sitevectorobsmin=None, sitevectorobsmax=None,
-                **kwargs):
+def plot(Ax, sitevectorobsmin=None, sitevectorobsmax=None, **kwargs):
 
-    plot0(Ax, get_plotdata, zlim=[sitevectorobsmin,sitevectorobsmax],
-            **kwargs)
+    plot0(Ax, zlim=[sitevectorobsmin,sitevectorobsmax], **kwargs)
 
     
 

@@ -18,11 +18,10 @@ common_sliders = common_sliders0 + [obs_index, obs_vminmax]
 
 
 
-def plot(Ax, get_plotdata, enlim=None, 
-            obsmin=None, obsmax=None, **kwargs):
+def plot(Ax, enlim=None, obsmin=None, obsmax=None, **kwargs):
 
 
-    plot0(Ax, get_plotdata, zmin=obsmin, zmax=obsmax, **kwargs) 
+    plot0(Ax, zmin=obsmin, zmax=obsmax, **kwargs) 
 
     
 

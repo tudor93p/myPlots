@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     fig,ax = plt.subplots()
     
-    Curves_yofx.plot([ax], get_plotdata, **get_kwargs())
+    Curves_yofx.plot([ax], **get_plotdata(), **get_kwargs())
     
     plt.show()
     

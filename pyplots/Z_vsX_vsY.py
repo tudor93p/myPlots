@@ -127,15 +127,13 @@ def get_cc(contour_color, cmap="viridis"):
 
 
 
-def plot(Ax, get_plotdata, fontsize=12, **kwargs): 
+def plot(Ax, fontsize=12, zlim=[None,None],
+        zlabel="",
+        **data): 
 
     ax0 = Ax[0]
 
-    data = get_plotdata(kwargs)
-
-    get_val = Utils.prioritized_get(kwargs, data)
-
-    zlim = deduce_axislimits([data["z"]],[get_val("zlim",[None,None])])
+    zlim = deduce_axislimits([data["z"]],[zlim])
 
     cmap = get_val("cmap","viridis")
 
@@ -179,7 +177,7 @@ def plot(Ax, get_plotdata, fontsize=12, **kwargs):
 
     if get_val("show_colorbar", True):
 
-        Plot.good_colorbar(P, zlim, ax0, data.get("zlabel",""), fontsize=fontsize, ticks=cbarticks)
+        Plot.good_colorbar(P, zlim, ax0, zlabel, fontsize=fontsize, ticks=cbarticks)
    
 
     if ("x_plot" in data) and ("y_plot" in data):

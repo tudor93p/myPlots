@@ -52,7 +52,8 @@ if __name__ == '__main__':
 
     data = get_plotdata()
 
-    Z_vsX_vsY.plot([ax], get_plotdata, 
+    Z_vsX_vsY.plot([ax], 
+            **data,
                         xline = data["x"][nx//2-1],#np.random.choice(data["x"]),
                         yline = data["y"][ny//2+1],#np.random.choice(data["y"]),
 #                        xlim = [xmin,xmax],

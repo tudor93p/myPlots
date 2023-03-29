@@ -195,7 +195,9 @@ def figure(ax,fontsize=12,**P):
 
     data = get_plotdata(P)
 
-    VectorField.plot([ax], lambda aux: data, **P)
+    data.update(P)
+
+    VectorField.plot([ax], **data)
 #    Curves_yofx.plot(Axes[1:2], get_plotdata2, **P)
 
 #    fontsize = P["fontsize"]

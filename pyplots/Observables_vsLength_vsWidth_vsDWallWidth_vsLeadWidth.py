@@ -16,12 +16,10 @@ def nr_axes(nrowcol,**kwargs):
 #
 #---------------------------------------------------------------------------#
 
+#refine ...
 
-
-def plot(Ax, get_plotdata, SCDW_width=None, Lead_Width=None, fontsize=12, 
-                            **kwargs):
-
-    Data = get_plotdata(**kwargs)
+def plot(Ax, SCDW_width=None, Lead_Width=None, fontsize=12, 
+                            **Data):
 
     Z = Data.pop("z")
 
@@ -36,7 +34,7 @@ def plot(Ax, get_plotdata, SCDW_width=None, Lead_Width=None, fontsize=12,
       
         data = {**Data, "z": Z[:,:,i,j]}
 
-        plot0([ax], lambda aux: data, fontsize=fontsize, **kwargs)
+        plot0([ax], lambda aux: data, fontsize=fontsize, **Data)
 
         ax.set_title(", ".join([title(*I) for I in zip("xy",(i,j))]),
                                                     fontsize=fontsize)
