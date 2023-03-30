@@ -1,1 +1,36 @@
-{"checkbox": {"save_replace": false, "reverse_cmap": false}, "combobox": {"save_justfig": 0, "a": 0, "c": 0, "cmap": 1}, "slider": {"b": 0, "dotsize": 5, "smooth": 0, "fontsize": 7, "arrow_scale": 5, "arrow_minlength": 0, "arrow_maxlength": 47, "arrow_uniformsize": 0, "atomsize": 0}, "text": {"save_path": "/media/tudor/Tudor/Work/2020_Snake-states/SnakeStates/myPlots/pyplots/pyqt_figures/2022-05-21_200940", "vectormin": "", "vectormax": ""}}
+{
+    "checkbox": {
+        "save_replace": true,
+        "output_figure": true,
+        "reverse_cmap": false
+    },
+    "combobox": {
+        "save_highres": 0,
+        "a": 0,
+        "c": 0,
+        "sample_states_method": 0,
+        "cmap": 5,
+        "inset_location": 0
+    },
+    "slider": {
+        "b": 0,
+        "fontsize": 7,
+        "dotsize": 5,
+        "arrow_scale": 30,
+        "arrow_minlength": 0,
+        "arrow_maxlength": 54,
+        "arrow_uniformsize": 0,
+        "atomsize": 0,
+        "smooth": 0,
+        "inset_size": 10
+    },
+    "text": {
+        "save_path": "/media/tudor/Tudor/Work/2020_Snake-states/SnakeStates/myPlots/pyplots/pyqt_figures/2023-03-30_012435",
+        "kpoint": "",
+        "sample_states_width_k": "",
+        "vectormin": "0.1",
+        "vectormax": "",
+        "contour_levels": "",
+        "contour_color": "contrasted"
+    }
+}

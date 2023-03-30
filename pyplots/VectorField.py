@@ -71,7 +71,7 @@ def plot(Ax,
 #        reverse_cmap=False,
         fontsize=12, 
         smooth=0,
-        colorbar=True,
+        show_colorbar=True,
         **kwargs):
 
 
@@ -172,7 +172,7 @@ def plot(Ax,
 
 
 
-    if colorbar: 
+    if show_colorbar: 
 
         label_ = "Arrow length"
         

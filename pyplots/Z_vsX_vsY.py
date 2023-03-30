@@ -116,6 +116,26 @@ def get_cc(contour_color, cmap="viridis"):
 
 #matplotlib.colors.cnames 
 
+def get_cl(cnlev, zlim):
+
+    if cnlev is None:
+        return None 
+
+    if isinstance(cnlev,list) or isinstance(cnlev,np.ndarray):
+        return np.sort(cnlev)
+    
+    if isinstance(cnlev,float):
+        
+        if cnlev>0:
+            return np.arange(*zlim,cnlev)
+    
+        else:
+            return np.arange(*reversed(zlim),cnlev)[::-1] 
+    
+    raise Exception(f"'cnlev={cnlev}' not implemented")
+
+        
+
 #===========================================================================#
 #
 #   Plot - requires data dictionary with:
@@ -127,55 +147,51 @@ def get_cc(contour_color, cmap="viridis"):
 
 
 
-def plot(Ax, fontsize=12, zlim=[None,None],
+def plot(Ax, fontsize=12, 
+        xlim=None, ylim=None,zlim=None,
+        cmap="viridis",
+        contour_levels=None,
+        contour_color=None,
+        show_colorbar=True,
+        x=None, y=None, z=None,
+        aspect_ratio=None,
         zlabel="",
         **data): 
 
+    assert x is not None 
+    assert y is not None 
+    assert z is not None 
+
+
     ax0 = Ax[0]
 
-    zlim = deduce_axislimits([data["z"]],[zlim])
+    zlim = deduce_axislimits([z],[zlim])
 
-    cmap = get_val("cmap","viridis")
 
-    X = shift_by_Dx(data["x"],-1/2)
-    Y = shift_by_Dx(data["y"],-1/2)
+    X = shift_by_Dx(x,-1/2)
+    Y = shift_by_Dx(y,-1/2)
 
-    P = ax0.pcolormesh(*Utils.mgrid_from_1D(X,Y), data["z"],
+    P = ax0.pcolormesh(*Utils.mgrid_from_1D(X,Y), z,
                         cmap=cmap, edgecolors='face',
       		        zorder=2, vmax=zlim[1], vmin=zlim[0])
  
     cbarticks = None 
 
 
-    cnlev = get_val("contour_levels")
+    cnlev = get_cl(contour_levels, zlim)
 
     if cnlev is not None:
 
-        if isinstance(cnlev,list) or isinstance(cnlev,np.ndarray):
-            cnlev = np.sort(cnlev)
-
-        elif isinstance(cnlev,float):
-            
-            if cnlev>0:
-
-                cnlev = np.arange(*zlim,cnlev)
-
-            else:
-                cnlev = np.arange(*reversed(zlim),cnlev)[::-1] 
-
-
-        
-
-        p = ax0.contour(*Utils.mgrid_from_1D(data["x"],data["y"],extend=False),
-                data["z"], cnlev, 
+        p = ax0.contour(*Utils.mgrid_from_1D(x,y,extend=False),
+                z, cnlev, 
                 zorder=5,
-                **get_cc(get_val("contour_color"), cmap)
+                **get_cc(contour_color, cmap)
                 )
 
         cbarticks = p.levels  
 
 
-    if get_val("show_colorbar", True):
+    if show_colorbar:
 
         Plot.good_colorbar(P, zlim, ax0, zlabel, fontsize=fontsize, ticks=cbarticks)
    
@@ -187,36 +203,35 @@ def plot(Ax, fontsize=12, zlim=[None,None],
 
 
 
-    for k,f in [("xlim",ax0.set_xlim),("ylim",ax0.set_ylim)]:
-
-        lim = get_val(k)
+    for (v,lim,f) in [(x,xlim,ax0.set_xlim),(y,ylim,ax0.set_ylim)]:
 
         if lim is not None:
 
-            f([shift_by_dx(data[k[0]],*ls) for ls in zip(lim,[-1/2,1/2])])
+            f([shift_by_dx(v,*ls) for ls in zip(lim,[-1/2,1/2])])
 
 
   
 
-    plot_levellines(ax0, get_val, zorder=5, color="k", lw=1, alpha=0.6)
-    set_xylabels(ax0, get_val, fontsize=fontsize)
+    plot_levellines2(ax0, data, zorder=5, color="k", lw=1, alpha=0.6,
+            xlim=xlim,ylim=ylim)
+
+    set_xylabels2(ax0, data, fontsize=fontsize)
 
 
-    i,j = [closest_data_i(data[c],get_val(c+"line"),1)[0] for (i,c) in enumerate("xy")]
+    i,j = [closest_data_i(v,data.get(c+"line",None),1)[0] for (v,c) in [(x,"x"),(y,"y")]]
 
 
     if (i is not None) and (j is not None):
 
-        z0 = np.round(data["z"][i,j],2)
+        z0 = np.round(z[i,j],2)
 
         ax0.set_xlabel(ax0.get_xlabel() + " [$z="+str(z0)+"$]")
 
 
 
 
-    if "aspect_ratio" in data:
-
-        ax0.set_aspect(data["aspect_ratio"])
+    if aspect_ratio is not None:
+        ax0.set_aspect(aspect_ratio)
 
 
 

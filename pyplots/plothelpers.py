@@ -2,9 +2,9 @@ import numpy as np
 import warnings  
 import Plot,Utils,Algebra
 
-def inset_sizes(rectangle, kwargs):
+def inset_kwargs(kwargs):
 
-    return Plot.inset_sizes(rectangle, kwargs, 
+    return Plot.inset_sizes(kwargs, 
             ["fontsize", "dotsize", "atomsize", "arrow_scale", "linewidth"])
 
 

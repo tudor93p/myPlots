@@ -12,7 +12,7 @@ def get_plotdata(*args,**kwargs):
 
 #    time.sleep(2)
 
-    X = np.linspace(0,2,5)
+    X = np.linspace(0,2,20)
 
     Y = (np.random.rand(len(X)) - 0.5)*10
 

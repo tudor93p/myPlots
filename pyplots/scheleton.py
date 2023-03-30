@@ -5,10 +5,24 @@ import PlotPyQt
 import time
 import sliders
 import matplotlib.pyplot as plt 
+import json 
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
 
 def get_axes(Axes, inds_axes_, subplot_nr):
 
     inds = (inds_axes_[subplot_nr], inds_axes_[subplot_nr+1]) 
+
+
 
     if np.ndim(Axes)==0: 
 
@@ -18,24 +32,38 @@ def get_axes(Axes, inds_axes_, subplot_nr):
         
     return Axes[np.unravel_index(np.arange(*inds), Axes.shape)]
 
-def combine_data_and_P(f, P):
+
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
+#def combine_data_and_P(f, P):
+#
+#    data = f(P)
+#
+#    data.update(P)
+#
+#    return data  
+
+
+def plot_one_timed(axes, lib, f, title, inset=False, **P):
+ 
+    start0 = time.time() 
+   
 
     data = f(P)
 
     data.update(P)
 
-    return data  
-
-
-def plot_one_timed(axes, libr, **P):
-    
-    (lib, f, title) = libr
-   
-    start0 = time.time()
-
-#    out = lib.plot(axes, f, **P) 
-
-    out = lib.plot(axes, **combine_data_and_P(f, P))
+    out = plot_one_fromdata(axes, lib, data, title, inset)
 
 
     print(title+": "+str(int(time.time()-start0))+"s\n") 
@@ -43,50 +71,181 @@ def plot_one_timed(axes, libr, **P):
     return out 
 
 
-def plot_one(axes, libr, fontsize=None, **P):
 
-    plot_one_timed(axes, libr, fontsize=fontsize, **P)
+
+
+def plot_one_fromdata(axes, lib, data, title, inset=False):
+ 
+    if isinstance(lib,str):
+        return plot_one_fromdata(axes, import_module(lib), data, title, inset)
+
+
+
+    if inset:
+        Plot.disable_labels(lib.plot(axes, show_colorbar=False, **inset_kwargs(data)))
+        Plot.disable_labels(axes) 
+
+    else:
+        lib.plot(axes, **data)
+
+        if len(axes)==1:
     
-    if len(axes)==1:
+            axes[0].set_title(printable_string(title),
+                                fontsize=data.get("fontsize",None))
 
-        axes[0].set_title(printable_string(libr[2]), fontsize=fontsize)
+        Plot.set_fontsize(axes, data.get("fontsize",None))
 
-    Plot.set_fontsize(axes, fontsize)
+    return (lib.__name__, data, title)
 
 
-def add_inset_axes(N, NrsAxes_all, inset, axes, inset_position, fontsize):
 
-    n = min(N, NrsAxes_all[inset])
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
+
+
+
+
+
+
+
+def add_inset_axes(axes, NrsAxes_all, inset, inset_position, fontsize):
+
+    n = min(len(axes), NrsAxes_all[inset])
 
     return [Plot.add_inset_axes(axes[i], inset_position, fontsize=fontsize) for i in range(n)]
         
 
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
 
-def foo(Axes, arg2, libraries, insets, NrsAxes, inset_position=None, fontsize=None, **P):
 
-    inds_subplots, inds_axes_, NrsAxes_all = arg2 
 
-    for (subplot_nr, library_i) in enumerate(inds_subplots): 
+def draw_subplots(Axes, 
+        libraries, 
+        numbering_subplots, 
+        insets, 
+        inset_position=None, 
+        record_data=False,
+        **P):
+
+    components = dict() 
+
+    inset_args = [inset_position, P.get("fontsize",None)]
+
+
+    inds_subplots, inds_axes_, NrsAxes_all = numbering_subplots  
+
+    for (subplot_nr, i) in enumerate(inds_subplots): 
     
         axes = get_axes(Axes, inds_axes_, subplot_nr)
     
-        plot_one(axes, libraries[library_i], fontsize=fontsize, **P)
-    
-        if library_i in insets.keys():
-    
-    
-            axes_ = add_inset_axes(NrsAxes[subplot_nr], NrsAxes_all, insets[library_i], axes, inset_position, fontsize)
-    
-    
-            ax = plot_one_timed(axes_, libraries[insets[library_i]],
-                    **inset_sizes(inset_position, P), 
-                    show_colorbar=False)
-    
-    
-            Plot.disable_labels(ax)
-    
-            Plot.disable_labels(axes_) 
+        lib_out = plot_one_timed(axes, *libraries[i], **P)
+        
+        if record_data:
+            components[str(i)] = lib_out 
 
+        if i in insets.keys():
+    
+            j = insets[i]
+
+            axes_ = add_inset_axes(axes, NrsAxes_all, j, *inset_args)
+   
+            lib_out_ = plot_one_timed(axes_, *libraries[j], inset=True, **P,) 
+
+            if record_data:
+                components[str(j)] = lib_out_ 
+
+
+    if not record_data: return {}
+
+
+    return {
+            "numbering_subplots":numbering_subplots,
+            "insets":insets,
+            "inset_args": inset_args,
+            "components": components
+            }
+
+
+def data_from_plot0(i0):
+
+    numbering_subplots, (components, initial_data, insets, nr_rc) = i0
+
+    fontsize = [c[1]["fontsize"] for c in components if "fontsize" in c[1]][0]
+
+    i_p = [c[1]["inset_position"] for c in components if "inset_position" in c[1]]
+
+
+    inset_args = [get_inset_pos(insets, i_p[0] if len(i_p)>0 else None), fontsize]
+
+
+    return {"numbering_subplots":numbering_subplots,
+            "insets":insets,
+            "inset_args":inset_args,
+            "components": {str(int(i)):[lib.__name__,data,t] for (i,(lib,data,t)) in enumerate(components)},
+            "nr_rc":nr_rc}
+
+
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+
+def draw_subplots_fromdata(
+        Axes, 
+        inset_args=None,
+        numbering_subplots=None,
+        insets=dict(),
+        components=None,
+        **kwargs
+        ):
+
+
+    inds_subplots, inds_axes_, NrsAxes_all = numbering_subplots  
+
+    for (subplot_nr, i) in enumerate(inds_subplots): 
+    
+        axes = get_axes(Axes, inds_axes_, subplot_nr)
+    
+        plot_one_fromdata(axes, *components[str(i)])
+
+        if i in insets.keys():
+    
+            j = insets[i]
+
+            axes_ = add_inset_axes( axes, NrsAxes_all, j, *inset_args)
+   
+            plot_one_fromdata(axes_, *components[str(j)], inset=True) 
+
+    return 
+
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
 
 
 def merge_parameters(P, *Ps):
@@ -114,6 +273,8 @@ def P_from_obj(obj, params, single_params, read_slid, insets):
 
     P["inset_position"] = get_inset_pos(insets, obj, sliders.insets()[1])
 
+    P["record_data"] = obj.get_checkbox("output_figure") 
+
     return P 
 
 #===========================================================================#
@@ -123,9 +284,15 @@ def P_from_obj(obj, params, single_params, read_slid, insets):
 #---------------------------------------------------------------------------#
 
 
-def init_plot_0(libraries, initial_data=dict(), insets=dict()):
 
-    insets = {k-1:v-1 for (k,v) in insets.items()} # julia 
+
+
+def init_plot_0(libraries, initial_data=dict(), insets=dict(),
+    insets_from_julia=True,
+        ):
+
+    if insets_from_julia:
+        insets = {k-1:v-1 for (k,v) in insets.items()}
 
     libraries = [[import_module(lib),f,t] for (lib,f,t) in libraries]
    
@@ -137,12 +304,22 @@ def init_plot_0(libraries, initial_data=dict(), insets=dict()):
    
     inds_axes_ = np.cumsum(np.append(0, NrsAxes))
 
+
+
     return ((inds_subplots, inds_axes_, NrsAxes_all), 
-            (NrsAxes, libraries, initial_data, insets,
+            (libraries, initial_data, insets,
                 nrowscols(sum(NrsAxes), **initial_data))
             )
 
-def baz(f_figure, nr_rc, params, insets, other_sliders, **initial_data):
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
+
+def pyqt_fig_show(f_figure, nr_rc, params, insets, other_sliders, **initial_data):
 
     fig = PlotPyQt.Figure(f_figure, *nr_rc, tight=True)
 
@@ -157,7 +334,7 @@ def baz(f_figure, nr_rc, params, insets, other_sliders, **initial_data):
 
     if len(insets)>0:
 
-        sliders.insets()[0](fig, **initial_data)
+        sliders.insets()[0](fig, **initial_data) # add
 
     fig.show()
 
@@ -189,47 +366,130 @@ def get_inset_pos(insets, obj=None, read_sliders_insets=None, inset_position=Non
 
 def init_plot(*args, **kwargs):
 
-    arg2, (NrsAxes, libraries, initial_data, insets, nr_rc) = init_plot_0(*args, **kwargs)
+    numbering_subplots, (libraries, initial_data, insets, nr_rc) = init_plot_0(*args, **kwargs)
 
 
-    def figure(Axes, printP=True, inset_position=None, **P): 
+    def figure(Axes, printP=True, inset_position=None, fontsize=12, **P): 
        
         if printP: print("\n",P,"\n") 
-        
-        inset_position = get_inset_pos(insets, **P)
 
-        foo(Axes, arg2, libraries, insets, NrsAxes, inset_position, **P)
+        return draw_subplots(Axes, 
+                libraries, 
+                numbering_subplots, 
+                insets, 
+                get_inset_pos(insets, **P),
+                fontsize=fontsize, **P)
 
     return figure, insets, nr_rc 
 
       # ----------------------------- #
 
 
+def default_figsize(nr_rc):
+    
+    figsize = np.array(nr_rc)[::-1]
 
-def plot_direct_frominit(figure, insets, nr_rc, 
+    return figsize/figsize.max() * 8 
+
+
+
+
+def plot_direct_frominit(figure, insets, 
+        nr_rc, 
         figsize=None, 
         fignum=0,
         tight_layout=True,
         **kwargs):
 
     if figsize is None:
-
-        figsize = np.array(nr_rc)[::-1]
-
-        figsize = figsize/figsize.max() * 8 
+        figsize = default_figsize(nr_rc)
         
     fig,Ax = plt.subplots(*nr_rc, figsize=figsize, num=fignum)
     
-    figure(Ax, **kwargs)
+    out = figure(Ax, **kwargs) 
+
+##########
+    
+    out["nr_rc"] = nr_rc 
+    out["tight_layout"] = tight_layout 
+    out["figsize"] = figsize 
+
+########## 
 
     if tight_layout:
         fig.tight_layout() 
     
     plt.show() # ??
 
-    return fig,Ax 
+    return out#,fig,Ax  
 
 
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------# 
+
+def load_data(fnjson):
+
+    with open(fnjson,"r") as f: 
+        data = json.load(f) 
+
+    for (i,c) in data["components"].items():
+
+        for (k,v) in c[1].items():
+
+            if k in ['nodes','dRs']:
+
+                data["components"][i][1][k] = np.asarray(v)
+
+    return data 
+
+
+
+
+
+def plot_fromfile(fnjson, **kwargs):
+
+    data = load_data(fnjson)
+
+    return plot_fromdata(**data, **kwargs)
+
+
+
+def default_nrrc(numbering_subplots=None, **kwargs):
+
+    return nrowscols(len(numbering_subplots[2]))
+
+
+
+
+
+
+def plot_fromdata(
+        nr_rc=None,
+        figsize=None, 
+        tight_layout=True,
+        **loaded_data):
+
+    if nr_rc is None:
+        nr_rc = default_nrrc(**loaded_data)
+    if figsize is None:
+        figsize = default_figsize(nr_rc)
+
+
+    fig,Ax = plt.subplots(*nr_rc, figsize=figsize)
+
+    out = draw_subplots_fromdata(Ax, **loaded_data)
+    
+    if tight_layout:
+        fig.tight_layout() 
+
+    plt.show()
+
+    return out 
 
 
 #===========================================================================#
@@ -248,7 +508,7 @@ def plot_frominit(params, libraries, figure, insets, nr_rc,
     
     libraries = [[import_module(lib),f,t] for (lib,f,t) in libraries]  
 
-    add_slid,read_slid = bar(libraries, extra_sliders)
+    add_slid,read_slid = get_addread_slids(libraries, extra_sliders)
 
 
     def figure_pyqt(obj, Fig, Axes):
@@ -260,7 +520,7 @@ def plot_frominit(params, libraries, figure, insets, nr_rc,
 
     
 
-    baz(figure_pyqt, nr_rc, params, insets, add_slid, **initial_data)
+    pyqt_fig_show(figure_pyqt, nr_rc, params, insets, add_slid, **initial_data)
    
 #===========================================================================#
 #
@@ -290,7 +550,7 @@ def plot_(params, libraries, extra_sliders=[], initial_data=dict(), insets=dict(
 #
 #---------------------------------------------------------------------------#
 
-def bar(libraries, extra_sliders):
+def get_addread_slids(libraries, extra_sliders):
 
     extra_slid = [getattr(sliders,s) for s in extra_sliders]
 
@@ -318,10 +578,10 @@ def plot(params, libraries,
 
     params, single_params = get_single_elements(params)
 
-    arg2, (NrsAxes, libraries, initial_data, insets, nr_rc) = init_plot_0(libraries, initial_data, insets)
+    numbering_subplots, (libraries, initial_data, insets, nr_rc) = init_plot_0(libraries, initial_data, insets)
 
 
-    add_slid,read_slid = bar(libraries, extra_sliders)
+    add_slid,read_slid = get_addread_slids(libraries, extra_sliders)
 
 
     # ---------------------------------- #
@@ -330,11 +590,11 @@ def plot(params, libraries,
         
         P = P_from_obj(obj, params, single_params, read_slid, insets)
 
-        foo(Axes, arg2, libraries, insets, NrsAxes, **P)
+        return draw_subplots(Axes, libraries, numbering_subplots, insets, **P)
 
       # ----------------------------- #
    
-    baz(figure, nr_rc, params, insets, add_slid, **initial_data)
+    pyqt_fig_show(figure, nr_rc, params, insets, add_slid, **initial_data)
 
 
 
