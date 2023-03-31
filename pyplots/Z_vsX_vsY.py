@@ -123,6 +123,10 @@ def get_cl(cnlev, zlim):
 
     if isinstance(cnlev,list) or isinstance(cnlev,np.ndarray):
         return np.sort(cnlev)
+
+    if isinstance(cnlev,int):
+        return cnlev 
+
     
     if isinstance(cnlev,float):
         
@@ -182,6 +186,11 @@ def plot(Ax, fontsize=12,
 
     if cnlev is not None:
 
+
+#        z[z<zlim[0]]=zlim[0]
+#        z[z>zlim[1]]=zlim[1]
+
+
         p = ax0.contour(*Utils.mgrid_from_1D(x,y,extend=False),
                 z, cnlev, 
                 zorder=5,
@@ -189,6 +198,7 @@ def plot(Ax, fontsize=12,
                 )
 
         cbarticks = p.levels  
+
 
 
     if show_colorbar:

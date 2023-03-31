@@ -45,7 +45,7 @@ end
 
 const pysliders_kwargs = Dict{String,String}(
 	"energy_zoom"							=> 	"enlim",
-	"choose_energy"						=>	"enlim",
+#	"choose_energy"						=>	"enlim",
 	"zoom_choose_energy"			=>	"enlim",
 	"operators"								=>	"HOperNames",
 	"observables"							=>	"ObsNames",

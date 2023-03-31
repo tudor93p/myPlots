@@ -199,6 +199,18 @@ def contour():
     return add,read
 
 
+def simple_fct():
+
+    def add(fig, **kwargs):
+   
+        fig.add_text(label="Simple fct.",key="simple_fct",text="")
+    
+    def read(obj):
+             
+        return read_text(obj, "simple_fct", accepted_types=(str,))
+    
+    return add,read
+
 #===========================================================================#
 #
 #
@@ -816,10 +828,8 @@ def colormap():
 
         return out 
     
-
-
-
     return add,read
+
 
 
 
@@ -831,26 +841,42 @@ def colormap():
 #
 #---------------------------------------------------------------------------#
 
-energy_zoom = choose_energy = zoom_choose_energy
-#
-#    def add(fig, enlim=None, **kwargs):
-#
-#        if enlim is not None:
-#    
-#            fig.add_slider(label="Zoom energy", key="zoom", columnSpan=5,
-#                    vs=np.linspace(1,0,80)*(np.max(enlim) - np.mean(enlim))
-#                    )
-#        
-#            fig.add_slider(label="Center energy", key="shift", columnSpan=2,
-#                    vs = np.linspace(*enlim,31), v0 = 15)
-#    
-#    def read(obj):
-#    
-#        return {"enlim": np.array([-1,1])*obj.get_slider("zoom") 
-#                                            + obj.get_slider("shift")}
-#   
-#
-#    return add,read
+energy_zoom = zoom_choose_energy
+
+
+def choose_energy():
+
+    def add(fig, **kwargs):
+   
+        fig.add_text(label="Energy",key="Energy",text="")
+
+        fig.add_text(label="Window E",key="sample_states_width_E",text="")
+    
+        fig.add_combobox(["Gaussian","Lorentzian","Rectangle"],label="Sample method",key="sample_states_method")
+
+
+
+
+    def read(obj):
+   
+        try: delta = float(obj.get_text("sample_states_width_E"))
+        except: delta = 0.02
+
+        try: en = float(obj.get_text("Energy"))
+        except: en = 0.0 
+
+        return {
+                "Energy" : en,
+                "E_width" : max(1e-4,delta),
+                "interp_method" : obj.get_combobox("sample_states_method")
+                }
+    
+    
+    return add,read
+    
+
+
+
 
 
 

@@ -441,7 +441,7 @@ def load_data(fnjson):
 
         for (k,v) in c[1].items():
 
-            if k in ['nodes','dRs']:
+            if k in ['nodes','dRs','x','y','z']:
 
                 data["components"][i][1][k] = np.asarray(v)
 
