@@ -171,14 +171,7 @@ function pyplot_init_sliders1!(kwargs::AbstractDict,
 															 pyslider::AbstractString, args...
 															 )::Nothing
 
-	if !haskey(Sliders.pysliders_kwargs,pyslider) 
-
-		@warn "Slider '$pyslider' not implemented. Update 'Sliders.pysliders_kwargs' and 'Sliders.pysliders_funs'"
-
-		return 
-
-	end 
-		
+	haskey(Sliders.pysliders_kwargs,pyslider) || return 
 
 	kwarg = Sliders.pysliders_kwargs[pyslider] 
 	
