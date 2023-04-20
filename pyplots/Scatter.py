@@ -57,21 +57,12 @@ def mask(x,xlim,y,ylim,z=None):
 #
 #---------------------------------------------------------------------------#
 
-#def plot(Ax, get_plotdata, **kwargs):
-#
-#    data = get_plotdata(kwargs)
-#
-#    data.update(kwargs)
-#
-#    return plot0(Ax, **data) 
-#
-
-
 def plot(Ax, dotsize=10, fontsize=12, cmap="cool", zorder0=0, 
         xlim=None,ylim=None,zlim=None,
         zlabel="",
         show_colorbar=True,
         xticks=None, xticklabels=None,
+        kwargs_levellines={},
         **kwargs): 
 
     ax0 = Ax[0]
@@ -137,7 +128,8 @@ def plot(Ax, dotsize=10, fontsize=12, cmap="cool", zorder0=0,
     ax0.set_ylim(ylim)
 
     
-    plot_levellines2(ax0, kwargs, zorder=zorder0+5, color="k", lw=1, alpha=alpha0*0.75
+    plot_levellines2(ax0, kwargs, zorder=zorder0+5, 
+            **kwargs_levellines,
             )
 
     set_xylabels2(ax0, kwargs, fontsize=fontsize)

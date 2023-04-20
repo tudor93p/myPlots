@@ -1,7 +1,14 @@
 import numpy as np
 import Utils, Plot, Algebra
-from plothelpers import *
-from sliders import *
+
+import plothelpers
+import sliders 
+from plothelpers import (
+        get_one_or_many, 
+        plot_levellines2, 
+        deduce_axislimits,
+        set_xylabels2,
+        )
 
 
 def nr_axes(**kwargs):
@@ -10,7 +17,7 @@ def nr_axes(**kwargs):
 
 
 
-common_sliders = [linewidths]
+common_sliders = [sliders.linewidths]
 
 
 
@@ -41,7 +48,12 @@ common_sliders = [linewidths]
 
 def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35, 
         xlim=None, ylim=None, aspect_ratio=None,
+        linestyles=plothelpers.linestyles,
+        colors=plothelpers.colors,
+        lw2=0.5,lw1=1.5,
+        kwargs_levellines={},
         **data):
+
     ax0 = Ax[0]
 
     d = get_one_or_many(data)
@@ -53,7 +65,7 @@ def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35,
 
 
 
-    LWS = np.linspace(1.5,0.5,nr_curves)*linewidth
+    LWS = np.linspace(lw1,lw2,nr_curves)*linewidth
    
     LSS = [linestyles[i%len(linestyles)] for i in range(nr_curves)] 
 
@@ -90,6 +102,7 @@ def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35,
     
                 ax0.plot(*xy, c=c, linewidth=lw, zorder=3*ils+zorder0+2+z*2, alpha=alpha, label=l, linestyle=ls) 
 
+
             else:
 
                 ax0.scatter(*xy[:,0], c=c, s=dotsize, zorder=3*ils+zorder0+2+z*2, alpha=alpha, label=l,marker="X")
@@ -118,7 +131,7 @@ def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35,
     ax0.tick_params(labelsize=fontsize)
 
     plot_levellines2(ax0, data, zorder=zorder0+5,
-                        xlim=xlim, ylim=ylim)
+                        xlim=xlim, ylim=ylim, **kwargs_levellines)
 
 
 

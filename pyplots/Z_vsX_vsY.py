@@ -160,6 +160,8 @@ def plot(Ax, fontsize=12,
         x=None, y=None, z=None,
         aspect_ratio=None,
         zlabel="",
+        x_plot=None,y_plot=None,
+        kwargs_levellines={},
         **data): 
 
     assert x is not None 
@@ -206,9 +208,9 @@ def plot(Ax, fontsize=12,
         Plot.good_colorbar(P, zlim, ax0, zlabel, fontsize=fontsize, ticks=cbarticks)
    
 
-    if ("x_plot" in data) and ("y_plot" in data):
+    if x_plot is not None and y_plot is not None:
 
-        ax0.plot(data["x_plot"], data["y_plot"], zorder=10, color="red", lw=2, ls="--", alpha=0.7) 
+        ax0.plot(x_plot, y_plot, zorder=10, color="red", lw=2, ls="--", alpha=0.7) 
 
 
 
@@ -222,8 +224,10 @@ def plot(Ax, fontsize=12,
 
   
 
-    plot_levellines2(ax0, data, zorder=5, color="k", lw=1, alpha=0.6,
-            xlim=xlim,ylim=ylim)
+    plot_levellines2(ax0, data, zorder=5, 
+            xlim=xlim,ylim=ylim,
+            **kwargs_levellines
+            )
 
     set_xylabels2(ax0, data, fontsize=fontsize)
 

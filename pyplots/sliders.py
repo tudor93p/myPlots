@@ -717,6 +717,21 @@ def obs_vminmax():
 
     return add,read
 
+def zlim():
+
+    def add(fig, **kwargs):
+    
+        fig.add_text(label="Limits z",key="zmin",text="")
+    
+        fig.add_text(key="zmax",text="")
+    
+    
+    def read(obj):
+ 
+        return read_many(lambda k: read_text(obj, k), ["zmin", "zmax"])
+    
+    return add,read
+
 
 
 def ylim():

@@ -24,20 +24,20 @@ pyplot_init_sliders = {"enlim":[-1,2]}
 pyplot_extra_sliders = ["choose_k"]#"zoom_choose_energy"] 
 
 
-#scheleton.plot(    
-#                    pyplot_merged_Param,
-#                    pyplot_pyjl_pairs,
-#                    pyplot_extra_sliders,
-#                    pyplot_init_sliders,
-#                    insets=insets)
-
-
-
-init_plot = scheleton.init_plot(
+scheleton.plot(    
+                    pyplot_merged_Param,
                     pyplot_pyjl_pairs,
+                    pyplot_extra_sliders,
                     pyplot_init_sliders,
-                    insets=insets 
-                    )
+                    insets=insets)
+
+
+
+#init_plot = scheleton.init_plot(
+#                    pyplot_pyjl_pairs,
+#                    pyplot_init_sliders,
+#                    insets=insets 
+#                    )
 
 #    return figure, insets, nr_rc 
 #
@@ -59,23 +59,23 @@ init_plot = scheleton.init_plot(
 
 
 
-fn = "jte.json"
-
-#with open(fn,"w") as f: json.dump(out, f , cls=Utils.NumpyEncoder)
-
-
-
-
-#print("len(out)=",len(out))   
-
-
-#scheleton.plot_fromdata(**out) 
-
-out = scheleton.load_data(fn)
-
-i0 = scheleton.init_plot_0([out["components"]["2"] for i in range(5)])
-
-scheleton.plot_fromdata(**scheleton.data_from_plot0(i0))
+#fn = "jte.json"
+#
+##with open(fn,"w") as f: json.dump(out, f , cls=Utils.NumpyEncoder)
+#
+#
+#
+#
+##print("len(out)=",len(out))   
+#
+#
+##scheleton.plot_fromdata(**out) 
+#
+#out = scheleton.load_data(fn)
+#
+#i0 = scheleton.init_plot_0([out["components"]["2"] for i in range(5)])
+#
+#scheleton.plot_fromdata(**scheleton.data_from_plot0(i0))
 
 
 

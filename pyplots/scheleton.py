@@ -58,7 +58,6 @@ def plot_one_timed(axes, lib, f, title, inset=False, **P):
  
     start0 = time.time() 
    
-
     data = f(P)
 
     data.update(P)
@@ -120,6 +119,7 @@ def add_inset_axes(axes, NrsAxes_all, inset, inset_position, fontsize):
 
     n = min(len(axes), NrsAxes_all[inset])
 
+
     return [Plot.add_inset_axes(axes[i], inset_position, fontsize=fontsize) for i in range(n)]
         
 
@@ -178,7 +178,7 @@ def draw_subplots(Axes,
             }
 
 
-def data_from_plot0(i0):
+def data_from_plot0(i0, **kwargs):
 
     numbering_subplots, (components, initial_data, insets, nr_rc) = i0
 
@@ -190,11 +190,15 @@ def data_from_plot0(i0):
     inset_args = [get_inset_pos(insets, i_p[0] if len(i_p)>0 else None), fontsize]
 
 
-    return {"numbering_subplots":numbering_subplots,
+    out = {"numbering_subplots":numbering_subplots,
             "insets":insets,
             "inset_args":inset_args,
             "components": {str(int(i)):[lib.__name__,data,t] for (i,(lib,data,t)) in enumerate(components)},
             "nr_rc":nr_rc}
+
+    out.update(kwargs)
+
+    return out 
 
 
 
@@ -349,9 +353,13 @@ def get_inset_pos(insets, obj=None, read_sliders_insets=None, inset_position=Non
         **kwargs):
 
     if (inset_position is not None) or (len(insets)==0):
-        return inset_position 
+        return inset_position  
+
 
     if obj is None:
+#        print("here") 
+#        print(Plot.inset_positions()[0])
+#        print(Plot.inset_positions(Plot.inset_positions()[0], 0.3))
             
         return Plot.inset_positions(Plot.inset_positions()[0], 0.3)
 
@@ -399,12 +407,16 @@ def plot_direct_frominit(figure, insets,
         figsize=None, 
         fignum=0,
         tight_layout=True,
+        sharex=False,
+        sharey=False,
         **kwargs):
 
     if figsize is None:
         figsize = default_figsize(nr_rc)
         
-    fig,Ax = plt.subplots(*nr_rc, figsize=figsize, num=fignum)
+    fig,Ax = plt.subplots(*nr_rc, 
+            figsize=tuple(x/2.54 for x in figsize),
+            sharex=sharex, sharey=sharey)
     
     out = figure(Ax, **kwargs) 
 
@@ -413,6 +425,9 @@ def plot_direct_frominit(figure, insets,
     out["nr_rc"] = nr_rc 
     out["tight_layout"] = tight_layout 
     out["figsize"] = figsize 
+    out["sharex"] = sharex 
+    out["sharey"] = sharey 
+
 
 ########## 
 
@@ -432,20 +447,74 @@ def plot_direct_frominit(figure, insets,
 #
 #---------------------------------------------------------------------------# 
 
-def load_data(fnjson):
+def components_asarray(data):
+    
+    for c in data["components"].values():
+        component_asarray(c)
+
+    return data 
+
+
+def component_asarray(c):
+
+    for (k,v) in c[1].items():
+        
+        if k in ['nodes','dRs','x','y','z']:
+        
+            c[1][k] = np.asarray(v)
+
+    return c 
+
+
+def keep_components(data,i_comps):
+
+    if i_comps is None: 
+        return data 
+        
+    i_del = set(data["components"].keys()).difference(set(map(str,i_comps)))
+
+    for i in i_del:
+        del data["components"][i]
+
+    return data 
+
+def update_components(data,comp_update):
+
+    if len(comp_update)>0:
+        for i in data["components"].keys():
+            data["components"][i][1].update(comp_update)
+
+    return data 
+
+
+def load_data(fnjson,i_comps=None,
+        comp_update={}):
 
     with open(fnjson,"r") as f: 
         data = json.load(f) 
 
-    for (i,c) in data["components"].items():
+    keep_components(data, i_comps)
 
-        for (k,v) in c[1].items():
+    update_components(data, comp_update)
 
-            if k in ['nodes','dRs','x','y','z']:
-
-                data["components"][i][1][k] = np.asarray(v)
+    components_asarray(data)   
 
     return data 
+
+
+def load_components(fnjson,i_comps,comp_update={}):
+
+    with open(fnjson,"r") as f: 
+        data = json.load(f) 
+
+    keep_components(data, i_comps)
+    
+    update_components(data, comp_update)
+    
+    components_asarray(data)  
+
+    return [data["components"][str(i)] for i in i_comps]
+
 
 
 
@@ -468,10 +537,12 @@ def default_nrrc(numbering_subplots=None, **kwargs):
 
 
 
-def plot_fromdata(
+def fig_fromdata(
         nr_rc=None,
         figsize=None, 
         tight_layout=True,
+        sharex=False,
+        sharey=False,
         **loaded_data):
 
     if nr_rc is None:
@@ -480,16 +551,20 @@ def plot_fromdata(
         figsize = default_figsize(nr_rc)
 
 
-    fig,Ax = plt.subplots(*nr_rc, figsize=figsize)
+
+
+    fig,Ax = plt.subplots(*nr_rc, 
+            figsize=tuple(x/2.54 for x in figsize),
+            sharex=sharex, sharey=sharey)
 
     out = draw_subplots_fromdata(Ax, **loaded_data)
     
     if tight_layout:
         fig.tight_layout() 
 
-    plt.show()
+#    plt.show()
 
-    return out 
+    return (fig,Ax),out 
 
 
 #===========================================================================#

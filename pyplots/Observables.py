@@ -46,7 +46,7 @@ def plot(Ax, obsmin=None, obsmax=None, Energy=None, enlim=None, linewidth=1, fon
 
     restrict = np.logical_and(y>=min(enlim), y<=max(enlim))
 
-    # ------------ check if there's some x_ to plot ---------------- #
+    # ------------ check if there's some x to plot ---------------- #
 
     show_x = (xlabel is not None) and (xlabel != xlabel0)
 
@@ -56,7 +56,7 @@ def plot(Ax, obsmin=None, obsmax=None, Energy=None, enlim=None, linewidth=1, fon
                                 # don't show if there's no curve
         show_x = False
         
-        X = d("x_")
+        X = d("x")
 
         if X is not None:
 
@@ -177,7 +177,7 @@ def plot(Ax, obsmin=None, obsmax=None, Energy=None, enlim=None, linewidth=1, fon
 
         LSS = [linestyles[i%len(linestyles)] for i in range(len(d("label")))]
 
-        for (x_,l,lw) in zip(d("x_"), d("label"), LWS):
+        for (x_,l,lw) in zip(d("x"), d("label"), LWS):
             
             if x_ is not None:
                 

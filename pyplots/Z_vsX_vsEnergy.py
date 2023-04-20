@@ -20,10 +20,12 @@ local_sliders = common_sliders + [smoothen]
 
 
 
-def plot(Ax, enlim=None, Energy=None, **kwargs):
+def plot(Ax, enlim=None, Energy=None, ylabel="Energy", **kwargs):
 
 
-    plot0(Ax, ylabel="Energy", ylim=enlim, yline=Energy, Energy=Energy, **kwargs) 
+    plot0(Ax, 
+            ylabel=ylabel,
+            ylim=enlim, yline=Energy, Energy=Energy, **kwargs) 
 
     
 
