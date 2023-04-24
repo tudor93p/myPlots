@@ -2,6 +2,7 @@ import numpy as np
 import json 
 
 import Utils 
+import matplotlib.pyplot as plt 
 
 import scheleton  
 import test_vectorfield, test_scatter, test_Z
@@ -24,35 +25,34 @@ pyplot_init_sliders = {"enlim":[-1,2]}
 pyplot_extra_sliders = ["choose_k"]#"zoom_choose_energy"] 
 
 
-scheleton.plot(    
-                    pyplot_merged_Param,
-                    pyplot_pyjl_pairs,
-                    pyplot_extra_sliders,
-                    pyplot_init_sliders,
-                    insets=insets)
-
+#scheleton.plot(    
+#                    pyplot_merged_Param,
+#                    pyplot_pyjl_pairs,
+#                    pyplot_extra_sliders,
+#                    pyplot_init_sliders,
+#                    insets=insets,
+#                    windowtitle="test title"
+#                    )
+#
 
 
 #init_plot = scheleton.init_plot(
 #                    pyplot_pyjl_pairs,
 #                    pyplot_init_sliders,
-#                    insets=insets 
+#                    insets=insets ,
+#                   windowtitle="test title"
 #                    )
-
-#    return figure, insets, nr_rc 
-#
 
 #out = scheleton.plot_direct_frominit(*init_plot,
 #        record_data=True)
 
 
-#
+
 #out = scheleton.plot_frominit(
 #        pyplot_merged_Param,
 #        pyplot_pyjl_pairs,
 #        *init_plot,
 #        pyplot_extra_sliders,
-#        pyplot_init_sliders
 #        )
 
 
@@ -64,7 +64,9 @@ scheleton.plot(
 ##with open(fn,"w") as f: json.dump(out, f , cls=Utils.NumpyEncoder)
 #
 #
-#
+
+fn = "pyqt_figures/2023-03-30_012435_outfig.json"
+
 #
 ##print("len(out)=",len(out))   
 #
@@ -81,8 +83,9 @@ scheleton.plot(
 
 
 
-#scheleton.plot_fromfile(fn)
+scheleton.plot_fromfile(fn)
 
+plt.show() 
 
 
 

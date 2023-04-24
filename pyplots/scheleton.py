@@ -292,8 +292,10 @@ def P_from_obj(obj, params, single_params, read_slid, insets):
 
 
 def init_plot_0(libraries, initial_data=dict(), insets=dict(),
-    insets_from_julia=True,
+    insets_from_julia=True, **kwargs,
         ):
+
+    initial_data.update(kwargs) 
 
     if insets_from_julia:
         insets = {k-1:v-1 for (k,v) in insets.items()}
@@ -309,7 +311,6 @@ def init_plot_0(libraries, initial_data=dict(), insets=dict(),
     inds_axes_ = np.cumsum(np.append(0, NrsAxes))
 
 
-
     return ((inds_subplots, inds_axes_, NrsAxes_all), 
             (libraries, initial_data, insets,
                 nrowscols(sum(NrsAxes), **initial_data))
@@ -323,9 +324,11 @@ def init_plot_0(libraries, initial_data=dict(), insets=dict(),
 #---------------------------------------------------------------------------#
 
 
-def pyqt_fig_show(f_figure, nr_rc, params, insets, other_sliders, **initial_data):
+def pyqt_fig_show(f_figure, nr_rc, params, insets, other_sliders, 
+        windowtitle=None,
+        **initial_data):
 
-    fig = PlotPyQt.Figure(f_figure, *nr_rc, tight=True)
+    fig = PlotPyQt.Figure(f_figure, *nr_rc, tight=True, windowtitle=windowtitle)
 
     for (i,(name,values)) in enumerate(zip(*params)):
     
@@ -341,6 +344,9 @@ def pyqt_fig_show(f_figure, nr_rc, params, insets, other_sliders, **initial_data
         sliders.insets()[0](fig, **initial_data) # add
 
     fig.show()
+
+    return 
+
 
 
 #===========================================================================#
@@ -388,7 +394,7 @@ def init_plot(*args, **kwargs):
                 get_inset_pos(insets, **P),
                 fontsize=fontsize, **P)
 
-    return figure, insets, nr_rc 
+    return figure, initial_data, insets, nr_rc 
 
       # ----------------------------- #
 
@@ -402,7 +408,9 @@ def default_figsize(nr_rc):
 
 
 
-def plot_direct_frominit(figure, insets, 
+def plot_direct_frominit(figure, 
+        slider_initial_data, ## ignored 
+        insets, 
         nr_rc, 
         figsize=None, 
         fignum=0,
@@ -422,6 +430,8 @@ def plot_direct_frominit(figure, insets,
 
 ##########
     
+# initial_data
+
     out["nr_rc"] = nr_rc 
     out["tight_layout"] = tight_layout 
     out["figsize"] = figsize 
@@ -524,7 +534,7 @@ def plot_fromfile(fnjson, **kwargs):
 
     data = load_data(fnjson)
 
-    return plot_fromdata(**data, **kwargs)
+    return fig_fromdata(**data, **kwargs)
 
 
 
@@ -574,9 +584,10 @@ def fig_fromdata(
 #---------------------------------------------------------------------------#
 
 
-def plot_frominit(params, libraries, figure, insets, nr_rc, 
+def plot_frominit(params, libraries, 
+        figure, initial_data, insets, nr_rc, # from init_plot
         extra_sliders=[],
-        initial_data=dict()):
+        ):
 
     params, single_params = get_single_elements(params)
 
@@ -595,7 +606,7 @@ def plot_frominit(params, libraries, figure, insets, nr_rc,
 
     
 
-    pyqt_fig_show(figure_pyqt, nr_rc, params, insets, add_slid, **initial_data)
+    return pyqt_fig_show(figure_pyqt, nr_rc, params, insets, add_slid, **initial_data)
    
 #===========================================================================#
 #
@@ -606,11 +617,11 @@ def plot_frominit(params, libraries, figure, insets, nr_rc,
 
 
     
-def plot_(params, libraries, extra_sliders=[], initial_data=dict(), insets=dict()):
+def plot_(params, libraries, extra_sliders=[], initial_data=dict(), insets=dict(), **kwargs):
 
-    data = init_plot(libraries, initial_data, insets)
+    data = init_plot(libraries, initial_data, insets, **kwargs)
    
-    plot_frominit(params, libraries, *data, extra_sliders, initial_data)
+    return plot_frominit(params, libraries, *data, extra_sliders)
 
     
     
@@ -649,11 +660,11 @@ def get_addread_slids(libraries, extra_sliders):
 
 def plot(params, libraries, 
         extra_sliders=[],
-        initial_data=dict(), insets=dict()):
+        initial_data=dict(), insets=dict(), **kwargs):
 
     params, single_params = get_single_elements(params)
 
-    numbering_subplots, (libraries, initial_data, insets, nr_rc) = init_plot_0(libraries, initial_data, insets)
+    numbering_subplots, (libraries, initial_data, insets, nr_rc) = init_plot_0(libraries, initial_data, insets, **kwargs)
 
 
     add_slid,read_slid = get_addread_slids(libraries, extra_sliders)
@@ -669,7 +680,7 @@ def plot(params, libraries,
 
       # ----------------------------- #
    
-    pyqt_fig_show(figure, nr_rc, params, insets, add_slid, **initial_data)
+    return pyqt_fig_show(figure, nr_rc, params, insets, add_slid, **initial_data)
 
 
 

@@ -4,5 +4,7 @@ test/savefile
 testfiles
 pyplots/__pycache__  
 pyplots/pyqt_config 
+pyplots/pyqt_figures/
 */.*.swp
-pyplots/mayavi.txt
+pyplots/mayavi.txt 
+Manifest.toml

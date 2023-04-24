@@ -103,7 +103,7 @@ def zoom_choose_energy():
 
         if enlim is not None:
     
-            fig.add_text(label="Center energy", key="shift", text="")
+            fig.add_text(label="Center energy", key="shift", text=np.mean(enlim))
 #            fig.add_slider(label="Center energy", key="shift", columnSpan=4,
 #                    vs = np.linspace(*enlim,51), v0 = 25)
 
@@ -171,6 +171,34 @@ def zoom_choose_energy():
     
 
 
+def energy_zoom():
+
+    def add(fig, enlim=None, **kwargs):
+   
+        if enlim is not None:
+    
+            fig.add_text(label="Center energy", key="shift", text=np.mean(enlim))
+
+            fig.add_slider(label="Zoom energy", key="zoom", columnSpan=5,
+                    vs=np.linspace(1,0,80)*(np.max(enlim) - np.mean(enlim))
+                    )
+        
+    def read(obj):
+  
+        try: 
+            shift = read_text(obj, "shift").get("shift", 0)
+
+            enlim = np.array([-1,1])*obj.get_slider("zoom") + shift
+        
+        except:
+
+            enlim = None
+        
+        return {"enlim" : enlim}
+    
+    
+    return add,read
+ 
 #===========================================================================#
 #
 #
@@ -855,8 +883,6 @@ def colormap():
 #   energy Zoom
 #
 #---------------------------------------------------------------------------#
-
-energy_zoom = zoom_choose_energy
 
 
 def choose_energy():
