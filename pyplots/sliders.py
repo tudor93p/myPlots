@@ -108,7 +108,7 @@ def zoom_choose_energy():
 #                    vs = np.linspace(*enlim,51), v0 = 25)
 
             fig.add_slider(label="Zoom energy", key="zoom", columnSpan=5,
-                    vs=np.linspace(1,0,80)*(np.max(enlim) - np.mean(enlim))
+                    vs=np.linspace(1,1e-4,80)*(np.max(enlim) - np.mean(enlim))
                     )
         
 #            fig.add_slider(label="Energy", key="sEnergy", vs=np.linspace(0,1,61), columnSpan=4, v0=30)
@@ -180,7 +180,7 @@ def energy_zoom():
             fig.add_text(label="Center energy", key="shift", text=np.mean(enlim))
 
             fig.add_slider(label="Zoom energy", key="zoom", columnSpan=5,
-                    vs=np.linspace(1,0,80)*(np.max(enlim) - np.mean(enlim))
+                    vs=np.linspace(1,1e-4,80)*(np.max(enlim) - np.mean(enlim))
                     )
         
     def read(obj):

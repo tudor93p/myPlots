@@ -20,7 +20,12 @@ common_sliders = [atomsizes, colormap]
 
 
 def plot(Ax, cmap="PuBuGn", atomsize=100, fontsize=12, 
-        zlabel=None, zlabels=None, show_colorbar=True, **kwargs):
+        zlabel=None, zlabels=None, show_colorbar=True, 
+        kwargs_colorbar={},
+        **kwargs):
+
+    if len(kwargs_colorbar)>0:
+        raise Exception("kwargs_colorbar not implemented")
 
     ax0 = Ax[0]
 

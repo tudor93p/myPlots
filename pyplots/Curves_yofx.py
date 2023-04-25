@@ -52,6 +52,7 @@ def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35,
         colors=plothelpers.colors,
         lw2=0.5,lw1=1.5,
         kwargs_levellines={},
+        kwargs_legend={},
         **data):
 
     ax0 = Ax[0]
@@ -122,10 +123,15 @@ def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35,
     if nr_items_legend>0:
 
         nrow = 4
+       
+        kl = {  "fontsize": fontsize,
+                "ncol": (nr_items_legend-1)//nrow + 1,
+                "columnspacing" : 1,
+                }
 
-        ncol = (nr_items_legend-1)//nrow + 1 
+        kl.update(kwargs_legend)
 
-        ax0.legend(fontsize=fontsize, ncol=ncol, columnspacing=1)
+        ax0.legend(**kl)
        
 
     ax0.tick_params(labelsize=fontsize)

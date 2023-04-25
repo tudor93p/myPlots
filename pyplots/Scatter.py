@@ -63,6 +63,7 @@ def plot(Ax, dotsize=10, fontsize=12, cmap="cool", zorder0=0,
         show_colorbar=True,
         xticks=None, xticklabels=None,
         kwargs_levellines={},
+        kwargs_colorbar={},
         **kwargs): 
 
     ax0 = Ax[0]
@@ -113,7 +114,8 @@ def plot(Ax, dotsize=10, fontsize=12, cmap="cool", zorder0=0,
        
             if i==0 and show_colorbar:
 
-                Plot.good_colorbar(P, zlim, ax0, zlabel, fontsize=fontsize)
+                Plot.good_colorbar(P, zlim, ax0, zlabel, fontsize=fontsize,
+                        **kwargs_colorbar)
                 pass            
     
     

@@ -26,6 +26,7 @@ local_sliders = common_sliders + common_sliders0 + [choose_energy, atomsizes]
 def plot(Ax, localobs=None, cmap="PuBuGn", atomsize=100, 
         lobsmin=None, lobsmax=None, fontsize=12, show_colorbar=True, 
         z=None,xy=None,
+        kwargs_colorbar={},
         **kwargs):
 
 
@@ -65,6 +66,7 @@ def plot(Ax, localobs=None, cmap="PuBuGn", atomsize=100,
                 dotsize=atomsize,
                 cbarlabs=[localobs],
                 show_colorbar=show_colorbar,
+                kwargs_colorbar=kwargs_colorbar,
             )
    
 

@@ -72,6 +72,7 @@ def plot(Ax,
         fontsize=12, 
         smooth=0,
         show_colorbar=True,
+        kwargs_colorbar={},
         **kwargs):
 
 
@@ -180,7 +181,9 @@ def plot(Ax,
         
             label_ += "\n"+ label 
 
-        Plot.good_colorbar(P, [vmin, vmax], ax0, label_, fontsize=fontsize)
+        Plot.good_colorbar(P, [vmin, vmax], ax0, label_, fontsize=fontsize,
+                **kwargs_colorbar)
+
 
 
 

@@ -162,6 +162,7 @@ def plot(Ax, fontsize=12,
         zlabel="",
         x_plot=None,y_plot=None,
         kwargs_levellines={},
+        kwargs_colorbar={},
         **data): 
 
     assert x is not None 
@@ -205,7 +206,7 @@ def plot(Ax, fontsize=12,
 
     if show_colorbar:
 
-        Plot.good_colorbar(P, zlim, ax0, zlabel, fontsize=fontsize, ticks=cbarticks)
+        Plot.good_colorbar(P, zlim, ax0, zlabel, fontsize=fontsize, ticks=cbarticks, **kwargs_colorbar)
    
 
     if x_plot is not None and y_plot is not None:
