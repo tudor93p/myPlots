@@ -2,7 +2,6 @@ import numpy as np
 import Plot, Algebra, Utils
 from plothelpers import *
 from sliders import *
-from Z_vsX_vsY import common_sliders as common_sliders0
 
 def nr_axes(**kwargs):
 
@@ -12,7 +11,7 @@ def nr_axes(**kwargs):
 
 common_sliders = [local_observables, localobs_vminmax]
 
-local_sliders = common_sliders + common_sliders0 + [choose_energy, atomsizes]
+local_sliders = common_sliders + [colormap, choose_energy, atomsizes]
 
 
 

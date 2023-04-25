@@ -168,6 +168,26 @@ def zoom_choose_energy():
     
     
     return add,read
+
+
+#def zoom_step(ylim):
+#   
+#    dy = np.max(enlim) - np.mean(enlim)
+#    
+#    step = dy/80 
+#
+#    u1 = 10**np.floor(np.log10(step))
+#
+#    u5 = 5*u1  
+#
+#    np.u5 if u5<step else u1 
+#
+#    a = 10**np.floor(
+#
+#    np.linspace(1,1e-4,80)*
+#
+#
+
     
 
 
