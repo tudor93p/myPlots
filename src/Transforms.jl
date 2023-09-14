@@ -558,25 +558,62 @@ end
 #---------------------------------------------------------------------------#
 
 
+#	for (d,A) in enumerate(["X","Y","Z"]), a in [A,lowercase(A)]
+#
+#		good(a) && return (d, identity)
+#
+#		good("|$a|") && return (d, pow_fct(1,true))
+#
+#		for n=2:4 
+#
+#			good("$a$n") && return (d, pow_fct(n))
+#
+#			good("|$a|$n") && return (d, pow_fct(n,true))
+#
+#		end 
+#
+#	end 
+#
+
+function v2s_template(R::AbstractVector{<:Real},::Val )::Float64 
+
+end 
 
 function parse_vec2scalar(d::AbstractString)::Function
 
-	d=="Angle" && return R->atan(R[2],R[1])/pi
+	if d=="Angle" 
 
-	d=="Norm" && return LinearAlgebra.norm
+		return function v2s_angle(R::AbstractVector{<:Real})::Float64 
 
+			atan(R[2],R[1])/pi
 
-	for i in 1:SYST_DIM
-
-		if any(c->occursin(c,d), i-1 .+ ['x', 'X'])
-
-			occursin("norm", d) && return R -> R[i]/LinearAlgebra.norm(R)
-
-			occursin("^2", d) && return R->abs2(R[i])
-
-			return R->R[i]
-			
 		end 
+
+	end 
+
+	if d=="Norm" 
+
+		return function v2s_norm(R::AbstractVector{<:Number})::Float64 
+
+			LinearAlgebra.norm(R)
+
+		end 
+
+	end 
+
+
+	for (i,a_)=enumerate('x':'x'+SYST_DIM), a=(a_,uppercase(a_))
+
+		occursin(a,d) || continue   
+
+#			good("$a$n") && return (d, pow_fct(n))
+#			good("|$a|$n") && return (d, pow_fct(n,true))
+
+		d==a && return R->R[i]
+		d=="$a/norm" && return R -> R[i]/LinearAlgebra.norm(R)
+		d=="|$a|/norm" && return R -> abs(R[i])/LinearAlgebra.norm(R)
+		d=="$a^2" && return R->R[i]^2
+		d=="|$a|^2" && return R->abs2(R[i])
 
 	end  
 

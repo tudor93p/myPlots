@@ -85,6 +85,29 @@ const pysliders_funs = Dict{String,Tuple{Vararg{Symbol}}}(
 #
 #---------------------------------------------------------------------------#
 
+function py_vec2scalar()::Vector{String}
+
+	map(string, [([i, i*"/norm", i*"^2"] for i='x'.+(0:SYST_DIM-1))...;
+							 "Angle"; "Norm"; ])
+
+end 
+
+
+
+
+
+
+
+
+
+
+
+#===========================================================================#
+#
+#
+#
+#---------------------------------------------------------------------------#
+
 
 
 function py_enlim(a::Ta, b::Tb)::NTuple{2,Float64} where {
@@ -113,12 +136,6 @@ function py_obsgroups(gr::AbstractVector)::Vector{String}
 
 end 
 
-function py_vec2scalar()::Vector{String}
-
-	map(string, [([i, i*"/norm", i*"^2"] for i='x'.+(0:SYST_DIM-1))...;
-							 "Angle"; "Norm"; ])
-
-end 
 
 function py_transf(t::AbstractString...)::Vector{String} 
 

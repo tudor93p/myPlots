@@ -8,17 +8,20 @@ Revise.retry()
 
 for filename in [
 
-"transf_Fermi_surface",
+#"transf_Fermi_surface",
+#
+#"myplots", 
+#
+#"plot_obs",
+#
+#"plotlatt",
+#
+#"transforms",
+#
+#"init-sliders",
 
-"myplots", 
 
-"plot_obs",
-
-"plotlatt",
-
-"transforms",
-
-"init-sliders",
+"vec2scalar",
 
 ]
 
