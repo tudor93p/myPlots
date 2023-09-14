@@ -14,15 +14,11 @@ using myLibs.ComputeTasks: CompTask
 
 export PlotTask 
 
-@show pkgdir(myPlots)
 
-@assert pkgdir(myPlots) == "/mnt/Work/2020_Snake-states/SnakeStates/myPlots"
-#const PATH_path = "$PATH_SNAKE/myPlots/pyplots/"
+@assert pkgdir(myPlots) == "/mnt/Work/scripts/julia_libraries/myPlots"
 
 const PATH_PYPLOTS = joinpath(pkgdir(myPlots),"pyplots")
 	
-pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"), PATH_PYPLOTS)
-
 
 #===========================================================================#
 #
@@ -596,15 +592,9 @@ function retrieve_pyplot_object(script::Union{Symbol,AbstractString},
 																obj::Union{Symbol,AbstractString}
 																)
 
-#	@show pkgdir(myPlots)
-#	@assert pkgdir(myPlots) == "/mnt/Work/2020_Snake-states/SnakeStates/myPlots"
+	pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"), PATH_PYPLOTS)
 
-#	path = "$PATH_SNAKE/myPlots/pyplots/"
-
-#	pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"),
-#						 PATH_PYPLOTS)
-
-	getproperty(PyCall.pyimport(string(script)), Symbol(obj))
+	return getproperty(PyCall.pyimport(string(script)), Symbol(obj))
 
 end  
 

@@ -8,15 +8,15 @@ Revise.retry()
 
 for filename in [
 
-#"transf_Fermi_surface",
-#
-#"myplots", 
-#
-#"plot_obs",
+"transf_Fermi_surface",
 
-#"plotlatt",
+"myplots", 
 
-#"transforms",
+"plot_obs",
+
+"plotlatt",
+
+"transforms",
 
 "init-sliders",
 
