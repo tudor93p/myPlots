@@ -126,7 +126,7 @@ localobs(get_data::Function, lattice_::Module) = localobs(get_data, lattice_.Pos
 #
 #---------------------------------------------------------------------------#
 
-oper(task::Union{CompTask,PlotTask}) = oper(task.get_data)
+oper(task::Union{CompTask,PlotTask}; kwargs...) = oper(task.get_data; kwargs...)
 
 oper(get_data::Function; vsdim::Int) = ("Hamilt_Diagonaliz", 
 
