@@ -15,9 +15,13 @@ using myLibs.ComputeTasks: CompTask
 export PlotTask 
 
 
-@assert pkgdir(myPlots) == "/mnt/Work/scripts/julia_libraries/myPlots"
+const PATH_PYPLOTS = "/mnt/Work/scripts/julia_libraries/myPlots/pyplots/"
 
-const PATH_PYPLOTS = joinpath(pkgdir(myPlots),"pyplots")
+#	println(pkgdir(myPlots))
+#	println(@__FILE__) 
+#	println(@__DIR__ )
+#
+#const PATH_PYPLOTS = joinpath(pkgdir(myPlots),"pyplots")
 	
 
 #===========================================================================#
