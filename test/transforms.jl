@@ -1,9 +1,12 @@
 T = myPlots.Transforms
 import LinearAlgebra
-using Constants: NR_ENERGIES
+#using Constants: NR_ENERGIES
 import PyPlot, Random
 import myLibs:Utils
 using BenchmarkTools: @btime
+
+NR_ENERGIES = 100 
+ENERGIES = Vector(LinRange(-0.3,0.3,NR_ENERGIES))
 
 
 @show T.get_SamplingVars_(Dict(), "Energy")
@@ -23,7 +26,7 @@ println()
 P["k"] = 0.3
 P["k_width"] = 0.1
 
-Data = Dict("kLabels"=>rand(NR_ENERGIES))
+Data = Dict("kLabels"=>rand(NR_ENERGIES),"Energy"=>ENERGIES)
 
 @show T.get_SamplingVars(P; Data=Data, get_k=true) .|> length
 
@@ -33,11 +36,15 @@ println()
 
 
 
-@show T.SamplingWeights(P) |> size
+#@show T.SamplingWeights(P) |> size
 
 @show T.SamplingWeights(P; Data=Data, get_k=true) |> size
 
-@show T.SampleVectors(rand(10,NR_ENERGIES), P; Data=Data, get_k=true) |> size 
+vs = Dict(:vsdim=>2) 
+
+
+@show T.SampleVectors(rand(10,NR_ENERGIES), P; Data=Data, get_k=true,
+										 vs...) |> size 
 
 
 
@@ -53,7 +60,7 @@ println()
 false && @testset "Vector to scalar" begin 
 
 	@info T.Vec2Scalar 
-	@test length(T.Vec2Scalar(rand(2,3)))==3
+	@test length(T.Vec2Scalar(rand(2,3);vs...))==3
 
 	println()
 	@show myPlots.Sliders.init_Vec2Scalar()(Dict())["Vec2Scalar"]
@@ -70,7 +77,7 @@ false && @testset "Vector to scalar" begin
 	
 			s1 = T.parse_vec2scalar(q)(A isa AbstractMatrix ? A[:,1] : A) 
 	
-		result = T.Vec2Scalar(A,P)   
+			result = T.Vec2Scalar(A,P; vs...)
 		
 		@test isapprox(first(result), s1) 
 		

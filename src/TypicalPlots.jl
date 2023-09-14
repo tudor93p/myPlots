@@ -5,7 +5,6 @@ using myLibs.ComputeTasks: CompTask
 import myLibs: Lattices, Utils
 
 using ..myPlots: PlotTask, construct_obs0obs, join_label
-using Constants: ENERGIES 
 
 import ..Transforms, ..Sliders 
 
@@ -27,11 +26,16 @@ function obs(get_data::Function)::Tuple{String,Function}
 	
 		obs_ = vcat(get(P, "obs", obs0))
 	
-		Data = get_data(P, mute=false, fromPlot=true, target=vcat(obs_,obs0))
+		Data = get_data(P, mute=false, fromPlot=true, 
+										target=union(vcat(obs_,obs0),"Energy"),
+										)
+
+		@show keys(Data)
 
 
 		return construct_obs0obs(P, 
-														 get(Data,"Energy",ENERGIES),
+														 Data["Energy"],
+#														 get(Data,"Energy",ENERGIES),
 														 obs_,	[get(Data, o_, 	nothing) for o_ in obs_],
 														 obs0, get(Data, obs0, nothing),
 														 )
@@ -106,7 +110,7 @@ localobs(get_data::Function, PosAtoms::Function) = ("LocalObservables", function
 
 	@assert haskey(P, "Energy")
 
-	return Dict("xy" => atoms, 
+	return Dict{String,Any}("xy" => atoms, 
 							"z" => Transforms.SampleVectors(Data[localobs_], P; Data=Data, get_k=true))
 	
 end)
@@ -124,7 +128,7 @@ localobs(get_data::Function, lattice_::Module) = localobs(get_data, lattice_.Pos
 
 oper(task::Union{CompTask,PlotTask}) = oper(task.get_data)
 
-oper(get_data::Function) = ("Hamilt_Diagonaliz", 
+oper(get_data::Function; vsdim::Int) = ("Hamilt_Diagonaliz", 
 
 	function plot_(P::AbstractDict)::Dict
 
@@ -172,7 +176,8 @@ oper(get_data::Function) = ("Hamilt_Diagonaliz",
 
 		if haskey(Data, oper_) 
 
-			z,lab1 = Transforms.choose_color_i(P, Data[oper_], oper_; f="first") 
+			z,lab1 = Transforms.choose_color_i(P, Data[oper_], oper_; f="first",
+																				 vsdim=vsdim)
 
 			@assert ndims(z)==1 && length(z)==length(out["y"])==length(out["x"])
 
@@ -268,8 +273,8 @@ function lattice(get_data::Function; nr_uc::Int=0, kwargs...)
 
 		end 
 
-		return Dict(zip(["labels", "xys"], Utils.zipmap(lxy, iter)))
-	
+		return Dict{String,Any}(zip(["labels", "xys"], Utils.zipmap(lxy, iter)))
+
 	end 
 
 

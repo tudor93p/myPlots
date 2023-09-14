@@ -7,4 +7,5 @@ pyplots/pyqt_config
 pyplots/pyqt_figures/
 */.*.swp
 pyplots/mayavi.txt 
-Manifest.toml
+Manifest.toml 
+pyplots/log

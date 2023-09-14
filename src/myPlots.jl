@@ -10,13 +10,18 @@ using myLibs: Utils, Algebra, ComputeTasks
 using myLibs.ComputeTasks: CompTask
 
 
-using Constants: MAIN_DIM, SECOND_DIM, PATH_SNAKE
 
-#using Constants: ENERGIES, HOPP_CUTOFF, VECTOR_STORE_DIM
 
 export PlotTask 
 
+@show pkgdir(myPlots)
 
+@assert pkgdir(myPlots) == "/mnt/Work/2020_Snake-states/SnakeStates/myPlots"
+#const PATH_path = "$PATH_SNAKE/myPlots/pyplots/"
+
+const PATH_PYPLOTS = joinpath(pkgdir(myPlots),"pyplots")
+	
+pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"), PATH_PYPLOTS)
 
 
 #===========================================================================#
@@ -591,11 +596,15 @@ function retrieve_pyplot_object(script::Union{Symbol,AbstractString},
 																obj::Union{Symbol,AbstractString}
 																)
 
-	path = "$PATH_SNAKE/myPlots/pyplots/"
+#	@show pkgdir(myPlots)
+#	@assert pkgdir(myPlots) == "/mnt/Work/2020_Snake-states/SnakeStates/myPlots"
 
-	pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"), path)
+#	path = "$PATH_SNAKE/myPlots/pyplots/"
 
-	return getproperty(PyCall.pyimport(string(script)), Symbol(obj))
+#	pushfirst!(PyCall.PyVector(PyCall.pyimport("sys")."path"),
+#						 PATH_PYPLOTS)
+
+	getproperty(PyCall.pyimport(string(script)), Symbol(obj))
 
 end  
 
@@ -653,20 +662,6 @@ function init_plot(tasks::AbstractVector{PlotTask};
 end
 
 
-
-
-#===========================================================================#
-#
-#
-#
-#---------------------------------------------------------------------------#
-
-
-function main_secondary_dimensions()::Tuple{String,String}
-
-	Tuple(["x","y"][[MAIN_DIM, SECOND_DIM]])
-
-end 
 
 
 

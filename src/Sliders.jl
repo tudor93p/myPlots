@@ -3,7 +3,8 @@ module Sliders
 
 import myLibs: Utils 
 
-using Constants:SYST_DIM
+const SYST_DIM = 2 # 3?
+
 
 #===========================================================================#
 #

@@ -71,6 +71,7 @@ def plot(Ax,
 #        reverse_cmap=False,
         fontsize=12, 
         smooth=0,
+        background=False,#True,#False,
         show_colorbar=True,
         kwargs_colorbar={},
         **kwargs):
@@ -149,41 +150,46 @@ def plot(Ax,
 #    XY = XY[inds] 
 
 ###
-
-    with warnings.catch_warnings():
-
-        warnings.simplefilter("ignore")
-
-        x_smooth,y_smooth = Utils.mgrid_from_1D(x,y,extend=True)
-
-        arrowsize = Rbf(*XY.T, sizes, function='linear', smooth=50*smooth)(x_smooth,y_smooth)
-
-
     vmin = vectormin 
 
     vmax = max(vmin,Utils.Assign_Value(vectormax, np.max(sizes)))
 
 
-    P = ax0.pcolormesh(x_smooth-(x[1]-x[0])/2, y_smooth-(y[1]-y[0])/2,
-                arrowsize, #alpha = 0.6, 
-                cmap=cmap, 
-                edgecolors='face', #linewidth=0.001,#001,
-                zorder=5,
-                vmin=vmin, vmax=vmax)
 
 
+    if background:
 
-    if show_colorbar: 
-
-        label_ = "Arrow length"
-        
-        if label is not None:
-        
-            label_ += "\n"+ label 
-
-        Plot.good_colorbar(P, [vmin, vmax], ax0, label_, fontsize=fontsize,
-                **kwargs_colorbar)
-
+        with warnings.catch_warnings():
+    
+            warnings.simplefilter("ignore")
+    
+            x_smooth,y_smooth = Utils.mgrid_from_1D(x,y,extend=True)
+    
+            arrowsize = Rbf(*XY.T, sizes, function='linear', smooth=50*smooth)(x_smooth,y_smooth)
+    
+    
+    
+    
+        P = ax0.pcolormesh(x_smooth-(x[1]-x[0])/2, y_smooth-(y[1]-y[0])/2,
+                    arrowsize, #alpha = 0.6, 
+                    cmap=cmap, 
+                    edgecolors='face', #linewidth=0.001,#001,
+                    zorder=5,
+                    vmin=vmin, vmax=vmax)
+    
+    
+    
+        if show_colorbar: 
+    
+            label_ = "Arrow length"
+            
+            if label is not None:
+            
+                label_ += "\n"+ label 
+    
+            Plot.good_colorbar(P, [vmin, vmax], ax0, label_, fontsize=fontsize,
+                    **kwargs_colorbar)
+    
 
 
 
@@ -194,14 +200,16 @@ def plot(Ax,
     UV = UV[inds]*arrow_scale
 
     XY = XY[inds] 
+
     sizes = sizes[inds]
 
 ### 
 
 
-#    get_col = matplotlib.cm.get_cmap(cmap) 
+#    get_col2 = matplotlib.cm.get_cmap(cmap) 
 
-    get_col2 = contrasting_cmap(cmap) 
+
+    get_col2 = contrasting_cmap(cmap) if background else matplotlib.cm.get_cmap(cmap) 
 
 
     for (xy,dxy,s) in zip(XY-UV/2,UV, Utils.Rescale(sizes,[0,1],[vmin,vmax])): 

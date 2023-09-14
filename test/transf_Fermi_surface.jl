@@ -103,7 +103,7 @@ ks = sort(rand(47))
 
 
 
-(DOS,Z),label2 = T.convol_DOSatEvsK1D(P, (Data,"X"); ks=ks)
+(DOS,Z),label2 = T.convol_DOSatEvsK1D(P, (Data,"X"); ks=ks, vsdim=2)
 
 @test label==label2
 
@@ -116,7 +116,7 @@ Data["X"]= rand(2,100).-0.5
 
 P["obs_i"]=2
 
-(DOS,Z),label3 = T.convol_DOSatEvsK1D(P, (Data,"X"); ks=ks,f="first")
+(DOS,Z),label3 = T.convol_DOSatEvsK1D(P, (Data,"X"); ks=ks,f="first",vsdim=2)
 
 
 
@@ -128,7 +128,7 @@ println()
 
 Data["X"]= rand(100).-0.5
 
-(DOS,Z),label3 = T.convol_DOSatEvsK1D(P, (Data,"X"); ks=ks,f="first")
+(DOS,Z),label3 = T.convol_DOSatEvsK1D(P, (Data,"X"); ks=ks,f="first",vsdim=2)
 
 
 @test length(DOS)==length(Z)==47 
@@ -183,7 +183,7 @@ for oper_comp in ([],[1],[2]),normalize in [true,false]
 
 p = Utils.adapt_merge(P, add..., k=>x0)#, "opermax"=>1)
 	
-		(DOS,Z),label = T.convol_DOSatEvsK1D(p, (Data, oper); ks=ks, normalize=normalize, restrict_oper=restrict_oper)
+(DOS,Z),label = T.convol_DOSatEvsK1D(p, (Data, oper); ks=ks, normalize=normalize, restrict_oper=restrict_oper, vsdim=2)
 
 #		@show label 
 		@test length(DOS)==nr_ks 

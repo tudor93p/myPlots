@@ -1,6 +1,8 @@
-using Constants: NR_ENERGIES, ENERGIES
+#using #Constants: NR_ENERGIES, ENERGIES
 using myLibs.ComputeTasks: CompTask 
 import myLibs: Lattices
+
+ENERGIES = Vector(LinRange(-0.3,0.3,100))
 
 obs_list = ["Intruder", "LocalA", "BondVector1", "SiteVectorV", "Obs1", "CaroliCurrent_5"]
 
@@ -239,10 +241,10 @@ function get_data(args...;kwargs...)
 end 
 
 
-@show myPlots.TypicalPlots.oper(get_data)[1]
-@show myPlots.TypicalPlots.oper(get_data)[2](Dict()) 
+@show myPlots.TypicalPlots.oper(get_data; vsdim=2)[1]
+@show myPlots.TypicalPlots.oper(get_data; vsdim=2)[2](Dict()) 
 
-for (k,v) in myPlots.TypicalPlots.oper(get_data)[2](Dict("filterstates"=>true, "oper"=>"Velocity","obs_i"=>1,"opermin"=>0.4))
+for (k,v) in myPlots.TypicalPlots.oper(get_data; vsdim=2)[2](Dict("filterstates"=>true, "oper"=>"Velocity","obs_i"=>1,"opermin"=>0.4))
 
 	print("$k: ")
 
@@ -257,7 +259,7 @@ println()
 println()
 
 
-D = myPlots.TypicalPlots.oper(get_data)[2](Dict("oper"=>"Velocity","obs_i"=>2))
+D = myPlots.TypicalPlots.oper(get_data;vsdim=2)[2](Dict("oper"=>"Velocity","obs_i"=>2))
 
 @show D["z"] |> size 
 @show D["zlabel"]

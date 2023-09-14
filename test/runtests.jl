@@ -4,6 +4,8 @@ import myPlots
 
 Revise.retry()
 
+
+
 for filename in [
 
 #"transf_Fermi_surface",
@@ -12,12 +14,12 @@ for filename in [
 #
 #"plot_obs",
 
-"plotlatt",
+#"plotlatt",
 
 #"transforms",
-#
-#"init-sliders",
-#
+
+"init-sliders",
+
 ]
 
 
@@ -27,30 +29,8 @@ println(" ************ $filename ***********")
 include("$filename.jl")
 
 
-end
 
-
-
-#include("plotlatt.jl")
-
-#include("transforms.jl")
-
-
-
-
-#include("Fourier_Freq.jl")
-
-
-#include("choose-obs.jl")
-
-#include("plot_obs.jl")
-
-
-
-
-
-
-
+end 
 
 
 

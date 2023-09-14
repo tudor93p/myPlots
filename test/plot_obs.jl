@@ -1,14 +1,16 @@
-using Constants: NR_ENERGIES, ENERGIES
+#using Constants: NR_ENERGIES, ENERGIES
 using myLibs.ComputeTasks: CompTask 
 import myLibs: Lattices, Algebra ,Parameters
 
+NR_ENERGIES = 100 
+ENERGIES = Vector(LinRange(-0.3,0.3,NR_ENERGIES))
 	
 observables = Algebra.OuterBinary(["QP","E","H"], ["-CaroliTransm_2","-DOS"], *, flat=true)
 
 
 function get_data(args...; kwargs...) 
 
-	out = Dict{String,Any}() 
+	out = Dict{String,Any}("Energy"=>ENERGIES)
 
 
 	for obs in observables 
@@ -42,7 +44,7 @@ end
 
 
 param_flow = Parameters.ParamFlow("path_test_obs", 1,
-																	([:x],(x=(1,0),),Dict(:x=>1)))
+																	([:x251],(x=(1,0),),Dict(:x251=>1)))
 
 comp_task = Parameters.Calculation("Simulation observables", param_flow,
 															get_data,
@@ -68,7 +70,7 @@ plot_task2 = myPlots.PlotTask(comp_task,
 															("regions",10)],
 						myPlots.TypicalPlots.obs(get_data);
 						) 
-@show plot_task.init_sliders 
+plot_task.init_sliders 
 
 
 for target in ([],
@@ -124,7 +126,7 @@ for target in ([],
 end 
 
 #myPlots.plot(plot_task)
-#myPlots.plot(plot_task,plot_task2)
+myPlots.plot(plot_task,plot_task2)
 
 #@show task 
 

@@ -985,7 +985,7 @@ def atomsizes():
 
 
        fig.add_slider(label="Atom size", key="atomsize", 
-               vs=np.linspace(0.5,15,50)**2, columnSpan=3, v0=20)
+               vs=np.linspace(0.1,10,80)**2, columnSpan=3, v0=40)
 
 
     def read(obj):
@@ -1020,7 +1020,12 @@ def arrow_parameters():
 #                            vs=vs*3*1.5, columnSpan=3)
 #####
 
-        fig.add_text(label="Limits vector field", key=mM[0], text="")
+       
+        
+        fig.add_checkbox(label="background",key="background")
+
+        fig.add_text(label="zlim", key=mM[0], text="") 
+
         fig.add_text(key=mM[1], text="")
 
 #
@@ -1069,6 +1074,8 @@ def arrow_parameters():
 
 
         out.update(read_many(lambda k: read_text(obj, k), mM))
+
+        out.update(read_checkbox(obj, "background"))
 
         return out
 

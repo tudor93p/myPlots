@@ -5,12 +5,7 @@ import LinearAlgebra, FFTW
 
 import myLibs: Utils, Algebra, ArrayOps, SignalProcessing, ComputeTasks
 
-
-using Constants: ENERGIES, VECTOR_STORE_DIM, COMP_STORE_DIM
-using Constants: HOPP_CUTOFF, SYST_DIM, MAIN_DIM
-
-
-
+const SYST_DIM = 3 # 2?
 
 #===========================================================================#
 #
@@ -39,7 +34,7 @@ function get_SamplingVars_(P::AbstractDict,
 
 	width = get(P, key_width) do 
 
-			D = diff(Utils.Unique(centers; tol=HOPP_CUTOFF, sorted=true))
+			D = diff(Utils.Unique(centers; tol=1e-8, sorted=true))
 
 			return Algebra.Mean(D)*get(P, key_width_factor, 1)
 
@@ -55,7 +50,8 @@ end
 
 
 function get_SamplingVars(P;	Data=Dict(), get_k::Bool=false,
-									centers =	get(Data, "Energy", ENERGIES)[:],
+#									centers =	get(Data, "Energy", ENERGIES)[:],
+									centers =	Data["Energy"][:],
 									kwargs...
 													)
 
@@ -110,14 +106,15 @@ function SampleVectors(vector::AbstractVector{T}, args...;
 end 
 
 function SampleVectors(vectors::AbstractMatrix{T}, args...; 
-											 dim=VECTOR_STORE_DIM, kwargs...
+											 vsdim::Int, # VECTOR_STORE_DIM, 
+											 kwargs...
 											 )::Matrix{T} where T<:Number
 	
 	a = get_SamplingVars(args...; kwargs...)
 
 	isnothing(a) && return vectors
 
-	return Algebra.ConvoluteVectorPacket(a..., vectors; dim=dim, kwargs...)
+	return Algebra.ConvoluteVectorPacket(a..., vectors; dim=vsdim, kwargs...)
 
 end
 
@@ -340,7 +337,9 @@ function DOSatEvsK1D(P::AbstractDict,
 										 label...;
 										 ks::AbstractVector{<:Real}, 
 										 restrict_oper::Bool=false,
-										 normalize::Bool=true, kwargs...
+										 normalize::Bool=true, 
+										 vsdim::Int, 
+										 kwargs...
 										 )::Tuple{Tuple{Vector{Float64},
 																		<:Union{Nothing,Array{Float64}}},
 															Vector{String}} #where T<:AbstractMatrix{Float64}
@@ -351,11 +350,12 @@ function DOSatEvsK1D(P::AbstractDict,
 	haskey(Data, oper) || return (DOS, nothing), lab1
 
 
+	csdim = [2,1][vsdim] 
 
 
 	function prep_sizes(v::AbstractVector{Float64}, c)::Tuple#{T,T,Function}
 	
-		prep_sizes(Utils.VecAsMat(v, COMP_STORE_DIM), c, Val(true))
+		prep_sizes(Utils.VecAsMat(v, csdim), c, Val(true))
 
 	end 
 
@@ -364,10 +364,10 @@ function DOSatEvsK1D(P::AbstractDict,
 											reduce_dim::Val=Val(false)
 											)::Tuple#{T,T,Function}
 
-		@assert size(c)==(length(DOS),size(v,VECTOR_STORE_DIM)) 
+		@assert size(c)==(length(DOS),size(v,vsdim)) 
 		# (nr_ks, nr_eigenstates)
 
-		return v, (VECTOR_STORE_DIM==1 ? c : transpose(c)), reduce_dim
+		return v, (vsdim==1 ? c : transpose(c)), reduce_dim
 
 	end 
 
@@ -377,8 +377,8 @@ function DOSatEvsK1D(P::AbstractDict,
 
 	function prep_states(v, c, reduce_dim::Val{false}, ::Val{true})
 
-		(FilterStates(P, eachslice(v, dims=VECTOR_STORE_DIM),
-									v, VECTOR_STORE_DIM, c, COMP_STORE_DIM)...,
+		(FilterStates(P, eachslice(v, dims=vsdim),
+									v, vsdim, c, csdim)...,
 		 reduce_dim)
 
 	end 
@@ -386,19 +386,19 @@ function DOSatEvsK1D(P::AbstractDict,
 
 	function prep_states(v, c, reduce_dim::Val{true}, ::Val{true})
 
-		(FilterStates(P, selectdim(v, COMP_STORE_DIM, 1),
-									v, VECTOR_STORE_DIM, c, COMP_STORE_DIM)...,
+		(FilterStates(P, selectdim(v, csdim, 1),
+									v, vsdim, c, csdim)...,
 		 reduce_dim)
 
 	end 
 
 	function normalize_distrib((Z,W))
 
-		dos2 = sum(W, dims=COMP_STORE_DIM)
+		dos2 = sum(W, dims=csdim)
 
 		W2 = Algebra.normalizeDistrib(W, dos2, normalize)
 
-		return dropdims(dos2, dims=COMP_STORE_DIM), (Z,W2)
+		return dropdims(dos2, dims=csdim), (Z,W2)
 	end
 
 
@@ -406,15 +406,15 @@ function DOSatEvsK1D(P::AbstractDict,
 
 		outshape = [0, 0]
 
-		outshape[COMP_STORE_DIM] = size(v, COMP_STORE_DIM) 
+		outshape[csdim] = size(v, csdim) 
 
-		outshape[VECTOR_STORE_DIM] = size(c, VECTOR_STORE_DIM) 
+		outshape[vsdim] = size(c, vsdim) 
 
 		return zeros(outshape...) 
 
 	end   
 
-	zeroout(v, c, ::Val{true}) = zeros(size(c, COMP_STORE_DIM))
+	zeroout(v, c, ::Val{true}) = zeros(size(c, csdim))
 
 
 
@@ -422,26 +422,27 @@ function DOSatEvsK1D(P::AbstractDict,
 
 	function CombsOfVecs(vc, ::Val{false}=Val(false))
 
-		Utils.CombsOfVecs(vc...; dim=VECTOR_STORE_DIM)
+		Utils.CombsOfVecs(vc...; dim=vsdim)
 
 	end  
 
 
 	function CombsOfVecs(vc, ::Val{true})
 
-		selectdim(CombsOfVecs(vc), COMP_STORE_DIM, 1)
+		selectdim(CombsOfVecs(vc), csdim, 1)
 
 	end 
 
 
 
-#	nr_states=size(vecs,VECTOR_STORE_DIM)==size(coeffs,COMP_STORE_DIM)
-#	dimension==size(vecs,COMP_STORE_DIM) == size(out, COMP_STORE_DIM)
-#	nr_combs==size(coeffs,VECTOR_STORE_DIM) == size(out,VECTOR_STORE_DIM)
+#	nr_states=size(vecs,vsdim)==size(coeffs,csdim)
+#	dimension==size(vecs,csdim) == size(out, csdim)
+#	nr_combs==size(coeffs,vsdim) == size(out,vsdim)
 #	nr_combs==length(DOS)==length(ks)
 
 
-	z, lab2 = choose_color_i(P, Data[oper], vcat(lab1, oper); kwargs...) 
+	z, lab2 = choose_color_i(P, Data[oper], vcat(lab1, oper); 
+													 vsdim=vsdim, kwargs...)
 
 	zw, lab3, reduce_dim = prep_states(prep_sizes(z, w)..., Val(restrict_oper))
 
@@ -452,7 +453,7 @@ function DOSatEvsK1D(P::AbstractDict,
 
 	if any(isempty, zw)
 
-		return (zeros(size(w,COMP_STORE_DIM)), zeroout(z,w,reduce_dim)), lab4
+		return (zeros(size(w,csdim)), zeroout(z,w,reduce_dim)), lab4
 
 	else 
 
@@ -595,33 +596,37 @@ end
 #---------------------------------------------------------------------------#
 
 
-function Vec2Scalar(data::AbstractVector{<:Number}, args...
+function Vec2Scalar(data::AbstractVector{<:Number}, args...;
+										vsdim::Int,
 									 )::Number 
 
-	Vec2Scalar(Utils.VecAsMat(data, VECTOR_STORE_DIM), 
+	Vec2Scalar(Utils.VecAsMat(data, vsdim), 
 						 args...)[1]
 
 end 
 
-function Vec2Scalar(data::AbstractMatrix{<:Number}, ::Nothing, args...
+function Vec2Scalar(data::AbstractMatrix{<:Number}, ::Nothing, args...;
+										kwargs...
 									 )::Vector{<:Number}
 
-	Vec2Scalar(data, args...)
+	Vec2Scalar(data, args...; kwargs...)
 
 end 
 
 
-function Vec2Scalar(data::AbstractMatrix{<:Number}, P::AbstractDict=Dict()
+function Vec2Scalar(data::AbstractMatrix{<:Number}, P::AbstractDict=Dict();
+										vsdim::Int,
 									 )::Vector{<:Number}
 	
-	Vec2Scalar(data, [2,1][VECTOR_STORE_DIM], P)
+	Vec2Scalar(data, [2,1][vsdim], P; dim=vsdim)
 
 end 
 
 
 function Vec2Scalar(data::AbstractArray{<:Number, N},
 										dim::Int,
-										P::AbstractDict=Dict()
+										P::AbstractDict=Dict();
+										kwargs...
 										)::Array{<:Number, N-1} where N
 															
 
@@ -954,7 +959,8 @@ choose_obs_i = ProcessData(
 
 choose_color_i = ProcessData(choose_obs_i.check,
 
-	function calc_cci(P::AbstractDict, z::AbstractArray{T}; kwargs...
+	function calc_cci(P::AbstractDict, z::AbstractArray{T}; 
+										vsdim::Int, kwargs...
 										)::Tuple{Array{T},Any} where {T<:Real}
 	
 		z1 = dropdims(z, dims=Tuple(findall(size(z).==1)))
@@ -963,7 +969,7 @@ choose_color_i = ProcessData(choose_obs_i.check,
 	
 		ndims(z1)==1 && return z1, ""
 	
-		D = eachslice(z1, dims=Dict(1=>ndims(z1), 2=>1)[VECTOR_STORE_DIM])
+		D = eachslice(z1, dims=Dict(1=>ndims(z1), 2=>1)[vsdim])
 	
 		return ComputeTasks.choose_obs_i(Dict(enumerate(D)); P=P, kwargs...)
 	
@@ -1150,15 +1156,16 @@ transform = ProcessData(pd_fourier_comp,
 
 
 
-function dist_dw_label(Rs::AbstractVector{<:Number})::Vector{String}
+function dist_dw_label(Rs::AbstractVector{<:Number},
+											slice_dim::Int)::Vector{String}
 
-	dist_dw_label.(Rs)
+	dist_dw_label.(Rs, slice_dim)
 
 end 
 
-function dist_dw_label(R::Number)::String 
+function dist_dw_label(R::Number,slice_dim::Int)::String 
 
-	string(["x","y"][MAIN_DIM], "=", nr2str(R))
+	string(["x","y","z"][slice_dim], "=", nr2str(R))
 
 end  
 
@@ -1166,11 +1173,13 @@ end
 closest_to_dw = ProcessData(
 
 				function just_slice(P::AbstractDict, A::AbstractArray{T, N};
-														R::Number, inds::AbstractVector{Int}, kwargs... 
+														R::Number, inds::AbstractVector{Int}, 
+														slice_dim::Int,
+														kwargs... 
 														)::Tuple{Array{T,N}, String} where {T<:Number, N}
 
-					(collect(selectdim(A, N==1 ? 1 : kwargs[:dim], inds)), 
-					 dist_dw_label(R))
+					(collect(selectdim(A, N==1 ? 1 : kwargs[:vsdim], inds)), 
+					 dist_dw_label(R,slice_dim))
 
 
 				end)

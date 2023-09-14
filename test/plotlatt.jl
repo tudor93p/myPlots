@@ -16,14 +16,6 @@ end
 
 
 
-error() 
-
-
-
-
-
-
-
 
 myPlots.split_label(String[])
 
@@ -34,19 +26,21 @@ myPlots.split_label(["A","B","C"])
 
 function do_work(nr_uc::Int,gl::Function)
 
-@show Lattices.LattDim(gl())
-
-
-
 	pyscript,plot = myPlots.TypicalPlots.lattice(gl;nr_uc=nr_uc)
 
 
-	plot(Dict())
+	p = plot(Dict())
+
+	@show p 
 
 
 	fig,ax = PyPlot.subplots()
 
-	myPlots.pyplot(pyscript,[ax],plot)
+
+
+
+	myPlots.pyplot(pyscript,[ax];Dict(Symbol(k)=>v for (k,v) in p)...)
+
 	sleep(2) 
 
 	PyPlot.close()
