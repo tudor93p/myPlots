@@ -85,14 +85,34 @@ const pysliders_funs = Dict{String,Tuple{Vararg{Symbol}}}(
 #
 #---------------------------------------------------------------------------#
 
+#function py_vec2scalar2()::Vector{String}
+#
+#	vcat(vec(('x':'x'+SYST_DIM-1) .* ["" "/norm" "^2"]),
+#			 ["Angle"; "Norm"]) 
+#end 
+
 function py_vec2scalar()::Vector{String}
 
-	map(string, [([i, i*"/norm", i*"^2"] for i='x'.+(0:SYST_DIM-1))...;
-							 "Angle"; "Norm"; ])
+	@assert 0<=SYST_DIM<=3 
+
+	V = Vector{String}(undef,SYST_DIM*3+2)
+
+	for c=1:SYST_DIM 
+
+		V[3c-2] = string('x'+c-1) 
+
+		V[3c-1] = V[3c-2]*"/norm"
+
+		V[3c] = V[3c-2]*"^2"
+
+	end 
+
+	V[end-1] = "Norm"
+	V[end] = "Angle"
+
+	return V
 
 end 
-
-
 
 
 
@@ -313,14 +333,9 @@ init_oper(oper) = function iop!(d)
 
 init_Vec2Scalar() = function ivs!(d::AbstractDict)
 
-	xyz = ([i, i*"/norm", i*"^2"] for i in 'x'.+(0:SYST_DIM-1))
+	merge!(union, d, Dict("Vec2Scalar" => py_vec2scalar()))
 
-	return merge!(union, d, Dict("Vec2Scalar" => map(string, [	
-							 xyz... ;  "Angle"; "Norm";
-			 
-			])))
-
-	end 
+end 
 
 
 

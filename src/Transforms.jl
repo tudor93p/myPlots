@@ -476,79 +476,49 @@ end
 #
 #---------------------------------------------------------------------------#
 
-#
-#
-#function apply_make_scalar(A::AbstractVector{<:Number}, make_scalar::Function
-#													)::Number
-#
-#	make_scalar(A)
-#
-#end 
-#
-#function apply_make_scalar(A::AbstractMatrix{<:Number}, 
-#													 make_scalar::Function,
-#													 )::Vector{<:Number}
-#
-#	apply_make_scalar(A, make_scalar, VECTOR_STORE_DIM)
-#
-#end 
-#
-#
-#function apply_make_scalar(A::AbstractArray{<:Number, N}, 
-#													 make_scalar::Function,
-#													 dim::Int
-#													 )::Array{<:Number, N-1} where N
-#												
-#	ArrayOps.mapslices_dropLostDims(make_scalar, A, dim)
-#
-#end 
+function decode_fstr_Cartesian(s::AbstractString)::Tuple{Int,String}
 
+	for (i,a_)=enumerate('x':'z'), a=(a_,uppercase(a_))
 
-#function apply_convolute(A::AbstractMatrix{<:Number}, 
-#												 convolute::AbstractDict, args...
-#												)
-#
-#	apply_convolute(A, v->SampleVectors(v,convolute), args...)
-#
-#end 
-#
-#
-#function apply_convolute(A::AbstractMatrix{<:Number}, 
-#												 convolute::Function)
-#	
-#	convolute(A)
-#
-#end 
-#
-#function apply_convolute(A::AbstractMatrix{<:Number}, 
-#												 convolute::Function,
-#												 inds::AbstractVector{Int},
-#												 dim::Int
-#												 )
-#
-#	ArrayOps.ApplyF_IndsSets(convolute, A, [2,1][dim], inds, dim)
-#
-#end 
-#
-#	if inds isa AbstractVector{<:AbstractVector}
-#
-#		@assert isa(A, AbstractVector) "Wrong dimension"
-#	
-#		return Utils.Slice_IndsSets(inds, A, 1)
-#
-#	end 
-#
-#	return A
-#
-#end 
-#
-#
-#
-#
+		s=="$a" && return i,"R" 
+
+		for p in [2,3]
+				s=="$a^$p" && return i,"R^$p"
+		end 
+				
+		s=="|$a|" && return i,"abs(R)"
+		s=="|$a|^2" && return i,"abs2(R)"
+		s=="|$a|^3" && return i,"abs(R)^3"
+
+	end  
+
+	return 0,""
+
+end 
 
 
 
+function decode_fstr_vec2scalar(d::AbstractString)::String 
 
+	d=="Angle" && return "atan(R[2],R[1])/pi"
+	d=="Norm" && return "LinearAlgebra.norm(R)"
+
+#	ic,fc = decode_fstr_Cartesian(d)
+#
+#	@show ic 
+#
+#	ic>0 && return ("r=R[$ic]", "$fc",)
+
+	for (i,a_)=enumerate('x':'z'), a=(a_,uppercase(a_))
+
+		d=="$a/norm" && return "R[$i]/LinearAlgebra.norm(R)"
+		d=="|$a|/norm" && return "abs(R[$i])/LinearAlgebra.norm(R)"
+
+	end  
+
+	return ""
+
+end  
 
 
 #===========================================================================#
@@ -558,69 +528,66 @@ end
 #---------------------------------------------------------------------------#
 
 
-#	for (d,A) in enumerate(["X","Y","Z"]), a in [A,lowercase(A)]
-#
-#		good(a) && return (d, identity)
-#
-#		good("|$a|") && return (d, pow_fct(1,true))
-#
-#		for n=2:4 
-#
-#			good("$a$n") && return (d, pow_fct(n))
-#
-#			good("|$a|$n") && return (d, pow_fct(n,true))
-#
-#		end 
-#
-#	end 
-#
 
-function v2s_template(R::AbstractVector{<:Real},::Val )::Float64 
+
+function parse_fstr_Cartesian(s::Union{Char,AbstractString}
+														 )::Tuple{Int,Function}
+
+	i,f = decode_fstr_Cartesian(string(s))
+
+	return i, (i==0 ? identity : fstr_to_f(f))
 
 end 
 
-function parse_vec2scalar(d::AbstractString)::Function
-
-	if d=="Angle" 
-
-		return function v2s_angle(R::AbstractVector{<:Real})::Float64 
-
-			atan(R[2],R[1])/pi
-
-		end 
-
-	end 
-
-	if d=="Norm" 
-
-		return function v2s_norm(R::AbstractVector{<:Number})::Float64 
-
-			LinearAlgebra.norm(R)
-
-		end 
-
-	end 
 
 
-	for (i,a_)=enumerate('x':'x'+SYST_DIM), a=(a_,uppercase(a_))
+parse_vec2scalar(c::Char)::Function = parse_vec2scalar(string(c))
 
-		occursin(a,d) || continue   
+function parse_vec2scalar(s::AbstractString)::Function 
 
-#			good("$a$n") && return (d, pow_fct(n))
-#			good("|$a|$n") && return (d, pow_fct(n,true))
+	ic,fc = parse_fstr_Cartesian(s)
 
-		d==a && return R->R[i]
-		d=="$a/norm" && return R -> R[i]/LinearAlgebra.norm(R)
-		d=="|$a|/norm" && return R -> abs(R[i])/LinearAlgebra.norm(R)
-		d=="$a^2" && return R->R[i]^2
-		d=="|$a|^2" && return R->abs2(R[i])
+	ic>0 && return fstr_to_F("$fc(R[$ic])")
 
-	end  
+	f = decode_fstr_vec2scalar(s)
 
-	error("Not supported Vec2Scalar: '$d'")
+	isempty(f) && error("Not supported Vec2Scalar: '$s'")
+
+	return fstr_to_F(f)
 
 end 
 
+
+
+
+function fstr_to_F(s::AbstractString)::Function 
+	
+	E = Meta.parse(s) 
+
+	return @eval begin 
+		function F(R::AbstractVector{<:Real})::Float64 
+
+			$(E)
+
+		end 
+	end 
+
+end 
+
+
+function fstr_to_f(s::AbstractString)::Function 
+
+	E = Meta.parse(s)
+
+	return @eval begin 
+		function f(R::Real)::Float64 
+
+			$(E)
+
+		end 
+	end 
+
+end 
 
 
 
