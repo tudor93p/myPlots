@@ -1,5 +1,6 @@
 import myPlots 
-import myLibs:Operators 
+import myLibs:Operators  
+using Test 
 
 @testset "i outside" begin 
 
@@ -19,6 +20,13 @@ end
 
 
 
+function foo(s)
+
+	myPlots.Transforms.parse_vec2scalar(s) 
+
+end 
+
+
 @testset "vec2scalar functions" begin 
 
 for s in myPlots.Sliders.py_vec2scalar()
@@ -28,15 +36,18 @@ for s in myPlots.Sliders.py_vec2scalar()
 #	@show myPlots.Transforms.get_vec2scalar_fstr(s)
 
 
-	w = myPlots.Transforms.parse_vec2scalar(s) 
+w = foo(s)#myPlots.Transforms.parse_vec2scalar(s) 
 
 	@show w
 
 
 	for q in [1, rand(3), rand(2,3,4), rand(2,3)]
 
-		hasmethod(w,(typeof(q),)) && w(q)
-		applicable(w,q) && w(q)
+		if hasmethod(w,(typeof(q),)) 
+			w(q)
+			@assert applicable(w,q) 
+
+		end 
 
 	end 
 

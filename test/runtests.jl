@@ -1,8 +1,8 @@
-using Revise, Test 
+#using Revise, Test 
 
-import myPlots
+#import myPlots
 
-Revise.retry()
+#Revise.retry()
 
 
 
@@ -21,7 +21,9 @@ for filename in [
 #"init-sliders",
 
 
-"vec2scalar",
+#"vec2scalar",
+
+"fpos",
 
 ]
 
