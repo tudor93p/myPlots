@@ -118,7 +118,7 @@ localobs(get_data::Function, PosAtoms::Function; vsdim::Int) = ("LocalObservable
 end)
 
 
-localobs(get_data::Function, lattice_::Module) = localobs(get_data, lattice_.PosAtoms)
+localobs(get_data::Function, lattice_::Module; kwargs...) = localobs(get_data, lattice_.PosAtoms; kwargs...)
 
 
 
