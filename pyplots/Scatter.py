@@ -57,21 +57,23 @@ def mask(x,xlim,y,ylim,z=None):
 #
 #---------------------------------------------------------------------------#
 
-def plot(Ax, dotsize=10, fontsize=12, cmap="cool", zorder0=0, 
+def plot(Ax, 
+        dotsize=10, dotsize_var=0.3,
+        fontsize=12, cmap="cool", zorder0=0, 
         xlim=None,ylim=None,zlim=None,
         zlabel="",
         show_colorbar=True,
-        xticks=None, xticklabels=None,
         kwargs_levellines={},
         kwargs_colorbar={},
         **kwargs): 
+
+
 
     ax0 = Ax[0]
 
     alpha0 = 1#0.6
 
     d = get_one_or_many(kwargs)
-
 
     Y = d("y") # Must be there
 
@@ -86,10 +88,9 @@ def plot(Ax, dotsize=10, fontsize=12, cmap="cool", zorder0=0,
 
     xlim,ylim,zlim = deduce_axislimits([X,Y,Z], [xlim,ylim,zlim])
 
-
     nr_col = 0
 
-
+#    exit()
 
 
     for i,(x_,y_,z_,l) in enumerate(zip(X, Y, Z, L)):
@@ -105,8 +106,8 @@ def plot(Ax, dotsize=10, fontsize=12, cmap="cool", zorder0=0,
             nr_col += 1
 
         else:
-      
-            S = (1+(2*np.random.rand(len(x))-1)*0.3)*dotsize
+     
+            S = (1+(2*np.random.rand(len(x))-1)*dotsize_var)*dotsize
           
             
 
@@ -123,27 +124,19 @@ def plot(Ax, dotsize=10, fontsize=12, cmap="cool", zorder0=0,
 
         ax0.legend(fontsize=fontsize)
 
-
-
-    ax0.set_xlim(xlim)
-
-    ax0.set_ylim(ylim)
-
+    set_xylabels2(ax0, kwargs, fontsize=fontsize)
     
-    plot_levellines2(ax0, kwargs, zorder=zorder0+5, 
+    if "zorder" not in kwargs_levellines:
+        kwargs_levellines["zorder"] = zorder0+5 
+
+
+    plot_levellines2(ax0, kwargs, 
+            xlim=xlim,ylim=ylim,
             **kwargs_levellines,
             )
 
-    set_xylabels2(ax0, kwargs, fontsize=fontsize)
 
-    if xticks is not None:
-
-        ax0.set_xticks(xticks)
-
-        if xticklabels is not None:
-
-            ax0.set_xticklabels(xticklabels)
-
+    Plot.set_xyticks(ax0, **kwargs)
     
 
 

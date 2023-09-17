@@ -469,7 +469,7 @@ def component_asarray(c):
 
     for (k,v) in c[1].items():
         
-        if k in ['nodes','dRs','x','y','z']:
+        if k in ['nodes','dRs','x','y','z','xy']:
         
             c[1][k] = np.asarray(v)
 

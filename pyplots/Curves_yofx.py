@@ -51,6 +51,7 @@ def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35,
         linestyles=plothelpers.linestyles,
         colors=plothelpers.colors,
         lw2=0.5,lw1=1.5,
+        alpha=0.65,
         kwargs_levellines={},
         kwargs_legend={},
         **data):
@@ -73,7 +74,7 @@ def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35,
 
     ils = 0
 
-    alpha = 0.65    # transparency of x0 vs y
+    #alpha = 0.65    # transparency of x0 vs y
 
 
     if d("function") is not None:
@@ -135,11 +136,15 @@ def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35,
        
 
     ax0.tick_params(labelsize=fontsize)
+    
+    if "zorder" not in kwargs_levellines:
+        kwargs_levellines["zorder"] = zorder0+5 
 
-    plot_levellines2(ax0, data, zorder=zorder0+5,
+    plot_levellines2(ax0, data, 
                         xlim=xlim, ylim=ylim, **kwargs_levellines)
 
 
+    Plot.set_xyticks(ax0, **data)
 
 
 

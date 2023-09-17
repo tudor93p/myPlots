@@ -12,9 +12,11 @@ def get_plotdata(*args,**kwargs):
 
 #    time.sleep(2)
 
-    X = np.linspace(0,2,20)
+    X = np.linspace(0,2,40)
 
     Y = (np.random.rand(len(X)) - 0.5)*10
+
+    Y.sort()
 
     return {"x":X, "y":Y,
             "z":np.random.rand(len(X)),
@@ -26,7 +28,7 @@ def get_plotdata(*args,**kwargs):
 
 def get_kwargs():
 
-    return {"ylim": [-3,1],
+    return {"ylim": [-2,1],
             }
 
 

@@ -55,7 +55,7 @@ def plot(Ax, localobs=None, cmap="PuBuGn", atomsize=100,
             vmax = lobsmax
     
 
-    Plot.LDOS(  [np.hstack((xy[:2].T,z.reshape(-1,1)))],
+    Plot.LDOS(  [np.hstack((xy[:2,:].T,z.reshape(-1,1)))],
                 ax_fname=ax0,
                 plotmethod="scatter",
                 axtitle="",
