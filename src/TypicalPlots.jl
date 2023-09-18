@@ -97,9 +97,12 @@ localobs(task::Union{CompTask,PlotTask}, arg...; kwargs...) = localobs(task.get_
 #localobs(get_data::Function, lattice_::Module; kwargs...) = localobs(get_data, lattice_.Latt; kwargs...)
 
 
-localobs(get_data::Function, PosAtoms::Function; vsdim::Int) = ("LocalObservables", function plot_(P::AbstractDict)::Dict
+localobs(get_data::Function, PosAtoms::Function; 
+				 vsdim::Int,
+				 default_lobs::AbstractString="LocalDOS",
+				 ) = ("LocalObservables", function plot_(P::AbstractDict)::Dict
 	
-	localobs_ = get(P, "localobs", "QP-LocalDOS")::AbstractString
+	localobs_ = get(P, "localobs", default_lobs)::AbstractString
 	
 	Data, good_P = get_data(P, mute=false, fromPlot=true, target=localobs_,
 													get_good_P=true)
