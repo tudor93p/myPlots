@@ -30,9 +30,6 @@ function obs(get_data::Function)::Tuple{String,Function}
 										target=union(vcat(obs_,obs0),["Energy"]),
 										)
 
-		@show keys(Data)
-
-
 		return construct_obs0obs(P, 
 														 Data["Energy"],
 #														 get(Data,"Energy",ENERGIES),
