@@ -1,6 +1,6 @@
 import numpy as np
 import Plot, Algebra, Utils
-from plothelpers import *
+#from plothelpers import *
 from sliders import *
 
 def nr_axes(**kwargs):

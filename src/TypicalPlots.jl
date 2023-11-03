@@ -27,7 +27,7 @@ function obs(get_data::Function)::Tuple{String,Function}
 		obs_ = vcat(get(P, "obs", obs0))
 	
 		Data = get_data(P, mute=false, fromPlot=true, 
-										target=union(vcat(obs_,obs0),"Energy"),
+										target=union(vcat(obs_,obs0),["Energy"]),
 										)
 
 		@show keys(Data)

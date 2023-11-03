@@ -63,7 +63,8 @@ def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35,
 
     xlim,ylim = deduce_axislimits([d("x"),d("y")], [xlim,ylim])
 
-    nr_curves = max([len(L) for L in [d("label"),d("flabel")] if L is not None ])
+#    nr_curves = max([len(L) for L in [d("label"),d("flabel")] if L is not None ])
+    nr_curves = max([len(L) for L in [d("function"),d("y")] if L is not None ])
 
 
 

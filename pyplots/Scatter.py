@@ -90,8 +90,6 @@ def plot(Ax,
 
     nr_col = 0
 
-#    exit()
-
 
     for i,(x_,y_,z_,l) in enumerate(zip(X, Y, Z, L)):
        

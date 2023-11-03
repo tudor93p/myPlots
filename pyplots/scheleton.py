@@ -460,18 +460,18 @@ def plot_direct_frominit(figure,
 def components_asarray(data):
     
     for c in data["components"].values():
-        component_asarray(c)
+        component_asarray(c[1])
 
     return data 
 
 
 def component_asarray(c):
 
-    for (k,v) in c[1].items():
+    for (k,v) in c.items():
         
         if k in ['nodes','dRs','x','y','z','xy']:
         
-            c[1][k] = np.asarray(v)
+            c[k] = np.asarray(v)
 
     return c 
 
@@ -512,10 +512,15 @@ def load_data(fnjson,i_comps=None,
     return data 
 
 
+
+
+
+
+
 def load_components(fnjson,i_comps,comp_update={}):
 
     with open(fnjson,"r") as f: 
-        data = json.load(f) 
+        data = json.load(f)  
 
     keep_components(data, i_comps)
     
@@ -523,11 +528,36 @@ def load_components(fnjson,i_comps,comp_update={}):
     
     components_asarray(data)  
 
+
+
+    
     return [data["components"][str(i)] for i in i_comps]
 
 
-
-
+#def load_components_plotx(fnjson,i_comps,comp_update={}):
+#
+#    plotxscript_, data, figtitle = load_components(fnjson,[0],comp_update_LDOS)[0]
+#
+#    plotxscript = plotxscript_.split("_vsX")[0]
+#
+#    plotxdata_ = data.pop("plotxdata")
+#
+#    plotxdata = [] 
+#
+#    for i in i_comps:
+#
+#        plotxdata_[i].update(comp_update) 
+#
+#        plotxdata.append(plotxdata_[i])
+#    
+#    plotx = np.array(data.pop("plotx"))[np.array(i_comps)]
+#
+#    plotxlabel = data.pop("plotxlabel")
+#
+#
+#    return plotxscript,plotxlabel,figtitle,plotx,plotxdata 
+#
+#components_asarray(c) 
 
 
 def plot_fromfile(fnjson, **kwargs):

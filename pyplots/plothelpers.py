@@ -477,7 +477,7 @@ def deduce_axislimits(data=None, limits=None):
 
     for i,lim in enumerate(limits): 
 
-        if is_lim_good(lim):
+        if Plot.is_lim_good(lim):
             
             limits[i] = np.reshape(lim,-1)
             limits_given[i] = True 
@@ -529,52 +529,13 @@ def deduce_axislimits(data=None, limits=None):
 
 def plot_levellines2(ax, data, *args, **kwargs):
 
-    plot_levellines(ax, lambda k:data.get(k,None), *args, **kwargs)
+    Plot.plot_levellines(ax, lambda k:data.get(k,None), *args, **kwargs)
 
-#def given_limif xlim is not None and all([x is not None for x in xlim]): 
-def is_lim_good(lim):
 
-    if lim is not None: 
-    
-        lim1 = np.reshape(lim,-1)
-    
-        if len(lim1)==2:
-            
-            if all([any([isinstance(l,t) for t in [np.int,np.int64,int,float,np.longlong]]) for l in lim1]):
 
-                return True 
-    
-            if not any([l is None for l in lim1]):
-    
-                print("Invalid limit:",i,type(lim1),[type(l) for l in lim1])
-    
-    return False 
     
 
 
-def plot_levellines(ax, get_line, color="k", lw=1, alpha=0.6, 
-        xlim=None, ylim=None,
-        **kwargs):
-
-    xylim = np.array([xlim if is_lim_good(xlim) else ax.get_xlim(), 
-                ylim if is_lim_good(ylim) else ax.get_ylim()],dtype=float)
-
-    for (i,c) in enumerate("xy"):
-
-        line = get_line(c+"line")
-
-        if line is not None:
-    
-            xy = np.copy(xylim)
-    
-            xy[i,:] = line
-
-            ax.plot(*xy, color=color, lw=lw, alpha=alpha, **kwargs)
-    
-    
-    for (l,f) in zip(xylim, [ax.set_xlim, ax.set_ylim]):
-    
-        f(l)
     
     
 
