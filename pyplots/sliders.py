@@ -135,12 +135,17 @@ def zoom_choose_energy():
 #
 #                m,M = enlim 
 #
-#                return m + (M-m)*obj.get_slider("sEnergy")
+#                Energy = m + (M-m)*obj.get_slider("sEnergy")
 #
-##                obj.set_text("Energy", Energy)
+#                obj.set_text("Energy", Energy) 
 #
-#            except:
-
+#                return Energy 
+#
+#
+#            except: 
+#
+#                return 0.0
+#
             return 0.0
 
 
@@ -965,10 +970,8 @@ def dotsizes():
 
     def add(fig, **kwargs):
 
-
        fig.add_slider(label="Dot size", key="dotsize", 
                vs=np.linspace(1,50,40), columnSpan=3, v0=5)
-
 
     def read(obj):
 
@@ -979,13 +982,40 @@ def dotsizes():
 
 
 
+def cbox_colors(colkeyword=None):
+
+    assert isinstance(colkeyword,str)
+    assert len(colkeyword.strip())>0
+
+    key = colkeyword + "color"
+
+    def add(fig, **kwargs):
+
+       fig.add_combobox(colors, 
+               label = colkeyword.strip().capitalize() + " color", 
+               key=key)
+
+    def read(obj):
+        return {key: obj.get_combobox(key)}
+
+    return add,read
+
+
+def linecolors():
+    return cbox_colors(colkeyword="line") 
+
+def bondcolors():
+    return cbox_colors(colkeyword="bond") 
+def atomcolors():
+    return cbox_colors(colkeyword="atom")
+
 def atomsizes():
 
     def add(fig, **kwargs):
 
 
        fig.add_slider(label="Atom size", key="atomsize", 
-               vs=np.linspace(0.1,10,80)**2, columnSpan=3, v0=40)
+               vs=np.linspace(0.1,17,80)**2, columnSpan=3, v0=40)
 
 
     def read(obj):
@@ -1091,7 +1121,7 @@ def linewidths():
 
     def add(fig, **kwargs):
 
-        fig.add_slider(label="Line width", key="lw", vs=np.linspace(0,4,40), columnSpan=3,v0=10)
+        fig.add_slider(label="Line width", key="lw", vs=np.linspace(0,5,50), columnSpan=3,v0=15)
 
 
     def read(obj):

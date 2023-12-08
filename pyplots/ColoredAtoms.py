@@ -1,5 +1,6 @@
 import numpy as np
-import Plot, Algebra
+import Plot, Algebra 
+import plothelpers
 from plothelpers import *
 from sliders import *
 
@@ -7,7 +8,7 @@ def nr_axes(**kwargs):
     return 1
 
 
-common_sliders = [atomsizes, colormap]
+common_sliders = [atomsizes, atomcolors] #, colormap]
 
 
 
@@ -22,6 +23,8 @@ common_sliders = [atomsizes, colormap]
 def plot(Ax, cmap="PuBuGn", atomsize=100, fontsize=12, 
         zlabel=None, zlabels=None, show_colorbar=True, 
         kwargs_colorbar={},
+        zorder=0,
+        atomcolor=None,
         **kwargs):
 
     if len(kwargs_colorbar)>0:
@@ -46,7 +49,12 @@ def plot(Ax, cmap="PuBuGn", atomsize=100, fontsize=12,
 
         for i,(xy,lab) in enumerate(zip(XY,L)):
 
-            ax0.scatter(*xy[:2], s=atomsize, c=colors[i%len(colors)], label=lab)
+            ax0.scatter(*xy[:2], 
+                    s=atomsize, 
+                    c=Utils.Assign_Value(atomcolor,plothelpers.get_color(i)),
+                    label=lab,
+                    zorder=zorder,
+                    )
 
         if sum(map(lambda l: l is not None, L))>1: 
 
@@ -74,9 +82,12 @@ def plot(Ax, cmap="PuBuGn", atomsize=100, fontsize=12,
     
             ax0.set_aspect(1)
     
-        ax0.set_xlabel("$x$",fontsize=fontsize)
+        ax0.set_xlabel(r"$x\ [a]$",fontsize=fontsize)
 
-        ax0.set_ylabel("$y$",rotation=0,fontsize=fontsize)
+#        ax0.set_ylabel("$y$",rotation=0,fontsize=fontsize)
+        ax0.set_ylabel(r"$y\ [a]$",rotation=90,fontsize=fontsize)
+
+        ax0.tick_params(labelsize=fontsize)
 
 
         return

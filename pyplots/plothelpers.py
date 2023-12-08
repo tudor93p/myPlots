@@ -91,9 +91,12 @@ MARKERS = np.concatenate([MARKERS for i in range(10)])
 
 colors = np.roll([["brown","red","coral","peru"],["goldenrod","olive","forestgreen","lightseagreen"],["dodgerblue","midnightblue","darkviolet","deeppink"]],1,axis=1).T.reshape(-1)
 
+colors = np.append(colors,["black","lightgrey"][::-1])
 
+def get_color(i=0,collist=colors):
+    
+    return collist[i%len(collist)]
 
-colors = np.concatenate((colors,colors,colors))
 
 #def clslw(D):
 #

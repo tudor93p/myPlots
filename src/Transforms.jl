@@ -101,7 +101,7 @@ function SampleVectors(vector::AbstractVector{T}, args...;
 											 kwargs...)::Vector{T} where T<:Number 
 
 	SampleVectors(Utils.VecAsMat(vector, 1), args...;
-								dim=2, kwargs...) |> vec
+								vsdim=2, kwargs...) |> vec
 
 end 
 

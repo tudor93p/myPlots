@@ -49,12 +49,19 @@ common_sliders = [sliders.linewidths]
 def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35, 
         xlim=None, ylim=None, aspect_ratio=None,
         linestyles=plothelpers.linestyles,
-        colors=plothelpers.colors,
+        colors=None,#plothelpers.colors,
         lw2=0.5,lw1=1.5,
         alpha=0.65,
         kwargs_levellines={},
         kwargs_legend={},
         **data):
+
+    def get_color(i):
+        if (colors is not None) and (len(colors)>0):
+            return plothelpers.get_color(i, collist=colors)
+
+        return plothelpers.get_color(i)
+
 
     ax0 = Ax[0]
 
@@ -80,9 +87,17 @@ def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35,
 
     if d("function") is not None:
 
-        for (z,(f,l,c,lw)) in enumerate(zip(d("function"),d("flabel"),colors[1:],LWS)):
+        for (z,(f,l,#c,
+            lw)) in enumerate(zip(d("function"),d("flabel"),
+#            colors[1:],
+            LWS)):
+
+            
+            #colors[1:][z] or plothelpers.colors(z+1)
     
             with np.errstate(divide='ignore',invalid='ignore'):
+
+                c = get_color(1+z)
 
                 x,y = Utils.Adaptive_Sampling(f, xlim, min_points=100)
     
@@ -96,7 +111,12 @@ def plot(Ax, linewidth=1, fontsize=12, zorder0=0, dotsize=35,
 
     if d("y") is not None and d("x") is not None:
 
-        for (z,(x,y,l,c,ls,lw)) in enumerate(zip(d("x"),d("y"),d("label"),colors[ils:], LSS, LWS)):
+        for (z,(x,y,l,#c,
+            ls,lw)) in enumerate(zip(d("x"),d("y"),d("label"),
+            #colors[ils:], 
+            LSS, LWS)):
+
+            c = get_color(ils+z)
  
             xy = np.vstack((np.reshape(x,-1),np.reshape(y,-1)))
 
