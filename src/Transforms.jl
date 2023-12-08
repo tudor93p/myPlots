@@ -496,6 +496,13 @@ function decode_fstr_Cartesian(s::AbstractString)::Tuple{Int,String}
 
 end 
 
+function decode_fstr_Cartesian(c::Char)::Tuple{Int,String}
+
+	decode_fstr_Cartesian(string(c))
+
+end 
+
+
 
 
 function decode_fstr_vec2scalar(d::AbstractString)::String 
@@ -533,7 +540,7 @@ end
 function parse_fstr_Cartesian(s::Union{Char,AbstractString}
 														 )::Tuple{Int,Function}
 
-	i,f = decode_fstr_Cartesian(string(s))
+	i,f = decode_fstr_Cartesian(s)#%string(s))
 
 	return i, (i==0 ? identity : fstr_to_f(f))
 
